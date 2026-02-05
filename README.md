@@ -37,6 +37,10 @@ plan détaillé
     - .to(device = "cuda")
     - clean GPU memory
   - solve common issue
+- **Extra: use another classifier**
+  - reuse internship content? ???
+- **Extra: Code training steps yourself**
+  - reuse internship content ???
 - **Save your work for later**
   - save model
   - save embeddings
