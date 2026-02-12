@@ -1,0 +1,69 @@
+---
+title: "Augmented Social Scientist: train encoder models on a classification task"
+author: 
+    - name: A. Morin
+      email: axel.morin@polytechnique.etu
+      role: "Author"
+toc: true
+toc-depth: 3
+---
+
+# Introduction
+
+## Install environment: 
+
+python 3.12
+
+pip install -qU pandas "transformers==4.52.4" datasets ipykernel matplotlib torch "accelerate>=0.26.0"
+
+# Understand the encoder architecture
+
+# Training pipeline: the essential
+
+## Load your data 
+
+## Preprocess your data
+
+## Choose and load a models
+
+
+Modifying a model that has already been trained on another task is not a easy road -> look for Setfit
+
+## Train the model
+
+## Predict the labels for the full dataset
+
+# Evaluate performance
+
+## Read the metrics
+
+## Read the learning curve
+
+# Training pipeline: advanced practices
+
+## Hyperparameters tuning
+
+## Use GPU for faster training
+
+## Read the errors
+
+many errors are raised due to the functions assuming that your columns are well named. Make sure to have the following: 
+
+- "text" column with the text as string
+- "labels" column with the labels as int; if you have multiple labels, make sure this is a Tensor of integers
+- "input_ids" a column with the tokens truncated and padded, maje sure this is a Tensor of integers
+- "attention_mask" a column with the tokens truncated and padded, maje sure this is a Tensor of integers
+
+Also, depending on the model you're using these columns can have different names. Make sure to check the huggingface documentation related to the model you are using 
+
+Also, for the inputs and model, they HAVE to be on the same device. Make sure to have all your tensors on the same device with `.to(device = DEVICE)`
+
+# Some good practices
+
+## Save your model and results 
+
+# Limits of using encoder models for classification
+
+# Conclusion 
+
+# Bibliography 
