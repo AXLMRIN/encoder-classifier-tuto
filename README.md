@@ -22,13 +22,13 @@ plan détaillé
 - **Train the model and interpret the results**
   - code for training
   - code for retrieving the results and compute the metrics
-  - Rapidly Explain the metrics and how to interpret them 
+  - Rapidly Explain the metrics and how to interpret them
 - **How to get better results**
   - Read a learning curve
   - what are the key hyperparameters
     1. learning rate +++
-    2. weight decay 
-    3. Batch size / gradient accumulation : stick to 32 / 64 in total, shouldn't be a problem 
+    2. weight decay
+    3. Batch size / gradient accumulation : stick to 32 / 64 in total, shouldn't be a problem
     4. optimizer: explain that most of the time it's useless to look at that
     5. precision: the higher the better explain the tradeoff — maybe leave aside for later?
   - code and execute
@@ -45,3 +45,29 @@ plan détaillé
   - save model
   - save embeddings
 - **Conclusion**
+
+# Revised version
+
+- Introduction
+  - Install environment:
+- Understand the encoder architecture
+- Training pipeline: the essential
+  - Load your data
+  - Preprocess your data
+  - Choose and load a models
+  - Train the model
+  - Predict the labels for the full dataset
+- Evaluate performance
+  - Read the metrics
+  - Read the learning curve
+- Training pipeline: advanced practices
+  - Hyperparameters tuning
+  - Use GPU for faster training
+  - Read the errors
+- Some good practices
+  - Save your model and results
+  - Balance classes
+  - Fix the seed
+- Limits of using encoder models for classification
+- Conclusion
+- Bibliography
