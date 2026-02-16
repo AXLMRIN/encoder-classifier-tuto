@@ -23,11 +23,11 @@ print(df.head())
 df["sentence-len"] = df["sentence"].apply(len)
 plt.figure()
 ax = df["sentence-len"].hist()
-plt.savefig('./sentence-len-hist.png')
+plt.savefig('./outputs/sentence-len-hist.png')
 plt.close()
 plt.figure()
 ax = df.hist("sentence-len", by="leaning"); 
-plt.savefig('./sentence-len-hist-by-label.png')
+plt.savefig('./outputs/sentence-len-hist-by-label.png')
 plt.close()
 
 print("\t i- Preprocess Dataset")
