@@ -1,1 +1,4 @@
 data/*.csv
+data/osfstorage-archive/
+*/libs/
+*.html
