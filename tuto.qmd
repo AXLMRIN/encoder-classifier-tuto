@@ -10,24 +10,269 @@ toc-depth: 3
 
 # Introduction
 
+It is now common practice to use LLMs (encoders or decoders) to annotate texts in the context of social science research (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). This approach does not replace the theoretical work and manual annotation, as one must define the labels and what they represent, as well as annotate some elements that will be used to evaluate the LLMs’ ability to perform the classification task. On the other hand, LLMs provide cost-effective and rapid alternatives for scaling studies.
+
+There are several strategies to use LLMs to annotate texts:
+
+- Using encoder models: from texts, models create embeddings (an array of several hundred of values) on which we perform the classification. This strategy is illustrated in the Augmented Social Scientist tutorial, which requires some coding skills as well as a computer capable of loading and running the model.
+- Using decoder models: from a prompt, ie the concatenation of the text to annotate as well as the codebook to do so, we ask a model to generate the labels as text. This strategy is easier to implement as fewer coding skills are required, and models run on external machines. This nonetheless has drawbacks, which we mention at the end of this page.
+
+In a previous tutorial, we demonstrated how to make API calls with the `openai`library ([available here](https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/)). In this tutorial, we explore the other solution: training an encoder model. Alternatively, you can use ActiveTigger, a software developed by our team that facilitates the use of models in the social sciences.
+
+<!-- TODO: write a pros and cons of the two methods -->
+
+## Objectives and materials
+
+In this tutorial we will present an overview of the techniques used to this day and experiment on a dataset of journal articles created by Luo et al. (2020). What you will learn: 
+
+- Understand the general pipeline for text classification with encoder models
+- Develop some familiarity with preprocessing and training techniques
+- Evaluate models' performance and their impact on downstream tasks
+- Develop good practices for your research
+
+We have also included a section discussing how to train models on GPUs.
+
 ## Install environment: 
 
-python 3.12
+For this tutorial we use Python version 3.12 and setup the environment with the following command:
 
+```bash
 pip install -qU pandas "transformers==4.52.4" datasets ipykernel matplotlib torch "accelerate>=0.26.0"
+```
+
+However, you should know that, however convenient PyTorch, accelerate, and transformers are, these libraries may be unstable depending on your computer and environment. You **will face issues** related to your version. We recommand using conda (or the virtual environments manager of your choice) to correctly setup your environment and create a requirement file of your own once you've reached a stable workspace. Don't hesitate downgrading your libraries as they are likely to be more stable. 
 
 # Understand the encoder architecture
 
-# Training pipeline: the essential
+In this section we provide common knowledge about the encoder architecture and training; if you want to refine your understanding of the theory, we list a number of state-of-the-art resources. 
+
+All models are neural network models with fancy architectures (activation nodes, pooling layers or feedback loops). Ultimately, one can see models as a sequence of matrix multiplication and vectors addition where the coefficients of the matrices and vectors (the weights) have been optimised for a certain task. The Transformer architecture, is one way of agencing nodes together. In one of the most famous paper in NLP (["Attention is all you need"](https://en.wikipedia.org/wiki/Attention_Is_All_You_Need)), a team from Google introduced the concept of *attention* which attempts to take into account the context in which a word is used.  
+
+![Transformer architecture](./assets/encoder-architecture.jpg){#fig-transformer-architecture width=50%}
+
+The transformer contains two parts, the encoder and the decoder
+
+- **Decoder** models include GPT models and Llama, they often are too heavy to run on your personal laptop (smallest models have 3-8 billion prameters and can go up to 2,000 billion). They also tend to be prioprietary (XXX vérifier) resulting in confidentiality and interpretation issues <!-- TODO reformulate -->. 
+- **Encoder** models (also called embedding models) include BERT models and many of it's kind (CamemBERT, RoBERTa, DeBERTa, and the list is long). They are way more frugal and can be run and finetuned on most laptops (most models have between 200 and 600 million parameters). Also, these models tend to be open source. (Which does not solve issues related to the training data and all.. but it's better).<!-- TODO find back reference with model size and all -->
+
+Training embedding models is a complex task that can be carried out in many different ways. For instance, BERT was trained on two tasks (Devlin et al., 2019): 
+
+- Task 1: Masked LM. Take a sentence, replace some words by a `[MASK]` token, predict what was the word.
+- Task 2: Next Sentence Prediction. Take two sentences A and B, classify whether it makes sense for sentence B to appear after sentence A. 
+
+In the context of training embedding models, tasks have been adapted and redesigned but they all have the same objective: modelise the semantic of words. If done correctly, this means that two words close in meaning are close in the embedding space and that the embedding calculated takes into account the context of the sentence. In most NLP applications, the similarity score is calculated as the scalar product of the embeddings also referred to as the cosine metric.
+
+![Similarity](./assets/similarity.png){#fig-similarity width=100%}
+
+For instance in @fig-similarity, the word "apple" and "pear" are very close in meaning, so their similarity score is very high. However, in the context of Apple's new product, the embedding has shifted with the context, now the similarity score is lower.
+
+In the case of 
+
+
+:::{.callout-note  collapse="true" title="Learn more the embedding space and training encoders"}
+
+- [The illustrated transformer](https://jalammar.github.io/illustrated-transformer/)
+- [What are Transformer Neural Networks](https://www.youtube.com/watch?v=XSSTuhyAmnI)
+- [Jurafsky's chapter on Transformers](https://web.stanford.edu/~jurafsky/slp3/8.pdf)
+- [Code your own transformer model](https://nlp.seas.harvard.edu/annotated-transformer/)
+
+:::
+
+# Fine-tuning pipeline: the essential
+
+In this section we will see the fundamentals to fine-tune encoders for a classification task. We will use a dataset introduced by Luo et al., (2020); they collected journal articles, from which they extracted sentences conveying an opinion regarding global warming. Finally, they annotated each opinion as "agreeing", "neutral" or "disagreeing" with regard to the following statement "Climate chage/global warming is a serious concern".
 
 ## Load your data 
 
+Data is available on the [project's GitHub repository](https://github.com/yiweiluo/GWStance/tree/master), we can download it from there using Pandas. 
+
+```python 
+import pandas as pd 
+
+url = "https://raw.githubusercontent.com/yiweiluo/GWStance/refs/heads/master/3_stance_detection/1_MTurk/full_annotations.tsv"
+df_raw = pd.read_csv(url, sep = "\t") # Careful here, this document is a tsv (separator="\t" and not a csv (separator = ",")
+
+df_raw.head()
+```
+
+We will first need to explore the dataset, get a graps of it's content as well as possible biases. 
+
+As a first step, let's make a list of all the columns: 
+
+- `sent_id`: the sentence id. It is not unique and represents something else, we will need to create a different ID.
+- `sentence`: the sentence to annotate.
+- `worker_#N` $N\in [1,7]$: The team tasked MTurk workers to label the data for them. Each column concatenates the labels for a given worker.
+- `MACE_pred`: this is the final prediction. The team used the MACE framework to create a debiased label from the workers' labels.
+- `av_rating`: The mean of all workers' annotations for a given sentence (with disagree = 1, neutral = 0, agree = 1).
+
+Other columns include `disagree`, `agree` and `neutral` but they are empty. The `round` and `batch` columns XXX.
+
+Let's have a look at the number of elements per class:
+
+```python
+df.groupby(["label_text"]).size()
+```
+
+We can see that there tends to be more "neutral" or "agrees" sentences. This means that "disagrees" sentences might be trickier to spot because there will be less elements to train on.
+
+Let's analyse the len of sentences in order to estimate how large will the context window be:
+
+```python
+df["sentence-len"] = df["sentence"].apply(len)
+df["sentence-len"].hist()
+df["sentence-len"].describe()
+```
+
+<!-- TODO: include histogramme -->
+
+We can see that e
+
+```python 
+df.hist(column = "sentence-len", by="label_text")
+df.groupby("label_text")["sentence-len"].describe()
+```
+
+there does not seem to be a bias regarding the length of the documents
+
 ## Preprocess your data
+
+The preprocessing step is one of the most important step in the NLP pipeline, one needs to know what the corpus contains. 
+
+!!!!! REMOVE DUPLICATES
+
+We will sub-select the rows of interest and create a custom id. Also we will filter out sentences that appear multiple times (they are identified with a `sent_id` starting with an 's')
+
+```python 
+df = df_raw.loc[
+  ~df_raw["sent_id"].str.startswith("s"),
+  ["sentence", "MACE_pred", "av_rating"]
+]
+df = df.rename(columns={"MACE_pred" : "labe_text"}) # Rename MACE_pred for conveniency
+df
+```
+
+!!!! CREATE SPLITS
 
 ## Choose and load a models
 
+In this tutorial we use the Transformers package, maintained by [HuggingFace](https://huggingface.co/). HuggingFace is a company specialised in NLP and machine learning. They maintain many SOTA libraries such as Transformers, Datasets or Sentence Transormers. On top of maintaining the libraries, they publish posts about the latest tech, tutorials on their libraries, host a forum for debugging but also propose inference and training solutions if you don't have the hardware necessary to do them on your own laptop.
 
-Modifying a model that has already been trained on another task is not a easy road -> look for Setfit
+More specifically, they propose a range of open source models and datasets downlable through their API. In the context of this tutorial, we will start working with the famous BERT models named: [google-bert/bert-base-uncased](https://huggingface.co/google-bert/bert-base-uncased)
+
+:::{.callout-note title="How to choose a model"}
+
+Models and their performance is highly sensible to the task and context of usage. When implementing an NLP task you might want to try several models to compare their performance. When choosing a model you want to take into account the following parametes: 
+
+- What task was the model trained for? You can see the list of tasks when [browsing HuggingFace's models](https://huggingface.co/models). In the context of this tutorial, we want to perform a Text Classification task. 
+- What language was the model trained on? This one is trivial. However, depending on your corpus, you might want to find models that are multilingual. Performance of multilingual models can be below monolingual models; consider trying different models. You can also try and translate your corpus into one language and use a monolingual model. 
+- What documents was the model trained on? Evaluated on? Models performance can vary a lot when used on a certain domain or another. Make sure to use models that have been XXX BENCSSMARK
+- Last but not least: How big is the model? You won't get away with it, your laptop has limited computation capabilities, large models won't run on a mere laptop. Know your hardware and don't be greedy
+
+:::
+
+To load the model we just need to use one of the AutoModel instance. Auto Classes are ready-to-use classes that will set up the right architecture depending on your task. In our case we are going to use the [`AutoModelForSequenceClassification`](https://huggingface.co/docs/transformers/en/model_doc/auto#transformers.AutoModelForSequenceClassification). To load the model we use the following command: 
+
+```python 
+from transformers import AutoModelForSequenceClassification
+
+MODEL_NAME = "google-bert/bert-base-uncased"
+model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+```
+
+_Nota: for some models you might need to set `trust_remote_code` to `True`. Make sure you trust the model you are downloading._
+
+We can easily observe the general architecture of the model by typing: 
+
+```python
+print(model)
+```
+
+:::{.callout-note title="Model description"}
+```txt 
+BertForSequenceClassification(
+  (bert): BertModel(
+    
+    >>> This is the first step of the encoding process, use ready made embeddings 
+    that will be modified with attention. We can find useful information: 
+    - 30522 is the vocab size, there are 30522 entities for which there is a ready 
+    made embedding.
+    - 768 is the dimension of the output embeddings
+
+    (embeddings): BertEmbeddings(
+      (word_embeddings): Embedding(30522, 768, padding_idx=0)
+      (position_embeddings): Embedding(512, 768)
+      (token_type_embeddings): Embedding(2, 768)
+      (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+      (dropout): Dropout(p=0.1, inplace=False)
+    )
+
+    >>> This is where the attention takes place. You can see that the encoder is a
+    stack of 12 BERTlayers, themselves containing a self attention module. We find 
+    again the dimension of the output embeddings: 768
+
+    (encoder): BertEncoder(
+      (layer): ModuleList(
+        (0-11): 12 x BertLayer(
+          (attention): BertAttention(
+            (self): BertSdpaSelfAttention(
+              (query): Linear(in_features=768, out_features=768, bias=True)
+              (key): Linear(in_features=768, out_features=768, bias=True)
+              (value): Linear(in_features=768, out_features=768, bias=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+            (output): BertSelfOutput(
+              (dense): Linear(in_features=768, out_features=768, bias=True)
+              (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+          )
+          (intermediate): BertIntermediate(
+            (dense): Linear(in_features=768, out_features=3072, bias=True)
+            (intermediate_act_fn): GELUActivation()
+          )
+          (output): BertOutput(
+            (dense): Linear(in_features=3072, out_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+      )
+    )
+
+    >>> This pooler is the component that will take the embedding of each token in 
+    the sequence and produce a unique embedding, supposedly best representing the sequene.
+
+    (pooler): BertPooler(
+      (dense): Linear(in_features=768, out_features=768, bias=True)
+      (activation): Tanh()
+    )
+  )
+  (dropout): Dropout(p=0.1, inplace=False)
+
+  >>> This last component is the classifier layer, a neural network composed of 768 
+  + 3 nodes. The out_features=3 corresponds to the number of label we are using for 
+  annotation! 
+
+  (classifier): Linear(in_features=768, out_features=3, bias=True)
+)
+```
+
+:::
+
+:::{.callout-note title="Tips and tricks regarding the model"}
+
+The `AutoConfig` class is very convenient for retrieveing information that may difficult to get otherwise. We load it like this: 
+
+```python 
+from transformers import AutoConfig
+AutoConfig.from_pretrained(MODEL_NAME)
+```
+
+If you ever wanted to work with another model that has already been fine-tuned and wanted to only train the classification layer, there are two solutions: 
+- You either generate the embeddings, save them, and train a scikit-learn classifier on top of it.
+- You use [Setfit](https://huggingface.co/docs/setfit/index)
+
+:::
 
 ## Train the model
 
@@ -45,6 +290,8 @@ Modifying a model that has already been trained on another task is not a easy ro
 
 ## Use GPU for faster training
 
+Set up your cuda environment XXX ?? https://www.youtube.com/results?search_query=pytorch+cuda+setup
+
 ## Read the errors
 
 many errors are raised due to the functions assuming that your columns are well named. Make sure to have the following: 
@@ -57,6 +304,10 @@ many errors are raised due to the functions assuming that your columns are well 
 Also, depending on the model you're using these columns can have different names. Make sure to check the huggingface documentation related to the model you are using 
 
 Also, for the inputs and model, they HAVE to be on the same device. Make sure to have all your tensors on the same device with `.to(device = DEVICE)`
+
+Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu! (when checking argument for argument index in method wrapper_CUDA__index_select)
+
+NVML_SUCCESS == r INTERNAL ASSERT FAILED at "/home/conda/feedstock_root/build_artifacts/libtorch_1750199048837/work/c10/cuda/CUDACachingAllocator.cpp":1016, please report a bug to PyTorch.
 
 # Some good practices
 
