@@ -683,7 +683,7 @@ for batch in dsd["test"].batch(batch_size=16, drop_last_batch=False):
 )
 ```
 
-# Evaluate performance
+## Evaluate performance
 
 To evaluate classification, we have many options. We list the main metrics use to evaluate the metrics performance : 
 
@@ -734,24 +734,66 @@ print(classification_report(y_true = labels_true, y_pred = labels_pred))
 ```txt
               precision    recall  f1-score   support
 
-      agrees       0.52      0.53      0.53        75
-   disagrees       0.00      0.00      0.00        45
-     neutral       0.50      0.75      0.60        84
+      agrees       0.70      0.75      0.72        75
+   disagrees       0.56      0.49      0.52        45
+     neutral       0.73      0.74      0.73        84
 
-    accuracy                           0.50       204
-   macro avg       0.34      0.43      0.37       204
-weighted avg       0.40      0.50      0.44       204
+    accuracy                           0.69       204
+   macro avg       0.66      0.66      0.66       204
+weighted avg       0.68      0.69      0.68       204
 ```
 
-Here we can see that the model is sub optimal to say the least. The _disagree_ label is completely ommitted from the predictions.
+Here we can see that the model is sub optimal to say the least. The model 
 
 ## Read the learning curve
 
 Another key insight is the learning curve. We can retrieve it by using the logs in the `trainer_state.json`. Let's retrieve it and plot it: 
 
 ```python 
+import json
+import plotly.express as px 
 
+with open("./models/training/trainer_state.json", "r") as file:  # MODIFY !!!
+    training_state = json.load(file)
+
+loss = []
+
+for log in training_state ["log_history"]:
+    step = log["step"]
+    if "loss" in log:
+        loss += [{"step": step, "loss": log["loss"], "split": "train"}]
+    elif "eval_loss" in log:
+        loss += [{"step": step, "loss": log["eval_loss"], "split": "eval"}]
+    else: 
+        # thweird
+        print(log)
+
+loss = pd.DataFrame(loss)
+
+px.line(loss, x = "step", y = "loss", color =  "split") 
 ```
+
+![Learning curve](./assets/learning_curve.png){#fig-learning-curve width=70%}
+
+::::{.columns}
+
+:::{.column-body}
+
+The learning curve follows the expected pattern. The loss curve for the train split decreases and reaches 0 over time whereas the loss curve on the train-eval split decreases until it reaches a minimum and then increases. We want the learning curve to look like that, and we want the minimum to be as low as possible. 
+
+- If the loss curves do not decrease or too little, this might be a sign that the learning rate was to low. Nothing's been learned
+- If the loss do not decrease, this might be a sign that the learning rate is too high. The model is un-learning. 
+- If the loss curve on the training split decreases but not the loss curve on the train-eval split, this means that the model cannot generalise well. In that case, consider increasing the weight decay.
+
+:::
+
+::: {.column-margin}
+
+![Typical learning curve](./assets/typical_learning_curve){#fig-01-01}
+
+:::
+
+::::
 
 # Training pipeline: advanced practices
 
