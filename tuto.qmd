@@ -903,9 +903,15 @@ It is likely that you have reached the memory limit of your hardware. Reducing t
 
 ## Save your model and results 
 
+??? necessary ???
+
 ## On annotating your Dataset
 
+@ Etienne
+
 ## What's a good score? 
+
+@ Etienne @ Julien
 
 # Limits of using encoder models for classification
 
