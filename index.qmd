@@ -1,5 +1,6 @@
 ---
 title: "Augmented Social Scientist: train encoder models on a classification task"
+format: html
 author: 
     - name: A. Morin
       email: axel.morin@polytechnique.etu
