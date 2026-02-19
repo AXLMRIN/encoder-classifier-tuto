@@ -37,10 +37,11 @@ We have also included a section discussing how to train models on GPUs.
 For this tutorial we use Python version 3.12 and setup the environment with the following command:
 
 ```bash
-pip install -qU pandas "transformers==4.52.4" datasets ipykernel matplotlib torch "accelerate>=0.26.0"
+pip install -qU pandas "transformers==4.52.4" datasets ipykernel matplotlib torch "accelerate>=0.26.0" scikit-learn plotly "nbformat>=4.2.0"
 ```
-
 However, you should know that, however convenient PyTorch, accelerate, and transformers are, these libraries may be unstable depending on your computer and environment. You **will face issues** related to your version. We recommand using conda (or the virtual environments manager of your choice) to correctly setup your environment and create a requirement file of your own once you've reached a stable workspace. Don't hesitate downgrading your libraries as they are likely to be more stable. 
+
+<!-- TODO: add requirement files -->
 
 # Understand the encoder architecture
 
@@ -78,6 +79,8 @@ In the case of
 
 :::
 
+<!-- TODO: add context window -->
+
 # Fine-tuning pipeline: the essential
 
 In this section we will see the fundamentals to fine-tune encoders for a classification task. We will use a dataset introduced by Luo et al., (2020); they collected journal articles, from which they extracted sentences conveying an opinion regarding global warming. Finally, they annotated each opinion as "agreeing", "neutral" or "disagreeing" with regard to the following statement "Climate chage/global warming is a serious concern".
@@ -105,15 +108,53 @@ As a first step, let's make a list of all the columns:
 - `MACE_pred`: this is the final prediction. The team used the MACE framework to create a debiased label from the workers' labels.
 - `av_rating`: The mean of all workers' annotations for a given sentence (with disagree = 1, neutral = 0, agree = 1).
 
-Other columns include `disagree`, `agree` and `neutral` but they are empty. The `round` and `batch` columns XXX.
+Other columns include `disagree`, `agree` and `neutral` but they are empty. The `round` and `batch` columns are irrelevant for our experiment.
+
+```python 
+df = df_raw.loc[:,["sent_id", "sentence", "MACE_pred", "av_rating"]]
+df = df.rename(columns={"MACE_pred" : "labe_text"}) # Rename MACE_pred for conveniency
+df
+```
 
 Let's have a look at the number of elements per class:
 
 ```python
-df.groupby(["label_text"]).size()
+df_raw.groupby(["label_text"]).size()
+```
+
+```txt
+MACE_pred
+agrees       871
+disagrees    441
+neutral      988
+dtype: int64
 ```
 
 We can see that there tends to be more "neutral" or "agrees" sentences. This means that "disagrees" sentences might be trickier to spot because there will be less elements to train on.
+We can see that e
+
+```python 
+df.hist(column = "sentence-len", by="label_text")
+df.groupby("label_text")["sentence-len"].describe()
+```
+
+| label_text   |   count |     mean |     std |   min |   25% |   50% |   75% |   max |
+|:-------------|--------:|---------:|--------:|------:|------:|------:|------:|------:|
+| agrees       |     871 | 114.91   | 56.0082 |    22 |    77 |   100 |   148 |   342 |
+| disagrees    |     441 |  98.0907 | 59.0937 |    22 |    51 |    86 |   134 |   325 |
+| neutral      |     988 | 110.732  | 54.4368 |    21 |    72 |   104 |   148 |   347 |
+
+![Length of text per label](./assets/len-label.png)
+
+there does not seem to be a bias regarding the length of the documents
+
+## Preprocess your data
+
+### Check content integrity
+
+The preprocessing step is one of the most important step in the NLP pipeline, one needs to know what the corpus contains. We list a number of aspects you want to keep in mind when pre-processing your data:
+
+- **The length of your documents**: Depending on the model used, the context window (ie the maximum length of the documents) will vary a lot (from 500 tokens to more than 8k). Also you will need to answer this question: where is the information that you're looking for. For some tasks, you might want to work at the sentence level because you want to find specific elements of your corpus. For other tasks, working at the document or paragraph level is acceptable because you want to assess a global quantity. Depending on your task and the model chosen, you might want to split your documents. We also want to make sure that elements have roughly the same size. Indeed, we can't really compare a sentence of 5 words to 10 paragraphs. This needs to be conceptualised. 
 
 Let's analyse the len of sentences in order to estimate how large will the context window be:
 
@@ -123,35 +164,167 @@ df["sentence-len"].hist()
 df["sentence-len"].describe()
 ```
 
-<!-- TODO: include histogramme -->
-
-We can see that e
-
-```python 
-df.hist(column = "sentence-len", by="label_text")
-df.groupby("label_text")["sentence-len"].describe()
+```txt 
+count    2300.000000
+mean      109.890435
+std        56.251317
+min        21.000000
+25%        70.000000
+50%       100.000000
+75%       145.000000
+max       347.000000
+Name: sentence-len, dtype: float64
 ```
 
-there does not seem to be a bias regarding the length of the documents
+![Sentence length](./assets/sentence-length.png){#fig-sentence-length-hist width=50%}
 
-## Preprocess your data
 
-The preprocessing step is one of the most important step in the NLP pipeline, one needs to know what the corpus contains. 
+In the context of our experiment, the sentences are quite short and their size is quite standard. 
 
-!!!!! REMOVE DUPLICATES
+- **Are there any unwanted characters**: If you are used to TF-IDF techniques, you might be accoustumed to filtering punctuations and stop words. This is not something that we want to do when using transformers models. Indeed these models are trained with these characters. On top of that they convey meaningful context to the model. However, you might want to filter out elements that, for your study, do not carry semantic value. For instance, when working on social media content, depending on your problematic, you will want to either keep or remove emojis for instance[^1]. At the end of the day, you want to make sure that the elements you keep in your text carry semantic information necessary for the annotation process.
 
-We will sub-select the rows of interest and create a custom id. Also we will filter out sentences that appear multiple times (they are identified with a `sent_id` starting with an 's')
+[^1]: you need to make sure that the model that you are using does recognise emojis
+
+Our corpus is relatively clean given that the preprocessing stage happened in the earlier stages of the study. Skimming through the text entries, we can still find some irregularities regarding the punctuation. Let's fix this: 
 
 ```python 
-df = df_raw.loc[
-  ~df_raw["sent_id"].str.startswith("s"),
-  ["sentence", "MACE_pred", "av_rating"]
+def preprocess_text(text: str):
+    if not(isinstance(text, str)):
+        return pd.NA
+    return (
+        text
+        .replace("``", '"')
+        .replace("''", '"')
+        .replace(" ,", ",")
+        .replace(" .", ".")
+        .replace(" !", "!")
+        .replace(" ?", "?")
+        .replace(" :", ":")
+        .replace(" 's", "'s")
+    )
+
+df["sentence-preprocessed"] = df["sentence"].apply(preprocess_text)
+```
+
+- **Are there any duplicates?** This can be a fatal flaw as training a model with repeated elements can outweight other annotation or completely confuse it. 
+
+Let's see if we have duplicates elements. 
+
+```python 
+df.groupby("sentence").size().value_counts()
+```
+
+```txt 
+1     2034
+2        8
+50       5
+Name: count, dtype: int64
+```
+
+We can see that 5 elements are duplicated 50 times. Further inverstigations let us identify that sentences with indexes starting with an "s" (`['s0', 's1', 's2', 's3', 's4']`) are duplicated 50 times. Let's remove these rows.
+
+```python 
+df_no_duplicates = df.loc[~df["sent_id"].str.startswith("s"), :] 
+df_no_duplicates.groupby("sentence").size().value_counts()
+```
+
+We still need to deal with the 8 elements that have a duplicate. We would like to use the `drop_duplicates` function, but to do so, we need to make sure that the label of the two duplicates are the same. Let's check if some sentence are the same but there is no concensus on the label: 
+
+```python 
+df_concensus = df_no_duplicates.groupby("sentence")["label_text"].agg(concensus = lambda X : len(set(X)) == 1)
+print(df_concensus[df_concensus["concensus"] == False].to_markdown())
+```
+
+| sentence                                         |   concensus |
+|:-------------------------------------------------|------------:|
+| We need to get rid of fossil fuel subsidies now. |       False |
+
+One sentence does not reach a concensus, We are going to remove it by hand and then use the `drop_duplicates` function: 
+
+```python 
+df_no_duplicates = df_no_duplicates.loc[
+    df_no_duplicates["sentence"] != "We need to get rid of fossil fuel subsidies now.",
+    :
 ]
-df = df.rename(columns={"MACE_pred" : "labe_text"}) # Rename MACE_pred for conveniency
-df
+df_no_duplicates = df_no_duplicates.drop_duplicates("sentence")
 ```
 
-!!!! CREATE SPLITS
+As a final check, we can use the Levenshtein distance to make sure that there are no lasting duplicates: 
+
+```python
+from Levenshtein import distance as lev_distance
+
+threshold = 10
+
+for i in range(len(df_no_duplicates)):
+    for j in range(i + 1, len(df_no_duplicates)):
+        s1 = df_no_duplicates.iloc[i]["sentence"]
+        s2 = df_no_duplicates.iloc[j]["sentence"]
+        d = lev_distance(s1, s2)
+        if d < threshold:
+            print(f"{d} : {s1} || {s2}")
+```
+
+With this loop, we have found 6 new sentences with duplicates:
+
+- Global warming isn’t happening. || Global warming isn't happening.
+- There is no solid evidence of global warming. || There is not solid evidence of global warming.
+- Balance of evidence suggests a discernible human influence on global climate. || The balance of evidence suggests a discernible human influence on global climate.
+- The alleged “ consensus ” behind the dangers of anthropogenic global warming is not nearly as settled among climate scientists as people imagine. || The alleged â consensus â behind the dangers of anthropogenic global warming is not nearly as settled among climate scientists as people imagine.
+- Rising global temperatures during the 19th and 20th centuries may be linked to greater plant photosynthesis. || Rising global temperatures during the 19th and 20th centuries could be linked to greater plant photosynthesis.
+- Climate change will continue to affect all types of weather phenomena and subsequently impact increasingly urbanised areas. || Climate change will continue to affect all types of weather phenomena and subsequently impact increasingly urbanized areas.
+
+From there, one can choose to remove them or not. For this tutorial we will remove one of them if the two have the same label and remove both if they don't.
+
+```python 
+last_duplicates = [
+    ("Global warming isn’t happening.","Global warming isn't happening."),
+    ("There is no solid evidence of global warming.","There is not solid evidence of global warming."),
+    ("Balance of evidence suggests a discernible human influence on global climate.","The balance of evidence suggests a discernible human influence on global climate."),
+    ("The alleged “ consensus ” behind the dangers of anthropogenic global warming is not nearly as settled among climate scientists as people imagine.","The alleged â consensus â behind the dangers of anthropogenic global warming is not nearly as settled among climate scientists as people imagine."),
+    ("Rising global temperatures during the 19th and 20th centuries may be linked to greater plant photosynthesis.","Rising global temperatures during the 19th and 20th centuries could be linked to greater plant photosynthesis."),
+    ("Climate change will continue to affect all types of weather phenomena and subsequently impact increasingly urbanised areas.","Climate change will continue to affect all types of weather phenomena and subsequently impact increasingly urbanized areas."),
+]
+
+for (s1, s2) in last_duplicates:
+    lab_s1 = df_no_duplicates.loc[df_no_duplicates["sentence"] == s1, "label_text"]
+    lab_s2 = df_no_duplicates.loc[df_no_duplicates["sentence"] == s2, "label_text"]
+    if lab_s1.item() == lab_s2.item() : 
+        df_no_duplicates.drop(index = lab_s2.index)
+    else: 
+        df_no_duplicates.drop(index = [*lab_s1.index, *lab_s2.index])
+```
+
+### Create splits
+
+The final step is to create a train set, a train-eval set, test set and final-eval set (also called splits). 
+
+- the train set is the set of sentences the model will be training and actually trained on. 
+- the train-eval set is the set of sentences the model is evluated on between epochs. These sentences are "seen" by the model so using this set for final evaluation will produce boosted results.
+- the test set is the set of sentences that are used to evaluate a model and choose Hyperparameters. They are not seen by the model but they are part of the optimisation problem.
+- the final-eval set is the set of sentences that are used to produce realistic performance evaluation. this set of sentences is not seen by the model during training and prevent from biasing the hyperparameter optimisation.
+
+In general, we allocate 70% of the data to the train set, then 10% to train eval, test set and final eval set.Depending on the size of your dataset, you might want to tweak this distribution. Ultimately, you want enough data for training and evaluation for scores to be significative.
+
+**Stratification of the splits** 
+<!-- Move to good practices ??? -->
+You dataset may contain additional variation through years, or sources. To make sure that these variation do not bias your model, you may want to stratify your splits according to the said dimensions. If you have an unbalanced dataset, you can also choose to stratify your sets in order to create balanced splits.
+
+In our case, we don't have additional metadata to stratify our splits, and classes but the classes are not this unbalanced that we have to stratify the splits. At least given the amount of data that we have to stratify by the label column. XXXXX 
+
+Here is a code snippet to do it: 
+
+```python
+stratification_column = "year"
+samples_per_stratum = 500
+df_stratified = (
+    df
+    .groupby(stratification_column, as_index = True)
+    .apply(lambda x : x.sample(n = samples_per_stratum))
+    .reset_index()
+    # .drop(["level_0", "level_1"], axis = 1) # Some additional columns will appear, you may want to drop them
+)
+```
 
 ## Choose and load a models
 
@@ -175,8 +348,19 @@ To load the model we just need to use one of the AutoModel instance. Auto Classe
 ```python 
 from transformers import AutoModelForSequenceClassification
 
+labels = list(df["label_text"].unique())
+num_labels = len(labels)
+id2label = {id:label for id, label in enumerate(labels)}
+label2id = {label:id  for id, label in enumerate(labels)}
+
 MODEL_NAME = "google-bert/bert-base-uncased"
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+model = AutoModelForSequenceClassification.from_pretrained(
+    MODEL_NAME, 
+    num_labels=num_labels,
+    id2label=id2label,
+    label2id=label2id, 
+    device="cpu"                                          
+)
 ```
 
 _Nota: for some models you might need to set `trust_remote_code` to `True`. Make sure you trust the model you are downloading._
@@ -265,10 +449,46 @@ The `AutoConfig` class is very convenient for retrieveing information that may d
 
 ```python 
 from transformers import AutoConfig
-AutoConfig.from_pretrained(MODEL_NAME)
+print(AutoConfig.from_pretrained(MODEL_NAME))
+```
+
+```txt 
+BertConfig {
+  "architectures": [
+    "BertForMaskedLM"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "classifier_dropout": null,
+  "gradient_checkpointing": false,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  
+  >>> Embedding dimension 
+  "hidden_size": 768,
+  
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "layer_norm_eps": 1e-12,
+  
+  >>> Maximum context window
+  "max_position_embeddings": 512,
+  
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pad_token_id": 0,
+  "position_embedding_type": "absolute",
+  "transformers_version": "4.52.4",
+  "type_vocab_size": 2,
+  "use_cache": true,
+
+  >>> Vocab size identified earlier
+  "vocab_size": 30522
+}
 ```
 
 If you ever wanted to work with another model that has already been fine-tuned and wanted to only train the classification layer, there are two solutions: 
+
 - You either generate the embeddings, save them, and train a scikit-learn classifier on top of it.
 - You use [Setfit](https://huggingface.co/docs/setfit/index)
 
@@ -276,19 +496,269 @@ If you ever wanted to work with another model that has already been fine-tuned a
 
 ## Train the model
 
+We are finally going to train the model. To do so, we are going to follow the 3 folowing steps:  
+
+- Tokenize your dataset
+- Setup the training arguments
+- Launch training
+
+### Tokenize the dataset: 
+
+:::{.callout-note title="What are tokens already?"}
+
+XXXX
+
+:::
+
+The tokenizer needs to be loaded just as we did with the model: 
+
+```python 
+from transformers import AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+```
+
+Then choosing the parameters for the tokenizer and writing a preprocessing function: 
+
+```python 
+from datasets import DatasetDict, Dataset
+
+# Create a dataset from the splits we created before
+grouped_ds_split = df_split.groupby("split")
+dsd = DatasetDict({
+    split : Dataset.from_pandas(grouped_ds_split.get_group(split))
+    for split in ["train", "train_eval", "test", "final_test"]
+})
+
+tokenizer_parameters = {
+    "truncation":True, 
+    "padding":"max_length",
+    "max_length":400,
+    "return_tensors":"pt"
+}
+
+def preprocess_dataset(row: dict):
+    tokenized_entry = tokenizer(row["sentence-preprocessed"], **tokenizer_parameters)
+    return {
+        **row.copy(),
+        "labels": int(label2id[row["label_text"]]),
+        "attention_mask" : tokenized_entry["attention_mask"].reshape(-1).to(device = "mps"),
+        "input_ids" : tokenized_entry["input_ids"].reshape(-1).to(device="mps")
+    }
+
+
+dsd = dsd.map(preprocess_dataset, batch_size=32)
+dsd
+```
+
+The data is ready to be used for Training! 
+
+### Understand the ins and outs of the pipeline 
+
+<!-- Move to experts? -->
+
+```python  
+entry = [
+    "Hello World",
+    "This is a second query"
+]
+
+tokenizer_parameters = {
+    "truncation":True, 
+    "padding":"max_length",
+    "max_length":400,
+    "return_tensors":"pt"
+}
+
+model_input = tokenizer(entry,**tokenizer_parameters)
+base_model_output = classif_model.base_model(**model_input)
+classif_model_output = classif_model(**model_input)
+print(f'''
+# model input keys: {', '.join(model_input)}
+model input shape (pytorch tensor): {model_input["input_ids"].shape}
+base model output keys: {', '.join(base_model_output)}
+base model output last_hidden_state shape (pytorch tensor): {base_model_output.last_hidden_state.shape}
+classification model output key: {', '.join(classif_model_output)}
+classification model output logits shape (pytorch tensor): {classif_model_output.logits.shape}
+''')
+```
+
+### Setup Training parameters 
+
+The training parameters are store in the `TrainingArguments` object. We have selected the main parameters that you'll want to look for during training but you can browse the [117 parameters it can take](https://huggingface.co/docs/transformers/v4.49.0/en/main_classes/trainer#transformers.TrainingArguments). You'll find more information about tuning the hyperparameters at the @sec-hyperparameters-tuning.
+
+```python 
+from transformers import TrainingArguments, Trainer, DataCollatorWithPadding
+training_arguments = TrainingArguments(
+    # Hyperparameters
+    num_train_epochs = 5,
+    learning_rate = 5e-5,
+    weight_decay  = 0.0,
+    warmup_ratio  = 0.0,
+    optim = "adamw_torch_fused",
+    # Second order hyperparameters
+    per_device_train_batch_size = 4,
+    per_device_eval_batch_size = 4,
+    gradient_accumulation_steps = 8,
+    # Metrics
+    # metric_for_best_model="f1_macro",
+    # Pipe
+    output_dir = "./models/training",
+    overwrite_output_dir=True,
+    eval_strategy = "epoch",
+    logging_strategy = "epoch",
+    save_strategy = "epoch",
+    load_best_model_at_end = True,
+    save_total_limit = 5 + 1,
+
+    disable_tqdm = False,
+)
+
+```
+
+### Launch training
+
+Finally, we can start the training. 
+
+```python
+trainer = Trainer(
+    model = classif_model, 
+    args = training_arguments,
+    train_dataset=dsd["train"],
+    eval_dataset=dsd["train_eval"],
+)
+
+trainer.train()
+```
+
+<!-- TODO SETUP F1 macro as metric -->
+
+<!-- TODO add training table -->
+
+As a result you will get get a list of folders (depending on the "save_strategy" you set), each containing the following documents: 
+
+- `config.json`: a dictionnary with the config, similar to `AutoConfig`.
+- `model.safetensors`: a file containing all the weights of the Model.
+- `optimizer.pt`, `rng_state.pth` and `scheduler.pt`: a copy of the optimizer, rng_state and scheduler used during training. 
+- `trainer_state.json`: a dictionnary containing all metadata up to the current checkpoint.
+- `training_args.bin`: a copy of the training arguments.
+
+The model can be loaded like before: 
+
+```python 
+reload_model = AutoModelForSequenceClassification.from_pretrained(
+    "./models/training/checkpoint-4/")
+```
+
 ## Predict the labels for the full dataset
+
+To predict the labels, we just need to use the model's `__call__` method and retrieve the predicted logit. From there, using the `np.argmax` function, we retrieve the predicted label and save the results to avoid re-running the inference.
+
+```python 
+labels_true : list[int] = []
+labels_pred : list[int] = []
+
+for batch in dsd["test"].batch(batch_size=16, drop_last_batch=False):
+    model_input = {
+        'input_ids' : batch['input_ids'],
+        'attention_mask' : batch['attention_mask']
+    }
+
+    logits : np.ndarray = model(**model_input).logits.detach().numpy()
+    
+    batch_of_true_label = [np.argmax(row).item() for row in batch["labels"]]
+    labels_true.extend(batch_of_true_label)
+
+    batch_of_pred_label = [np.argmax(row).item() for row in logits]
+    labels_pred.extend(batch_of_pred_label)
+
+(
+    pd.DataFrame({
+        "predict" : labels_pred, 
+        "gold_standard": labels_true
+    })
+    .to_csv("./outputs/prediction", index = False)
+)
+```
 
 # Evaluate performance
 
-## Read the metrics
+To evaluate classification, we have many options. We list the main metrics use to evaluate the metrics performance : 
+
+::::{.columns}
+
+:::{.column width=70%}
+
+-  Precision : Proportion of predicted elements of a certain class are correct. Maximize if you want 
+
+$$prec = \frac{\Sigma 1_{\hat y = c} 1_{y = c}}{ \Sigma 1_{\hat y = c}}$$ 
+
+- Recall: Proportion of a certain class correctly predicted. Maximize if you want to create a filter, i.e. maximizes the number of elements retrieved.
+
+$$recall = \frac{\Sigma 1_{\hat y = c} 1_{y = c}}{ \Sigma 1_{y = c}}$$
+
+- Accuracy: Proportion of all elements correctly predicted. Maximize if... 
+
+$$\Sigma 1_{\hat y == y}/ N$$
+
+- F1-score for one class: 
+
+$$F1(c) = 2 \times \frac{prec(c) recall(c)}{prec(c) + recall(c)}$$
+
+- F1-score macro: mean of all F1-score accross classes
+
+$$ F1_{macro} = \sum_{c} F1(C)$$
+
+- F1-score micro: F1 score weighted by the number of elements per class. 
+
+$$F1_{micro} = \sum_c \frac{n_c}{N}F1(C)$$
+:::
+
+:::{.column width=30%}
+
+![precision and recall](./assets/precision_recall.jpg){#fig-precision-recall width=100%}
+
+:::
+
+::::
+
+In general, we recommand using the macro F1 as it is the most representative of the model performance and works well with imbalanced datasets. Either way, you can use [`scikit-learn`](https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics) to compute all metrics. The `classification_report` summarises all the metrics presented above: 
+
+```python 
+from sklearn.metrics import classification_report
+
+print(classification_report(y_true = labels_true, y_pred = labels_pred))
+```
+```txt
+              precision    recall  f1-score   support
+
+      agrees       0.52      0.53      0.53        75
+   disagrees       0.00      0.00      0.00        45
+     neutral       0.50      0.75      0.60        84
+
+    accuracy                           0.50       204
+   macro avg       0.34      0.43      0.37       204
+weighted avg       0.40      0.50      0.44       204
+```
+
+Here we can see that the model is sub optimal to say the least. The _disagree_ label is completely ommitted from the predictions.
 
 ## Read the learning curve
 
+Another key insight is the learning curve. We can retrieve it by using the logs in the `trainer_state.json`. Let's retrieve it and plot it: 
+
+```python 
+
+```
+
 # Training pipeline: advanced practices
 
-## Hyperparameters tuning
+## Hyperparameters tuning{#sec-hyperparameters-tuning}
 
 ## Use GPU for faster training
+
+training arguments: 
+use_cpu, use_mps, use_cuda
 
 Set up your cuda environment XXX ?? https://www.youtube.com/results?search_query=pytorch+cuda+setup
 
@@ -310,6 +780,10 @@ Expected all tensors to be on the same device, but found at least two devices, c
 NVML_SUCCESS == r INTERNAL ASSERT FAILED at "/home/conda/feedstock_root/build_artifacts/libtorch_1750199048837/work/c10/cuda/CUDACachingAllocator.cpp":1016, please report a bug to PyTorch.
 
 # Some good practices
+
+## On annotating your Dataset
+
+## What's a good score? 
 
 ## Save your model and results 
 
