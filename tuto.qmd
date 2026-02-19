@@ -39,7 +39,9 @@ For this tutorial we use Python version 3.12 and setup the environment with the 
 ```bash
 pip install -qU pandas "transformers==4.52.4" datasets ipykernel matplotlib torch "accelerate>=0.26.0" scikit-learn plotly "nbformat>=4.2.0"
 ```
-However, you should know that, however convenient PyTorch, accelerate, and transformers are, these libraries may be unstable depending on your computer and environment. You **will face issues** related to your version. We recommand using conda (or the virtual environments manager of your choice) to correctly setup your environment and create a requirement file of your own once you've reached a stable workspace. Don't hesitate downgrading your libraries as they are likely to be more stable. 
+However, you should know that, however convenient PyTorch, accelerate, and transformers are, these libraries may be unstable depending on your computer and environment. You **will face issues** related to your version. We recommand using conda[^4] (or the virtual environments manager of your choice) to correctly setup your environment and create a requirement file of your own once you've reached a stable workspace. Don't hesitate downgrading your libraries as they are likely to be more stable. 
+
+[^4]: [Set up your cuda environment](https://www.youtube.com/watch?v=sDCtY9Z1bqE)
 
 <!-- TODO: add requirement files -->
 
@@ -583,7 +585,7 @@ classification model output logits shape (pytorch tensor): {classif_model_output
 ''')
 ```
 
-### Setup Training parameters 
+### Setup Training parameters{#sec-training-parameters}
 
 The training parameters are store in the `TrainingArguments` object. We have selected the main parameters that you'll want to look for during training but you can browse the [117 parameters it can take](https://huggingface.co/docs/transformers/v4.49.0/en/main_classes/trainer#transformers.TrainingArguments). You'll find more information about tuning the hyperparameters at the @sec-hyperparameters-tuning.
 
@@ -681,7 +683,7 @@ for batch in dsd["test"].batch(batch_size=16, drop_last_batch=False):
 )
 ```
 
-# Evaluate performance
+## Evaluate performance
 
 To evaluate classification, we have many options. We list the main metrics use to evaluate the metrics performance : 
 
@@ -732,62 +734,230 @@ print(classification_report(y_true = labels_true, y_pred = labels_pred))
 ```txt
               precision    recall  f1-score   support
 
-      agrees       0.52      0.53      0.53        75
-   disagrees       0.00      0.00      0.00        45
-     neutral       0.50      0.75      0.60        84
+      agrees       0.70      0.75      0.72        75
+   disagrees       0.56      0.49      0.52        45
+     neutral       0.73      0.74      0.73        84
 
-    accuracy                           0.50       204
-   macro avg       0.34      0.43      0.37       204
-weighted avg       0.40      0.50      0.44       204
+    accuracy                           0.69       204
+   macro avg       0.66      0.66      0.66       204
+weighted avg       0.68      0.69      0.68       204
 ```
 
-Here we can see that the model is sub optimal to say the least. The _disagree_ label is completely ommitted from the predictions.
+Here we can see that the model is sub optimal to say the least. The model 
 
 ## Read the learning curve
 
 Another key insight is the learning curve. We can retrieve it by using the logs in the `trainer_state.json`. Let's retrieve it and plot it: 
 
 ```python 
+import json
+import plotly.express as px 
 
+with open("./models/training/trainer_state.json", "r") as file:  # MODIFY !!!
+    training_state = json.load(file)
+
+loss = []
+
+for log in training_state ["log_history"]:
+    step = log["step"]
+    if "loss" in log:
+        loss += [{"step": step, "loss": log["loss"], "split": "train"}]
+    elif "eval_loss" in log:
+        loss += [{"step": step, "loss": log["eval_loss"], "split": "eval"}]
+    else: 
+        # thweird
+        print(log)
+
+loss = pd.DataFrame(loss)
+
+px.line(loss, x = "step", y = "loss", color =  "split") 
 ```
+
+![Learning curve](./assets/learning_curve.png){#fig-learning-curve width=70%}
+
+::::{.columns}
+
+:::{.column-body}
+
+The learning curve follows the expected pattern. The loss curve for the train split decreases and reaches 0 over time whereas the loss curve on the train-eval split decreases until it reaches a minimum and then increases. We want the learning curve to look like that, and we want the minimum to be as low as possible. 
+
+- If the loss curves do not decrease or too little, this might be a sign that the learning rate was to low. Nothing's been learned
+- If the loss do not decrease, this might be a sign that the learning rate is too high. The model is un-learning. 
+- If the loss curve on the training split decreases but not the loss curve on the train-eval split, this means that the model cannot generalise well. In that case, consider increasing the weight decay.
+
+:::
+
+::: {.column-margin}
+
+![Typical learning curve](./assets/typical_learning_curve){#fig-01-01}
+
+:::
+
+::::
 
 # Training pipeline: advanced practices
 
 ## Hyperparameters tuning{#sec-hyperparameters-tuning}
 
+In the @sec-training-parameters we used the default values for the hyperparameters. In this section, we will describe them and provide advices for tuning them. 
+
+|| Definition | Reference | Advice on how to tune it| Importance |
+|---|---|---|---|---|
+|Learning rate|This is the initial "push" when training your model. Each step (??) this value is updated, however, this initial value may lead to different results.|$[1e-6,1e-4]$|Consider increasing it if the loss does not decrease enough and decrease it if the loss diverges| 🟢🟢🟢 |
+|Number of epochs| This is the number of time that the model will see the full train set. | 3-5 | You want it as low as possible but high enough to reach the optimum| 🟢 |
+|Weight Decay| This parameter prevents the model from overfitting by freezing random nodes during a training step | $0.1$ | If you have good results on the training set the model performs poorly on the train-eval set and test set consider increasing it.| 🟢 |
+|Batch size and gradient accumulation | The batch size is the number of elements seen during one step. This parameter is to be tuned according to your hardware (small hardware, lower batch size). However, to get better results, we want the optimisation step to be considering many step at once, this is why we have the gradient accumulation step. This allows to execute the gradient descent with virtually more elements than the batch size | Maintain `batch_size * gradient_accumulation_steps = 32 or 64`| 🔴 |
+|Warmup ratio | XXX | XXXX | 0.1 | XXX| 
+| Optimizer | This is the algorithm chosen to perform the optimisation. The most famous is SGD (Stochastic Gradient Descent) but many alternatives exist. For finetuning, don't bother digging into it and stick with the AdamW which is made for easy tuning of the learning rate and weight decay | AdamW | 🔴🔴🔴 | 
+
+<!-- TODO find better hyperparameters and put the code here -->
+
 ## Use GPU for faster training
 
-training arguments: 
-use_cpu, use_mps, use_cuda
+For now we have only used the CPU to perform the training, but it is slow and alternatives exist. If you have a NVIDIA GPU[^2] and have set up your cuda[^3] environment, you may accelerate the process. Also, if you have a Mac with an MX chip, you can use mps to accelerate the training. 
 
-Set up your cuda environment XXX ?? https://www.youtube.com/results?search_query=pytorch+cuda+setup
+[^2]: [AMD GPUs do not have access to cuda](https://www.tutorialpedia.org/blog/is-it-possible-to-run-cuda-on-amd-gpus/#2-closed-source-ecosystem) but you can work you way out with alternative solutions like [ZLuda](https://github.com/vosen/ZLUDA)
+
+[^3]: [What is cuda in 3 mins](https://www.youtube.com/watch?v=pPStdjuYzSI); [Install cuda on your machine](https://developer.nvidia.com/cuda-downloads)
+
+You can check if your environment is ready to use cuda and mps with the following lines: 
+
+```python 
+from torch.cuda import is_available as cuda_available
+from torch.mps import is_available as mps_available
+
+print("CUDA: ", cuda_available())
+print("MPS: ", mps_available())
+```
+
+From there, you will need to be aware of where your objects are. Indeed, in order to use the model on CUDA (or MPS), the input and the model need to be stored on the same hardware. The code becomes: 
+
+```python 
+from torch import Tensor 
+
+DEVICE = "cuda" # or "mps", or "cpu"
+
+entry = [
+    "Hello World",
+    "This is a second query"
+]
+
+tokenizer_parameters = {
+    "truncation":True, 
+    "padding":"max_length",
+    "max_length":400,
+    "return_tensors":"pt"
+}
+
+
+model = model.to(device = DEVICE)
+
+model_input = tokenizer(entry,**tokenizer_parameters)
+model_input = {
+  "input_ids" = Tensor(model_input["input_ids"]).to(device = DEVICE),
+  "attention_mask" = Tensor(model_input["attention_mask"]).to(device = DEVICE)
+}
+base_model_output = model.base_model(**model_input)
+classif_model_output = model(**model_input)
+```
+
+If you don't move the elements properly, you will face this error: 
+
+```txt 
+Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu! (when checking argument for argument index in method wrapper_CUDA__index_select)
+```
+
+When using a `Dataset` or `DatasetDict`, you can force all arrays to be automatically stored on a same device using this command: 
+
+```python
+ds = ds.with_format("torch", device = DEVICE)
+```
+
+:::{.callout-note title="Training arguments to chose the device to use"}
+
+The Training arguments object accepts the following arguments `use_cpu`, `use_mps`, `use_cuda` which supposedly handles everything for you. However, we would advise to manually move your objects on the right device and set: 
+
+```
+training_args = TrainingArguments(
+  ...
+  use_mps   = DEVICE == "mps",
+  use_cuda  = DEVICE == "cuda",
+  use_cpu   = DEVICE == "cpu",
+)
+```
+
+:::
+
+The final step is to clean your GPU after using it. Otherwise you risk clogging the memory and flushing it becomes a hassle. Best practices include working inside a `try/except/finally` loop to make sure the memory is clean after use. 
+
+```python 
+from gc import collect as gc_collect
+from torch.cuda import empty_cache, synchronize, ipc_collect
+from torch.cuda import is_available as cuda_available
+
+def clean():
+  """Flush GPU memory"""
+  empty_cache()
+  if cuda_available():
+      synchronize()
+      ipc_collect()
+  gc_collect()
+  print("Memory flushed")
+
+tokenizer, model, dsd, trainer = (None, ) * 4 # All objects that are moved to the GPU
+try: 
+  tokenize = ...
+  model = ...
+  model = ...
+
+except Exception as e:
+    print("# ERROR" + "#" * 93)
+    print(e)
+    print"#" * 100)
+
+finally:
+    del tokenizer, model, dsd, trainer # All objects that are moved to the GPU
+    clean_memory()
+```
 
 ## Read the errors
 
-many errors are raised due to the functions assuming that your columns are well named. Make sure to have the following: 
+You will face many, many errors. Sometimes they are random and rerunning the script / restarting the kernel will solves the issue. Others are subtle and difficult to identify. In such case, copy pase the error in google (genAI is less likely to provide you the right answer), you'll find forums with people who faced the same issue. As stressed in the introduction, downgrading/upgrading some libraries is likely to solve the issue.
+
+Many errors are raised due to the functions assuming that your columns are well named and that the data has the right format. Make sure to have the following: 
 
 - "text" column with the text as string
-- "labels" column with the labels as int; if you have multiple labels, make sure this is a Tensor of integers
-- "input_ids" a column with the tokens truncated and padded, maje sure this is a Tensor of integers
-- "attention_mask" a column with the tokens truncated and padded, maje sure this is a Tensor of integers
+- "labels" column with the labels as int; if you have multiple labels. Make sure this is a Tensor of integers
+- "input_ids" a column with the tokens truncated and padded to the same length. Make sure this is a Tensor of integers
+- "attention_mask" a column with the tokens truncated and padded to the same length. Make sure this is a Tensor of integers
 
-Also, depending on the model you're using these columns can have different names. Make sure to check the huggingface documentation related to the model you are using 
+Also, depending on the model you're using these columns can have different names. Make sure to check the huggingface documentation related to the model you are using as well as forums.
 
-Also, for the inputs and model, they HAVE to be on the same device. Make sure to have all your tensors on the same device with `.to(device = DEVICE)`
+If you face this error: 
 
-Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu! (when checking argument for argument index in method wrapper_CUDA__index_select)
-
+```txt 
 NVML_SUCCESS == r INTERNAL ASSERT FAILED at "/home/conda/feedstock_root/build_artifacts/libtorch_1750199048837/work/c10/cuda/CUDACachingAllocator.cpp":1016, please report a bug to PyTorch.
+```
+
+It is likely that you have reached the memory limit of your hardware. Reducing the batch size or using a smaller model is likely to solve your issue.
 
 # Some good practices
 
+## Save your model and results 
+
+??? necessary ???
+
 ## On annotating your Dataset
+
+@ Etienne
 
 ## What's a good score? 
 
-## Save your model and results 
+@ Etienne @ Julien
 
 # Limits of using encoder models for classification
+
+Biased error, 
 
 # Conclusion 
 
