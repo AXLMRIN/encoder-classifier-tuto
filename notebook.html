@@ -1,0 +1,2395 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Checkpoint – Augmented tuto</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-6bd9cfa162949bde0a231f530c97869d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Augmented tuto</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./tuto.html"> 
+<span class="menu-text">Notebook</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Checkpoint</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="cell-1" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>SEED <span class="op">=</span> <span class="dv">2306406</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-2" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/yiweiluo/GWStance/refs/heads/master/3_stance_detection/1_MTurk/full_annotations.tsv"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_raw <span class="op">=</span> pd.read_csv(url, sep <span class="op">=</span> <span class="st">"</span><span class="ch">\t</span><span class="st">"</span>) <span class="co"># Careful here, this document is a tsv (separator="\t" and not a csv (separator = ",")</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df_raw.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Unnamed: 0</th>
+<th data-quarto-table-cell-role="th">MACE_pred</th>
+<th data-quarto-table-cell-role="th">av_rating</th>
+<th data-quarto-table-cell-role="th">sentence</th>
+<th data-quarto-table-cell-role="th">worker_0</th>
+<th data-quarto-table-cell-role="th">worker_1</th>
+<th data-quarto-table-cell-role="th">worker_2</th>
+<th data-quarto-table-cell-role="th">worker_3</th>
+<th data-quarto-table-cell-role="th">worker_4</th>
+<th data-quarto-table-cell-role="th">worker_5</th>
+<th data-quarto-table-cell-role="th">worker_6</th>
+<th data-quarto-table-cell-role="th">worker_7</th>
+<th data-quarto-table-cell-role="th">round</th>
+<th data-quarto-table-cell-role="th">batch</th>
+<th data-quarto-table-cell-role="th">sent_id</th>
+<th data-quarto-table-cell-role="th">disagree</th>
+<th data-quarto-table-cell-role="th">agree</th>
+<th data-quarto-table-cell-role="th">neutral</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>0</td>
+<td>disagrees</td>
+<td>-1.000</td>
+<td>Global warming is a hoax.</td>
+<td>disagrees</td>
+<td>disagrees</td>
+<td>disagrees</td>
+<td>disagrees</td>
+<td>disagrees</td>
+<td>disagrees</td>
+<td>disagrees</td>
+<td>disagrees</td>
+<td>1</td>
+<td>0</td>
+<td>s0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>neutral</td>
+<td>0.375</td>
+<td>Alarming levels of sea level rise are predicte...</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>agrees</td>
+<td>agrees</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>agrees</td>
+<td>1</td>
+<td>0</td>
+<td>s1</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2</td>
+<td>neutral</td>
+<td>0.000</td>
+<td>Over the past several years, the United States...</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>1</td>
+<td>0</td>
+<td>s2</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>3</td>
+<td>agrees</td>
+<td>1.000</td>
+<td>Global warming is happening and it will be dan...</td>
+<td>agrees</td>
+<td>agrees</td>
+<td>agrees</td>
+<td>agrees</td>
+<td>agrees</td>
+<td>agrees</td>
+<td>agrees</td>
+<td>agrees</td>
+<td>1</td>
+<td>0</td>
+<td>s3</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>4</td>
+<td>neutral</td>
+<td>0.000</td>
+<td>Some icebergs are cute.</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>neutral</td>
+<td>1</td>
+<td>0</td>
+<td>s4</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-3" class="cell" data-execution_count="66">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> df_raw.groupby([<span class="st">"sent_id"</span>])[<span class="st">"sentence"</span>].agg(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    howMany <span class="op">=</span> <span class="kw">lambda</span> X : <span class="bu">len</span>(X),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    howManyDifferent <span class="op">=</span> <span class="kw">lambda</span> X : <span class="bu">len</span>(X.unique()),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    isOneSentence <span class="op">=</span>  <span class="kw">lambda</span> X : <span class="bu">len</span>(X.unique()) <span class="op">==</span> <span class="dv">1</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    agg<span class="op">=</span> <span class="kw">lambda</span> X : <span class="st">'</span><span class="ch">\n\n</span><span class="st">'</span>.join(X)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>t[<span class="st">"Unique sentence"</span>] <span class="op">=</span> t[<span class="st">"howMany"</span>] <span class="op">==</span> t[<span class="st">"howManyDifferent"</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>t</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="66">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">howMany</th>
+<th data-quarto-table-cell-role="th">howManyDifferent</th>
+<th data-quarto-table-cell-role="th">isOneSentence</th>
+<th data-quarto-table-cell-role="th">agg</th>
+<th data-quarto-table-cell-role="th">Unique sentence</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">sent_id</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">s0</td>
+<td>50</td>
+<td>1</td>
+<td>True</td>
+<td>Global warming is a hoax.\n\nGlobal warming is...</td>
+<td>False</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">s1</td>
+<td>50</td>
+<td>1</td>
+<td>True</td>
+<td>Alarming levels of sea level rise are predicte...</td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">s2</td>
+<td>50</td>
+<td>1</td>
+<td>True</td>
+<td>Over the past several years, the United States...</td>
+<td>False</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">s3</td>
+<td>50</td>
+<td>1</td>
+<td>True</td>
+<td>Global warming is happening and it will be dan...</td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">s4</td>
+<td>50</td>
+<td>1</td>
+<td>True</td>
+<td>Some icebergs are cute.\n\nSome icebergs are c...</td>
+<td>False</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t0</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Warmer-than-normal sea surface temperatures ar...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t1</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>We will continue to rely in part on fossil fue...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t10</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>The actual rise in sea levels measured only 1....</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t11</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Claims of global warming have been greatly exa...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t12</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>The Intergovernmental Panel on Climate Change ...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t13</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Evidence now leans against global warming resu...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t14</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Flooding has been going on forever.\n\nThere i...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t15</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Simply reducing emissions will not sufficientl...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t16</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Climate deniers blame global warming on aliens...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t17</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Global warming is inevitably going to be, at b...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t18</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Some parts of the world the world, such as the...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t19</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>If carbon dioxide emissions continue to rise b...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t2</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>The study is one more example that you can get...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t20</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Millions more people around the world are thre...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t21</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>45 % of the general public view perceived glob...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t22</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Two billion people may be displaced by rising ...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t23</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Global warming is real and threatening.\n\nCli...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t24</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>There is a danger that we can get used to glob...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t25</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Doing so will be central for getting global wa...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t26</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Global sea-level rise is both undeniable and c...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t27</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Global warming isn’t happening.\n\nData on how...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t28</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Carbon dioxide will hit another record high in...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t29</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>You now have a global marketplace for clean en...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t3</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Fighting global warming, the stated purpose of...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t30</td>
+<td>40</td>
+<td>40</td>
+<td>False</td>
+<td>Global warming had ensured that the incidence ...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t31</td>
+<td>40</td>
+<td>40</td>
+<td>False</td>
+<td>Severe climate change is coming our way, and o...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t32</td>
+<td>40</td>
+<td>40</td>
+<td>False</td>
+<td>There is a clear connection between rising glo...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t33</td>
+<td>40</td>
+<td>40</td>
+<td>False</td>
+<td>Warming temperatures in Pacific Ocean waters o...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t34</td>
+<td>40</td>
+<td>40</td>
+<td>False</td>
+<td>Global warming is a major problem and deservin...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t35</td>
+<td>40</td>
+<td>40</td>
+<td>False</td>
+<td>The weeds that produce many allergens have ada...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t36</td>
+<td>40</td>
+<td>40</td>
+<td>False</td>
+<td>Europe’s financial losses related to flooding,...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t37</td>
+<td>40</td>
+<td>40</td>
+<td>False</td>
+<td>Climate scientists themselves are increasingly...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t38</td>
+<td>40</td>
+<td>40</td>
+<td>False</td>
+<td>A mini ice age could hit UK by 2030.\n\nGlobal...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t39</td>
+<td>40</td>
+<td>40</td>
+<td>False</td>
+<td>Global emissions will continue to rise at a to...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t4</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Four in ten Americans (40%) have personally ex...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t40</td>
+<td>20</td>
+<td>20</td>
+<td>False</td>
+<td>The Southern Hemisphere must be balancing the ...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t41</td>
+<td>20</td>
+<td>20</td>
+<td>False</td>
+<td>Christiana Figueres, executive secretary of th...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t42</td>
+<td>20</td>
+<td>20</td>
+<td>False</td>
+<td>Existing national pledges to restrict greenhou...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t43</td>
+<td>20</td>
+<td>20</td>
+<td>False</td>
+<td>Some legitimate uncertainty about the human co...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t44</td>
+<td>20</td>
+<td>20</td>
+<td>False</td>
+<td>Global warming could result in expensive incre...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t45</td>
+<td>10</td>
+<td>10</td>
+<td>False</td>
+<td>Ending climate change would require `entire so...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t46</td>
+<td>10</td>
+<td>10</td>
+<td>False</td>
+<td>The United States to exceed its 2025 commitmen...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t47</td>
+<td>10</td>
+<td>10</td>
+<td>False</td>
+<td>Climate change is a cult.\n\nCity officials ci...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t48</td>
+<td>10</td>
+<td>10</td>
+<td>False</td>
+<td>A 2 percent variation in H2O equals any climat...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t49</td>
+<td>10</td>
+<td>10</td>
+<td>False</td>
+<td>Republicans need to appeal to young people who...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t5</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Fossil fuels will be used for the foreseeable ...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t6</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Humans have a role and therefore as a matter o...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t7</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>The global warming has become a new religion.\...</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">t8</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>The global warming crowd can’t get any crazier...</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">t9</td>
+<td>50</td>
+<td>50</td>
+<td>False</td>
+<td>Global warming is mainly caused by human activ...</td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-4" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df_raw.loc[</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">~</span>df_raw[<span class="st">"sent_id"</span>].<span class="bu">str</span>.startswith(<span class="st">"s"</span>),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  [<span class="st">"sentence"</span>, <span class="st">"MACE_pred"</span>, <span class="st">"av_rating"</span>]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.rename(columns<span class="op">=</span>{<span class="st">"MACE_pred"</span> : <span class="st">"label_text"</span>})</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sentence</th>
+<th data-quarto-table-cell-role="th">label_text</th>
+<th data-quarto-table-cell-role="th">av_rating</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Warmer-than-normal sea surface temperatures ar...</td>
+<td>agrees</td>
+<td>0.625</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6</td>
+<td>We will continue to rely in part on fossil fue...</td>
+<td>neutral</td>
+<td>0.000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">7</td>
+<td>The actual rise in sea levels measured only 1....</td>
+<td>neutral</td>
+<td>0.000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">8</td>
+<td>Claims of global warming have been greatly exa...</td>
+<td>disagrees</td>
+<td>-1.000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9</td>
+<td>The Intergovernmental Panel on Climate Change ...</td>
+<td>neutral</td>
+<td>-0.125</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2295</td>
+<td>Agriculture, in general, is responsible for a ...</td>
+<td>neutral</td>
+<td>0.375</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2296</td>
+<td>Hiring a White House "climate change czar" wou...</td>
+<td>agrees</td>
+<td>0.750</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2297</td>
+<td>More carbon is being released than stored.</td>
+<td>neutral</td>
+<td>0.250</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2298</td>
+<td>New laws are needed to crack down on climate a...</td>
+<td>disagrees</td>
+<td>-0.750</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2299</td>
+<td>Scaring young people young people into believi...</td>
+<td>disagrees</td>
+<td>-0.750</td>
+</tr>
+</tbody>
+</table>
+
+<p>2050 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<div id="cell-5" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df.groupby([<span class="st">"label_text"</span>]).size()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>label_text
+agrees       780
+disagrees    391
+neutral      879
+dtype: int64</code></pre>
+</div>
+</div>
+<div id="cell-6" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sentence-len"</span>] <span class="op">=</span> df[<span class="st">"sentence"</span>].<span class="bu">apply</span>(<span class="bu">len</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sentence-len"</span>].hist()</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sentence-len"</span>].describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>count    2050.000000
+mean      114.340488
+std        55.721788
+min        21.000000
+25%        72.000000
+50%       104.000000
+75%       147.000000
+max       347.000000
+Name: sentence-len, dtype: float64</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="notebook_files/figure-html/cell-7-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-7" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df.hist(column<span class="op">=</span><span class="st">"av_rating"</span>, by<span class="op">=</span><span class="st">"label_text"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>array([[&lt;Axes: title={'center': 'agrees'}&gt;,
+        &lt;Axes: title={'center': 'disagrees'}&gt;],
+       [&lt;Axes: title={'center': 'neutral'}&gt;, &lt;Axes: &gt;]], dtype=object)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="notebook_files/figure-html/cell-8-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-8" class="cell" data-execution_count="82">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df.hist(column <span class="op">=</span> <span class="st">"sentence-len"</span>, by<span class="op">=</span><span class="st">"label_text"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>df.groupby(<span class="st">"label_text"</span>)[<span class="st">"sentence-len"</span>].describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="82">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">count</th>
+<th data-quarto-table-cell-role="th">mean</th>
+<th data-quarto-table-cell-role="th">std</th>
+<th data-quarto-table-cell-role="th">min</th>
+<th data-quarto-table-cell-role="th">25%</th>
+<th data-quarto-table-cell-role="th">50%</th>
+<th data-quarto-table-cell-role="th">75%</th>
+<th data-quarto-table-cell-role="th">max</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">label_text</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">agrees</td>
+<td>780.0</td>
+<td>118.393590</td>
+<td>58.178625</td>
+<td>22.0</td>
+<td>74.75</td>
+<td>108.0</td>
+<td>153.0</td>
+<td>342.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">disagrees</td>
+<td>391.0</td>
+<td>107.437340</td>
+<td>56.278525</td>
+<td>22.0</td>
+<td>64.00</td>
+<td>97.0</td>
+<td>143.0</td>
+<td>325.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">neutral</td>
+<td>879.0</td>
+<td>113.814562</td>
+<td>52.914260</td>
+<td>21.0</td>
+<td>76.00</td>
+<td>104.0</td>
+<td>144.0</td>
+<td>347.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="notebook_files/figure-html/cell-9-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-9" class="cell" data-execution_count="89">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df.sort_values(<span class="st">"sentence-len"</span>).head(<span class="dv">2</span>)[<span class="st">"sentence"</span>].unique()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="89">
+<pre><code>&lt;ArrowStringArray&gt;
+['The seas have warmed.']
+Length: 1, dtype: str</code></pre>
+</div>
+</div>
+<div id="cell-10" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sentence-len"</span>] <span class="op">=</span> df[<span class="st">"sentence"</span>].<span class="bu">apply</span>(<span class="bu">len</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sentence-len"</span>].hist()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="notebook_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-11" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df.loc[df[<span class="st">"sentence-len"</span>] <span class="op">&lt;</span> <span class="dv">50</span>,:].sort_values(<span class="st">"sentence-len"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sentence</th>
+<th data-quarto-table-cell-role="th">leaning</th>
+<th data-quarto-table-cell-role="th">sentence-len</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1715</td>
+<td>Gr \/ .</td>
+<td>Neutral</td>
+<td>7</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">153</td>
+<td>Howard Dean ( D-Vt . )</td>
+<td>Liberal</td>
+<td>22</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3749</td>
+<td>Senator James Inhofe ( R-Okla . )</td>
+<td>Conservative</td>
+<td>33</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-12" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df.loc[df[<span class="st">"sentence-len"</span>] <span class="op">&gt;=</span> <span class="dv">400</span>, :]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sentence</th>
+<th data-quarto-table-cell-role="th">leaning</th>
+<th data-quarto-table-cell-role="th">sentence-len</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">217</td>
+<td>In the new security environment , the United S...</td>
+<td>Liberal</td>
+<td>412</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">306</td>
+<td>As to this , Dr. Drexler offers this short lis...</td>
+<td>Neutral</td>
+<td>405</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">319</td>
+<td>Members of the Creative Class are drawn to suc...</td>
+<td>Liberal</td>
+<td>404</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">449</td>
+<td>Low capital costs are the result of a lot of p...</td>
+<td>Conservative</td>
+<td>408</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">520</td>
+<td>The Obama administration , together with assor...</td>
+<td>Conservative</td>
+<td>434</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">557</td>
+<td>Most local school districts must contend with ...</td>
+<td>Conservative</td>
+<td>417</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">706</td>
+<td>Under the circumstances , President Obama migh...</td>
+<td>Neutral</td>
+<td>418</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">713</td>
+<td>Del Vecchio 's words manifest not merely an et...</td>
+<td>Liberal</td>
+<td>409</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">871</td>
+<td>Abstract : For years , feminists have been war...</td>
+<td>Liberal</td>
+<td>400</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1224</td>
+<td>While experts will continue to debate the exac...</td>
+<td>Liberal</td>
+<td>400</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1240</td>
+<td>Yet despite that campaign assertion and the fa...</td>
+<td>Conservative</td>
+<td>418</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1290</td>
+<td>Here , Associate Director ( James Tweeny ) out...</td>
+<td>Conservative</td>
+<td>437</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1318</td>
+<td>The Inter Press Service reported that these co...</td>
+<td>Liberal</td>
+<td>482</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1433</td>
+<td>Illegal aliens are causing a financial drain ;...</td>
+<td>Conservative</td>
+<td>416</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1470</td>
+<td>The result has been a system that , according ...</td>
+<td>Liberal</td>
+<td>415</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1479</td>
+<td>In defending the latest incursion into airline...</td>
+<td>Conservative</td>
+<td>412</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1540</td>
+<td>The proposal also includes creating an orderly...</td>
+<td>Liberal</td>
+<td>418</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1660</td>
+<td>Here , Associate Director Tweeny outlines the ...</td>
+<td>Conservative</td>
+<td>423</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1712</td>
+<td>However , investors became unmoored from the e...</td>
+<td>Conservative</td>
+<td>450</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1741</td>
+<td>Our children are not learning because the pres...</td>
+<td>Liberal</td>
+<td>413</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1818</td>
+<td>Multinational bodies like NAFTA , CAFTA , and ...</td>
+<td>Conservative</td>
+<td>424</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1822</td>
+<td>Market and patient-based health care reform pr...</td>
+<td>Liberal</td>
+<td>401</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1915</td>
+<td>Between credit-card usage and using store-spon...</td>
+<td>Liberal</td>
+<td>513</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2018</td>
+<td>In this telling , school vouchers are taxpayer...</td>
+<td>Liberal</td>
+<td>422</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2088</td>
+<td>Abstract : ( ... ) a range of public policies ...</td>
+<td>Liberal</td>
+<td>404</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2144</td>
+<td>In a book he published last year laying out a ...</td>
+<td>Liberal</td>
+<td>423</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2243</td>
+<td>The dominance of such worldviews -- to the det...</td>
+<td>Conservative</td>
+<td>416</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2415</td>
+<td>Sex outside a monogamous , life-long relations...</td>
+<td>Conservative</td>
+<td>431</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2464</td>
+<td>Many of the Republican Party leaders are also ...</td>
+<td>Liberal</td>
+<td>442</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2470</td>
+<td>There is nothing inherently conservative about...</td>
+<td>Conservative</td>
+<td>420</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2537</td>
+<td>But the cost of servicing that debt could grow...</td>
+<td>Conservative</td>
+<td>404</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2676</td>
+<td>Without the protection of the natural forest t...</td>
+<td>Liberal</td>
+<td>402</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2761</td>
+<td>Since the collapse of the subprime mortgage ma...</td>
+<td>Liberal</td>
+<td>430</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2837</td>
+<td>The U.S.-led occupation privatized large porti...</td>
+<td>Liberal</td>
+<td>441</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2852</td>
+<td>While the Massachusetts Attorney General 's Of...</td>
+<td>Liberal</td>
+<td>412</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2866</td>
+<td>While `` merit pay '' is a code word for evalu...</td>
+<td>Liberal</td>
+<td>429</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2895</td>
+<td>Most startling , Scalia observed that in an ``...</td>
+<td>Liberal</td>
+<td>402</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2991</td>
+<td>Rather than cultivating a moral society and in...</td>
+<td>Conservative</td>
+<td>404</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3086</td>
+<td>All of this -- skyrocketing costs , dumbed-dow...</td>
+<td>Conservative</td>
+<td>416</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3119</td>
+<td>Abstract : The performance of state government...</td>
+<td>Conservative</td>
+<td>410</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3139</td>
+<td>That movement 's home base is Seattle 's Disco...</td>
+<td>Liberal</td>
+<td>447</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3148</td>
+<td>In its eagerness to promote the teaching of cr...</td>
+<td>Liberal</td>
+<td>407</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3594</td>
+<td>He suggested decentralizing government to sett...</td>
+<td>Conservative</td>
+<td>422</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3639</td>
+<td>Echoing the recently released report from the ...</td>
+<td>Liberal</td>
+<td>405</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3651</td>
+<td>In reality , the national debt , when all the ...</td>
+<td>Conservative</td>
+<td>414</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3739</td>
+<td>Eliminating subsidies and legal privileges for...</td>
+<td>Conservative</td>
+<td>415</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3752</td>
+<td>Universities always emphasize the importance o...</td>
+<td>Liberal</td>
+<td>402</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3830</td>
+<td>The proposal also includes creating an orderly...</td>
+<td>Liberal</td>
+<td>418</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4099</td>
+<td>The financial crisis through which we are stil...</td>
+<td>Liberal</td>
+<td>404</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4117</td>
+<td>And , in trying to enlist the courts in their ...</td>
+<td>Liberal</td>
+<td>400</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4144</td>
+<td>In May 1933 , U.S. Senate Banking Committee co...</td>
+<td>Liberal</td>
+<td>410</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-13" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df.hist(<span class="st">"sentence-len"</span>, by<span class="op">=</span><span class="st">"leaning"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>array([[&lt;Axes: title={'center': 'Conservative'}&gt;,
+        &lt;Axes: title={'center': 'Liberal'}&gt;],
+       [&lt;Axes: title={'center': 'Neutral'}&gt;, &lt;Axes: &gt;]], dtype=object)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="notebook_files/figure-html/cell-14-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-14" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.loc[df[<span class="st">"sentence-len"</span>] <span class="op">&gt;</span> <span class="dv">50</span>,:]</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"ID"</span>] <span class="op">=</span> [<span class="ss">f"ID-</span><span class="sc">{</span>i<span class="sc">:04}</span><span class="ss">"</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(df))]</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.set_index(<span class="st">"ID"</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sentence</th>
+<th data-quarto-table-cell-role="th">leaning</th>
+<th data-quarto-table-cell-role="th">sentence-len</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">ID</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ID-0000</td>
+<td>Union shop proponents point out that the `` fr...</td>
+<td>Conservative</td>
+<td>228</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">ID-0001</td>
+<td>I started this section talking about how good ...</td>
+<td>Conservative</td>
+<td>92</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ID-0002</td>
+<td>He would end foreign aid and abolish five Cabi...</td>
+<td>Conservative</td>
+<td>381</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">ID-0003</td>
+<td>Here 's how the scheme works : miss the requir...</td>
+<td>Conservative</td>
+<td>181</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ID-0004</td>
+<td>As President , Barack Obama will create a pris...</td>
+<td>Liberal</td>
+<td>309</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ID-4318</td>
+<td>Our plan was straightforward : Make private-se...</td>
+<td>Liberal</td>
+<td>370</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">ID-4319</td>
+<td>Only the Western occupiers have the planes to ...</td>
+<td>Liberal</td>
+<td>295</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ID-4320</td>
+<td>What 's more , virtually every subsidiary Repu...</td>
+<td>Liberal</td>
+<td>258</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">ID-4321</td>
+<td>Sometimes they even dole out for scientific ex...</td>
+<td>Liberal</td>
+<td>222</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ID-4322</td>
+<td>Another aspect of American exceptionalism we a...</td>
+<td>Conservative</td>
+<td>162</td>
+</tr>
+</tbody>
+</table>
+
+<p>4323 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<div id="cell-15" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> preprocess_text(text: <span class="bu">str</span>):</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span>(<span class="bu">isinstance</span>(text, <span class="bu">str</span>)):</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> pd.NA</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>        text</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">"``"</span>, <span class="st">'"'</span>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">"''"</span>, <span class="st">'"'</span>)</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" ,"</span>, <span class="st">","</span>)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" ."</span>, <span class="st">"."</span>)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" !"</span>, <span class="st">"!"</span>)</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" ?"</span>, <span class="st">"?"</span>)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" :"</span>, <span class="st">":"</span>)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" 's"</span>, <span class="st">"'s"</span>)</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sentence-preprocessed"</span>] <span class="op">=</span> df[<span class="st">"sentence"</span>].<span class="bu">apply</span>(preprocess_text)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-16" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sentence</th>
+<th data-quarto-table-cell-role="th">leaning</th>
+<th data-quarto-table-cell-role="th">sentence-len</th>
+<th data-quarto-table-cell-role="th">sentence-preprocessed</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">ID</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ID-0000</td>
+<td>Union shop proponents point out that the `` fr...</td>
+<td>Conservative</td>
+<td>228</td>
+<td>Union shop proponents point out that the " fre...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">ID-0001</td>
+<td>I started this section talking about how good ...</td>
+<td>Conservative</td>
+<td>92</td>
+<td>I started this section talking about how good ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ID-0002</td>
+<td>He would end foreign aid and abolish five Cabi...</td>
+<td>Conservative</td>
+<td>381</td>
+<td>He would end foreign aid and abolish five Cabi...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">ID-0003</td>
+<td>Here 's how the scheme works : miss the requir...</td>
+<td>Conservative</td>
+<td>181</td>
+<td>Here's how the scheme works: miss the required...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ID-0004</td>
+<td>As President , Barack Obama will create a pris...</td>
+<td>Liberal</td>
+<td>309</td>
+<td>As President, Barack Obama will create a priso...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ID-4318</td>
+<td>Our plan was straightforward : Make private-se...</td>
+<td>Liberal</td>
+<td>370</td>
+<td>Our plan was straightforward: Make private-sec...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">ID-4319</td>
+<td>Only the Western occupiers have the planes to ...</td>
+<td>Liberal</td>
+<td>295</td>
+<td>Only the Western occupiers have the planes to ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ID-4320</td>
+<td>What 's more , virtually every subsidiary Repu...</td>
+<td>Liberal</td>
+<td>258</td>
+<td>What's more, virtually every subsidiary Republ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">ID-4321</td>
+<td>Sometimes they even dole out for scientific ex...</td>
+<td>Liberal</td>
+<td>222</td>
+<td>Sometimes they even dole out for scientific ex...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ID-4322</td>
+<td>Another aspect of American exceptionalism we a...</td>
+<td>Conservative</td>
+<td>162</td>
+<td>Another aspect of American exceptionalism we a...</td>
+</tr>
+</tbody>
+</table>
+
+<p>4323 rows × 4 columns</p>
+</div>
+</div>
+</div>
+<div id="cell-18" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>dsd <span class="op">=</span> ds.train_test_split(test_size <span class="op">=</span> <span class="fl">0.2</span>, shuffle<span class="op">=</span><span class="va">True</span>, seed<span class="op">=</span>SEED)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an eval dataset</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>temp <span class="op">=</span> dsd[<span class="st">"train"</span>].train_test_split()</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>dsd[<span class="st">"train"</span>] <span class="op">=</span> temp[<span class="st">"train"</span>]</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>dsd[<span class="st">"eval"</span>] <span class="op">=</span> temp[<span class="st">"test"</span>]</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>dsd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>DatasetDict({
+    train: Dataset({
+        features: ['text', 'labels_text', 'ID'],
+        num_rows: 2593
+    })
+    test: Dataset({
+        features: ['text', 'labels_text', 'ID'],
+        num_rows: 865
+    })
+    eval: Dataset({
+        features: ['text', 'labels_text', 'ID'],
+        num_rows: 865
+    })
+})</code></pre>
+</div>
+</div>
+<div id="cell-19" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> <span class="bu">list</span>(df[<span class="st">"leaning"</span>].unique())</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>num_labels <span class="op">=</span> <span class="bu">len</span>(labels)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>id2label <span class="op">=</span> {<span class="bu">id</span>:label <span class="cf">for</span> <span class="bu">id</span>, label <span class="kw">in</span> <span class="bu">enumerate</span>(labels)}</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>label2id <span class="op">=</span> {label:<span class="bu">id</span> <span class="cf">for</span> <span class="bu">id</span>, label <span class="kw">in</span> <span class="bu">enumerate</span>(labels)}</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'''</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="ss">num_labels : </span><span class="sc">{</span>num_labels<span class="sc">}</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="ss">id2label : </span><span class="sc">{</span>id2label<span class="sc">}</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="ss">label2id : </span><span class="sc">{</span>label2id<span class="sc">}</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="ss">'''</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+num_labels : 3
+id2label : {0: 'Conservative', 1: 'Liberal', 2: 'Neutral'}
+label2id : {'Conservative': 0, 'Liberal': 1, 'Neutral': 2}
+</code></pre>
+</div>
+</div>
+<div id="cell-20" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoModel, AutoModelForSequenceClassification</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># MODEL_NAME = "distilbert/distilbert-base-uncased"</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>MODEL_NAME <span class="op">=</span> <span class="st">"google-bert/bert-base-uncased"</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>classif_model <span class="op">=</span> AutoModelForSequenceClassification.from_pretrained(</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    MODEL_NAME, </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    num_labels<span class="op">=</span>num_labels,</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    id2label<span class="op">=</span>id2label,</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    label2id<span class="op">=</span>label2id                                            </span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>classif_model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Some weights of BertForSequenceClassification were not initialized from the model checkpoint at google-bert/bert-base-uncased and are newly initialized: ['classifier.bias', 'classifier.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>BertForSequenceClassification(
+  (bert): BertModel(
+    (embeddings): BertEmbeddings(
+      (word_embeddings): Embedding(30522, 768, padding_idx=0)
+      (position_embeddings): Embedding(512, 768)
+      (token_type_embeddings): Embedding(2, 768)
+      (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+      (dropout): Dropout(p=0.1, inplace=False)
+    )
+    (encoder): BertEncoder(
+      (layer): ModuleList(
+        (0-11): 12 x BertLayer(
+          (attention): BertAttention(
+            (self): BertSdpaSelfAttention(
+              (query): Linear(in_features=768, out_features=768, bias=True)
+              (key): Linear(in_features=768, out_features=768, bias=True)
+              (value): Linear(in_features=768, out_features=768, bias=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+            (output): BertSelfOutput(
+              (dense): Linear(in_features=768, out_features=768, bias=True)
+              (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+          )
+          (intermediate): BertIntermediate(
+            (dense): Linear(in_features=768, out_features=3072, bias=True)
+            (intermediate_act_fn): GELUActivation()
+          )
+          (output): BertOutput(
+            (dense): Linear(in_features=3072, out_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+      )
+    )
+    (pooler): BertPooler(
+      (dense): Linear(in_features=768, out_features=768, bias=True)
+      (activation): Tanh()
+    )
+  )
+  (dropout): Dropout(p=0.1, inplace=False)
+  (classifier): Linear(in_features=768, out_features=3, bias=True)
+)</code></pre>
+</div>
+</div>
+<div id="cell-21" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>classif_model.config</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<pre><code>BertConfig {
+  "architectures": [
+    "BertForMaskedLM"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "classifier_dropout": null,
+  "gradient_checkpointing": false,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "id2label": {
+    "0": "Conservative",
+    "1": "Liberal",
+    "2": "Neutral"
+  },
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "label2id": {
+    "Conservative": 0,
+    "Liberal": 1,
+    "Neutral": 2
+  },
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pad_token_id": 0,
+  "position_embedding_type": "absolute",
+  "torch_dtype": "float32",
+  "transformers_version": "4.52.4",
+  "type_vocab_size": 2,
+  "use_cache": true,
+  "vocab_size": 30522
+}</code></pre>
+</div>
+</div>
+<div id="cell-22" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoTokenizer</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(MODEL_NAME)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-23" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>entry <span class="op">=</span> [</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Hello World"</span>,</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"This is a second query"</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>tokenizer_parameters <span class="op">=</span> {</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"truncation"</span>:<span class="va">True</span>, </span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"padding"</span>:<span class="st">"max_length"</span>,</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_length"</span>:<span class="dv">400</span>,</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"return_tensors"</span>:<span class="st">"pt"</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>model_input <span class="op">=</span> tokenizer(entry,<span class="op">**</span>tokenizer_parameters)</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>base_model_output <span class="op">=</span> classif_model.base_model(<span class="op">**</span>model_input)</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>classif_model_output <span class="op">=</span> classif_model(<span class="op">**</span>model_input)</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'''</span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a><span class="ss"># model input keys: </span><span class="sc">{</span><span class="st">', '</span><span class="sc">.</span>join(model_input)<span class="sc">}</span></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a><span class="ss">model input shape (pytorch tensor): </span><span class="sc">{</span>model_input[<span class="st">"input_ids"</span>]<span class="sc">.</span>shape<span class="sc">}</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a><span class="ss">base model output keys: </span><span class="sc">{</span><span class="st">', '</span><span class="sc">.</span>join(base_model_output)<span class="sc">}</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a><span class="ss">base model output last_hidden_state shape (pytorch tensor): </span><span class="sc">{</span>base_model_output<span class="sc">.</span>last_hidden_state<span class="sc">.</span>shape<span class="sc">}</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a><span class="ss">classification model output key: </span><span class="sc">{</span><span class="st">', '</span><span class="sc">.</span>join(classif_model_output)<span class="sc">}</span></span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a><span class="ss">classification model output logits shape (pytorch tensor): </span><span class="sc">{</span>classif_model_output<span class="sc">.</span>logits<span class="sc">.</span>shape<span class="sc">}</span></span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a><span class="ss">'''</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+# model input keys: input_ids, token_type_ids, attention_mask
+model input shape (pytorch tensor): torch.Size([2, 400])
+base model output keys: last_hidden_state, pooler_output
+base model output last_hidden_state shape (pytorch tensor): torch.Size([2, 400, 768])
+classification model output key: logits
+classification model output logits shape (pytorch tensor): torch.Size([2, 3])
+</code></pre>
+</div>
+</div>
+<div id="cell-24" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Any</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: make device choice better</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> preprocess_dataset(row: <span class="bu">dict</span>[<span class="bu">str</span>:Any]):</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    tokenized_entry <span class="op">=</span> tokenizer(row[<span class="st">"text"</span>], <span class="op">**</span>tokenizer_parameters)</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">**</span>row.copy(),</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"labels"</span>: <span class="bu">int</span>(label2id[row[<span class="st">"labels_text"</span>]]),</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"attention_mask"</span> : tokenized_entry[<span class="st">"attention_mask"</span>].reshape(<span class="op">-</span><span class="dv">1</span>).to(device <span class="op">=</span> <span class="st">"mps"</span>),</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"input_ids"</span> : tokenized_entry[<span class="st">"input_ids"</span>].reshape(<span class="op">-</span><span class="dv">1</span>).to(device<span class="op">=</span><span class="st">"mps"</span>)</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>dsd <span class="op">=</span> dsd.<span class="bu">map</span>(preprocess_dataset, batch_size<span class="op">=</span><span class="dv">32</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Map:   0%|          | 0/2593 [00:00&lt;?, ? examples/s]huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+    - Avoid using `tokenizers` before the fork if possible
+    - Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+Map: 100%|██████████| 2593/2593 [00:04&lt;00:00, 642.75 examples/s] 
+Map: 100%|██████████| 865/865 [00:01&lt;00:00, 642.04 examples/s] 
+Map: 100%|██████████| 865/865 [00:01&lt;00:00, 668.04 examples/s] </code></pre>
+</div>
+</div>
+<div id="cell-25" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> TrainingArguments, Trainer, DataCollatorWithPadding</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>training_arguments <span class="op">=</span> TrainingArguments(</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Hyperparameters</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    num_train_epochs <span class="op">=</span> <span class="dv">5</span>,</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    learning_rate <span class="op">=</span> <span class="fl">5e-5</span>,</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    weight_decay  <span class="op">=</span> <span class="fl">0.0</span>,</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    warmup_ratio  <span class="op">=</span> <span class="fl">0.0</span>,</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    optim <span class="op">=</span> <span class="st">"adamw_torch_fused"</span>,</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Second order hyperparameters</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>    per_device_train_batch_size <span class="op">=</span> <span class="dv">4</span>,</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    per_device_eval_batch_size <span class="op">=</span> <span class="dv">4</span>,</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>    gradient_accumulation_steps <span class="op">=</span> <span class="dv">8</span>,</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Metrics</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># metric_for_best_model="f1_macro",</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Pipe</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>    output_dir <span class="op">=</span> <span class="st">"./models/training"</span>,</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>    overwrite_output_dir<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>    eval_strategy <span class="op">=</span> <span class="st">"epoch"</span>,</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>    logging_strategy <span class="op">=</span> <span class="st">"epoch"</span>,</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>    save_strategy <span class="op">=</span> <span class="st">"epoch"</span>,</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>    load_best_model_at_end <span class="op">=</span> <span class="va">True</span>,</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>    save_total_limit <span class="op">=</span> <span class="dv">5</span> <span class="op">+</span> <span class="dv">1</span>,</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>    disable_tqdm <span class="op">=</span> <span class="va">False</span>,</span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: Use dataloader instead</span></span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>trainer <span class="op">=</span> Trainer(</span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> classif_model, </span>
+<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a>    args <span class="op">=</span> training_arguments,</span>
+<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a>    train_dataset<span class="op">=</span>dsd[<span class="st">"train"</span>],</span>
+<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a>    eval_dataset<span class="op">=</span>dsd[<span class="st">"eval"</span>],</span>
+<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># data_collator=DataCollatorWithPadding(tokenizer=tokenizer)</span></span>
+<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-26" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>trainer.train()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/opt/miniconda3/envs/encoder-tuto/lib/python3.11/site-packages/torch/utils/data/dataloader.py:775: UserWarning: 'pin_memory' argument is set as true but not supported on MPS now, device pinned memory won't be used.
+  super().__init__(loader)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+    <div>
+      
+      <progress value="3" max="410" style="width:300px; height:20px; vertical-align: middle;"></progress>
+      [  3/410 00:07 &lt; 52:37, 0.13 it/s, Epoch 0.02/5]
+    </div>
+    
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Epoch</th>
+<th data-quarto-table-cell-role="th">Training Loss</th>
+<th data-quarto-table-cell-role="th">Validation Loss</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+<p>
+</p></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">KeyboardInterrupt</span>                         Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[19]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">trainer</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">train</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/miniconda3/envs/encoder-tuto/lib/python3.11/site-packages/transformers/trainer.py:2240</span>, in <span class="ansi-cyan-fg">Trainer.train</span><span class="ansi-blue-fg">(self, resume_from_checkpoint, trial, ignore_keys_for_eval, **kwargs)</span>
+<span class="ansi-green-fg">   2238</span>         hf_hub_utils.enable_progress_bars()
+<span class="ansi-green-fg">   2239</span> <span style="font-weight:bold;color:rgb(0,135,0)">else</span>:
+<span class="ansi-green-fg">-&gt; </span><span class="ansi-green-fg">2240</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">inner_training_loop</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-fg">   2241</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">   2242</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">resume_from_checkpoint</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">resume_from_checkpoint</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">   2243</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">trial</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">trial</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">   2244</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">ignore_keys_for_eval</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">ignore_keys_for_eval</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">   2245</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/miniconda3/envs/encoder-tuto/lib/python3.11/site-packages/transformers/trainer.py:2560</span>, in <span class="ansi-cyan-fg">Trainer._inner_training_loop</span><span class="ansi-blue-fg">(self, batch_size, args, resume_from_checkpoint, trial, ignore_keys_for_eval)</span>
+<span class="ansi-green-fg">   2554</span> <span style="font-weight:bold;color:rgb(0,135,0)">with</span> context():
+<span class="ansi-green-fg">   2555</span>     tr_loss_step = <span style="color:rgb(0,135,0)">self</span>.training_step(model, inputs, num_items_in_batch)
+<span class="ansi-green-fg">   2557</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> (
+<span class="ansi-green-fg">   2558</span>     args.logging_nan_inf_filter
+<span class="ansi-green-fg">   2559</span>     <span style="font-weight:bold;color:rgb(175,0,255)">and</span> <span style="font-weight:bold;color:rgb(175,0,255)">not</span> is_torch_xla_available()
+<span class="ansi-green-fg">-&gt; </span><span class="ansi-green-fg">2560</span>     <span style="font-weight:bold;color:rgb(175,0,255)">and</span> (torch.isnan(tr_loss_step) <span style="font-weight:bold;color:rgb(175,0,255)">or</span> <span class="ansi-yellow-bg">torch</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">isinf</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">tr_loss_step</span><span class="ansi-yellow-bg">)</span>)
+<span class="ansi-green-fg">   2561</span> ):
+<span class="ansi-green-fg">   2562</span>     <span style="font-style:italic;color:rgb(95,135,135)"># if loss is nan or inf simply add the average of previous logged losses</span>
+<span class="ansi-green-fg">   2563</span>     tr_loss = tr_loss + tr_loss / (<span class="ansi-green-fg">1</span> + <span style="color:rgb(0,135,0)">self</span>.state.global_step - <span style="color:rgb(0,135,0)">self</span>._globalstep_last_logged)
+<span class="ansi-green-fg">   2564</span> <span style="font-weight:bold;color:rgb(0,135,0)">else</span>:
+
+<span class="ansi-red-fg">KeyboardInterrupt</span>: </pre>
+</div>
+</div>
+</div>
+<div id="cell-27" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.cuda <span class="im">import</span> is_available <span class="im">as</span> cuda_available</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.mps <span class="im">import</span> is_available <span class="im">as</span> mps_available</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"CUDA: "</span>, cuda_available())</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"MPS: "</span>, mps_available())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>False
+True</code></pre>
+</div>
+</div>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/AXLMRIN\.github\.io\/encoder-classifier-tuto\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

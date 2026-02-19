@@ -1,8 +1,0 @@
-data/*.csv
-data/osfstorage-archive/
-*/libs/
-*.html
-*/.ipynb_checkpoints/*
-
-models/*/
-outputs/*/
