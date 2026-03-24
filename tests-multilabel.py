@@ -59,7 +59,7 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from torch import Tensor
 
 RANDOM_SEED = 2306406
-DATA_PATH = "./data/multilabel_classification_biotech_event.csv"
+DATA_PATH = "./data/multilabel_classification_emotions.csv"
 MODEL_NAME = "google-bert/bert-base-uncased"
 MAX_LENGTH = 512
 N_CLASSES = 4
