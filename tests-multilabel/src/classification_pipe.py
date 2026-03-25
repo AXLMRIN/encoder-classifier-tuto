@@ -166,7 +166,7 @@ class ClassificationPipe:
             print("#" * 100)
 
         finally:
-            del self.__tokenizer, self.__model, dsd, trainer # All objects that are moved to the GPU
+            del self.__tokenizer, self.__model, trainer # All objects that are moved to the GPU
             clean_memory()
 
     def save_important_info(self, output_file : str):
