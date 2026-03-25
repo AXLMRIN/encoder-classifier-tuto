@@ -67,13 +67,10 @@ class ClassificationPipe:
         }
 
         self.__training_arguments_dict = {
-            # Hyperparameters
-            # num_train_epochs = 5,
-            "num_train_epochs" : 7,
+            "num_train_epochs" : 5,
             "learning_rate" : 5e-5,
             "weight_decay" : 0.0,
             "warmup_ratio" : 0.0,
-            "optim" : "adamw_torch_fused",
             # Second order hyperparameters
             "per_device_train_batch_size" : 4,
             "per_device_eval_batch_size" : 4,
@@ -81,16 +78,6 @@ class ClassificationPipe:
             # Pipe
             "output_dir" : "./models/training",
             "overwrite_output_dir" : True,
-            
-            "logging_strategy" : "epoch",
-            # eval_strategy = "epoch",
-            "eval_strategy" : "steps",
-            "eval_steps" : 32,
-            "save_strategy" : "epoch",
-            # load_best_model_at_end = True,
-            # save_total_limit = 5 + 1,
-
-            "disable_tqdm" : False,
         }
         dict_merge(
             # Default training arguments
