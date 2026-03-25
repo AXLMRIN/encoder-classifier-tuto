@@ -1,10 +1,15 @@
-data/*.csv
+**/data/**/*.csv
+**/data/**/*.arrow
+**/data/**/*.json
+**/data/**/*.txt
 data/osfstorage-archive/
 */libs/
 *.html
 */.ipynb_checkpoints/*
 
-models/*/
+**/models/*/
 outputs/*/
 /.quarto/
 _site/
+
+**/__pycache__/
