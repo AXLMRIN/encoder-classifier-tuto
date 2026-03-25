@@ -103,7 +103,8 @@ class ClassificationPipe:
                 "per_device_eval_batch_size" : device_batch_size * 2,
                 "use_cpu":  self.__device == "cpu",
                 "use_mps_device":  self.__device == "mps",
-                "no_cuda" : self.__device != "cuda"
+                "no_cuda" : self.__device != "cuda",
+                "dataloader_pin_memory" : self.__device == "cpu",
             },
             # include edditional training arguments
             additional_training_arguments if additional_training_arguments is not None else {}
