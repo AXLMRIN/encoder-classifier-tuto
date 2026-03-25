@@ -881,11 +881,13 @@ The Training arguments object accepts the following arguments `use_cpu`, `use_mp
 ```
 training_args = TrainingArguments(
   ...
-  use_mps   = DEVICE == "mps",
-  use_cuda  = DEVICE == "cuda",
-  use_cpu   = DEVICE == "cpu",
+  use_mps_device   = DEVICE == "mps" ,
+  no_cuda          = DEVICE != "cuda",
+  use_cpu          = DEVICE == "cpu" ,
 )
 ```
+
+wierd, i can't seem to be able to force using cpu -> you can't update, you have to set it when creating the instnce
 
 :::
 
@@ -941,6 +943,8 @@ NVML_SUCCESS == r INTERNAL ASSERT FAILED at "/home/conda/feedstock_root/build_ar
 ```
 
 It is likely that you have reached the memory limit of your hardware. Reducing the batch size or using a smaller model is likely to solve your issue.
+
+Same: "Invalid buffer size: " on CPU
 
 # Some good practices
 
