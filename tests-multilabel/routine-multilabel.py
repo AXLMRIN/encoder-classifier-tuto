@@ -45,7 +45,7 @@ for n_classes in range(2, len(CLASSES)):
         }
     )
     print(pipe)
-    dsd = pipe.tokenize(dsd)
+    dsd = pipe.tokenize(dsd, test_mode = True)
 
     pipe.train(dsd)
     config = pipe.save_important_info(f"./model-configs/multilabel-top-{n_classes}.json")
