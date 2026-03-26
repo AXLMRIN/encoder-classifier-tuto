@@ -40,13 +40,13 @@ for label in CLASSES:
         device = DEVICE, 
         tokenizer_max_length = MAX_LENGTH,
         additional_training_arguments={
-            "num_train_epochs" : 3,
+            "num_train_epochs" : 5,
             "gradient_accumulation_steps" : 2,
             "fp16" : True,
         }
     )
     print(pipe)
-    dsd = pipe.tokenize(dsd, test_mode = True)
+    dsd = pipe.tokenize(dsd)
 
     pipe.train(dsd)
     config = pipe.save_important_info(f"./model-configs/multiclass-{label}.json")
