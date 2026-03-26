@@ -9,7 +9,7 @@ class PredictionPipe:
         checkpoint_dir : str, 
         model_name : str,
         text_column : str, 
-        labels : str, 
+        labels : list[str], 
         tokenizer_parameters : dict,
         device_batch_size : int, 
         device : str | None = None,

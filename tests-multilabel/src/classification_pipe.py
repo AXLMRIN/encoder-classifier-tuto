@@ -104,7 +104,7 @@ class ClassificationPipe:
             f"Labels : {self.__labels}"
         ])
 
-    def tokenize(self, dsd: DatasetDict): 
+    def tokenize(self, dsd: DatasetDict, test_mode : bool = False): 
 
         def preprocess_dataset(row: dict):
             tokenized_entry = self.__tokenizer(row[self.__text_column], **self.__tokenizer_parameters)
@@ -126,15 +126,12 @@ class ClassificationPipe:
         
         for split in dsd:
             dsd[split] = dsd[split].with_format("torch", device=self.__device)
+            if test_mode:
+                dsd[split] = dsd[split].select(range(20))
 
         return dsd
     
-    def train(self, dsd : DatasetDict, test_mode : bool = False):
-        if test_mode : 
-            print("TEST - train : 50 - train_eval : 50")
-            dsd["train"] = dsd["train"].select(range(50))
-            dsd["train_eval"] = dsd["train_eval"].select(range(50))
-            
+    def train(self, dsd : DatasetDict):    
         try:
             trainer = Trainer(
                 model = self.__model, 
@@ -156,7 +153,7 @@ class ClassificationPipe:
             del self.__tokenizer, self.__model, trainer # All objects that are moved to the GPU
             clean_memory()
 
-    def save_important_info(self, output_file : str):
+    def save_important_info(self, output_file : str) -> dict:
         important_info = {
             "model_name" : self.__model_name,
             "mode" : self.__mode,
@@ -174,3 +171,4 @@ class ClassificationPipe:
         }
         with open(output_file, "w") as file: 
             json.dump(important_info, file, indent = 4, ensure_ascii = True)
+        return important_info
