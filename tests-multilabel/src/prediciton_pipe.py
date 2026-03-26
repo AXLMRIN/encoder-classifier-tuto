@@ -37,15 +37,16 @@ class PredictionPipe:
                 local_id += batch["id"]
 
                 texts = batch[self.__text_column]
+                model_input = self.__tokenizer(texts, **self.__tokenizer_parameters)
                 model_input = {
                     key : tensor.to(device=self.__device)
-                    for key, tensor in self.__tokenizer(texts, **self.__tokenizer_parameters).items()
+                    for key, tensor in model_input.items()
                 }
-                print({key : tensor.device for key, tensor in model_input.items()})
                 logits : np.ndarray = (
                     self.__model(**model_input)
                     .logits
                     .detach()
+                    .cpu()
                     .numpy()
                 )
                 local_logits += logits.tolist()
