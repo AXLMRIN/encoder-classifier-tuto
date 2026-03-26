@@ -55,7 +55,7 @@ for n_classes in range(2, len(CLASSES)):
             checkpoint_dir=f"{output_dir}/{checkpoint}",
             model_name = MODEL_NAME,
             text_column = TEXT_COLUMN, 
-            labels = [True, False],
+            labels = CLASSES[:n_classes],
             tokenizer_parameters = config["tokenizer_parameters"],
             device_batch_size = DEVICE_BATCH_SIZE, 
             device = DEVICE
