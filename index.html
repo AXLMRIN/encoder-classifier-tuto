@@ -190,7 +190,7 @@ window.Quarto = {
   <li><a href="#check-content-integrity" id="toc-check-content-integrity" class="nav-link" data-scroll-target="#check-content-integrity">Check content integrity</a></li>
   <li><a href="#create-splits" id="toc-create-splits" class="nav-link" data-scroll-target="#create-splits">Create splits</a></li>
   </ul></li>
-  <li><a href="#choose-and-load-a-models" id="toc-choose-and-load-a-models" class="nav-link" data-scroll-target="#choose-and-load-a-models">Choose and load a models</a></li>
+  <li><a href="#choose-and-load-a-model" id="toc-choose-and-load-a-model" class="nav-link" data-scroll-target="#choose-and-load-a-model">Choose and load a model</a></li>
   <li><a href="#train-the-model" id="toc-train-the-model" class="nav-link" data-scroll-target="#train-the-model">Train the model</a>
   <ul class="collapse">
   <li><a href="#tokenize-the-dataset" id="toc-tokenize-the-dataset" class="nav-link" data-scroll-target="#tokenize-the-dataset">Tokenize the dataset:</a></li>
@@ -214,7 +214,7 @@ window.Quarto = {
   <li><a href="#on-annotating-your-dataset" id="toc-on-annotating-your-dataset" class="nav-link" data-scroll-target="#on-annotating-your-dataset">On annotating your Dataset</a></li>
   <li><a href="#whats-a-good-score" id="toc-whats-a-good-score" class="nav-link" data-scroll-target="#whats-a-good-score">What’s a good score?</a></li>
   </ul></li>
-  <li><a href="#limits-of-using-encoder-models-for-classification" id="toc-limits-of-using-encoder-models-for-classification" class="nav-link" data-scroll-target="#limits-of-using-encoder-models-for-classification">Limits of using encoder models for classification</a></li>
+  <li><a href="#pros-and-cons-of-using-an-encoder-vs-decoder-model-for-text-classification" id="toc-pros-and-cons-of-using-an-encoder-vs-decoder-model-for-text-classification" class="nav-link" data-scroll-target="#pros-and-cons-of-using-an-encoder-vs-decoder-model-for-text-classification">Pros and cons of using an encoder vs decoder model for text classification</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">Bibliography</a></li>
   </ul>
@@ -253,10 +253,10 @@ window.Quarto = {
 <p>It is now common practice to use LLMs (encoders or decoders) to annotate texts in the context of social science research (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). This approach does not replace the theoretical work and manual annotation, as one must define the labels and what they represent, as well as annotate some elements that will be used to evaluate the LLMs’ ability to perform the classification task. On the other hand, LLMs provide cost-effective and rapid alternatives for scaling studies.</p>
 <p>There are several strategies to use LLMs to annotate texts:</p>
 <ul>
-<li>Using encoder models: from texts, models create embeddings (an array of several hundred of values) on which we perform the classification. This strategy is illustrated in the Augmented Social Scientist tutorial, which requires some coding skills as well as a computer capable of loading and running the model.</li>
-<li>Using decoder models: from a prompt, ie the concatenation of the text to annotate as well as the codebook to do so, we ask a model to generate the labels as text. This strategy is easier to implement as fewer coding skills are required, and models run on external machines. This nonetheless has drawbacks, which we mention at the end of this page.</li>
+<li>Using encoder models: from texts, models create embeddings (a vector of several hundred of values) used as predictors to perform the classification. This strategy is illustrated in the Augmented Social Scientist tutorial, which requires some coding skills as well as a computer capable of loading and running the model.</li>
+<li>Using decoder models: from a prompt, ie the concatenation of the text to annotate as well as the codebook, we ask a model to generate the labels as text. This strategy is easier to implement as fewer coding skills are required, and models run on external machines. This nonetheless has drawbacks, <!-- TODO Reprendre les conclusions du tuto decoder --></li>
 </ul>
-<p>In a previous tutorial, we demonstrated how to make API calls with the <code>openai</code>library (<a href="https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/">available here</a>). In this tutorial, we explore the other solution: training an encoder model. Alternatively, you can use ActiveTigger, a software developed by our team that facilitates the use of models in the social sciences.</p>
+<p>In a previous tutorial, we demonstrated how to make API calls with the <code>openai</code>library (<a href="https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/">available here</a>). In this tutorial, we explore the other solution: fine-tuning an encoder model. Alternatively, you can use ActiveTigger, a software developed by our team that facilitates the use of models in the social sciences.</p>
 <!-- TODO: write a pros and cons of the two methods -->
 <section id="objectives-and-materials" class="level2">
 <h2 class="anchored" data-anchor-id="objectives-and-materials">Objectives and materials</h2>
@@ -273,7 +273,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="install-environment">Install environment:</h2>
 <p>For this tutorial we use Python version 3.12 and setup the environment with the following command:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-qU</span> pandas <span class="st">"transformers==4.52.4"</span> datasets ipykernel matplotlib torch <span class="st">"accelerate&gt;=0.26.0"</span> scikit-learn plotly <span class="st">"nbformat&gt;=4.2.0"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>However, you should know that, however convenient PyTorch, accelerate, and transformers are, these libraries may be unstable depending on your computer and environment. You <strong>will face issues</strong> related to your version. We recommand using conda<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> (or the virtual environments manager of your choice) to correctly setup your environment and create a requirement file of your own once you’ve reached a stable workspace. Don’t hesitate downgrading your libraries as they are likely to be more stable.</p>
+<p>However, you should know that, however convenient <a href="XXX">PyTorch</a>, <a href="XXX">accelerate</a>, and <a href="XXX">transformers</a> are, these libraries may be unstable depending on your computer and environment. You <strong>will face issues</strong> related to your version. We recommand using conda<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> (or the virtual environments manager of your choice<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>) to correctly setup your environment and create a requirement file<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> of your own once you’ve reached a stable workspace. Don’t hesitate downgrading your libraries as they are likely to be more stable.</p>
 <!-- TODO: add requirement files -->
 </section>
 </section>
@@ -293,15 +293,15 @@ Figure&nbsp;1: Transformer architecture
 </div>
 <p>The transformer contains two parts, the encoder and the decoder</p>
 <ul>
-<li><strong>Decoder</strong> models include GPT models and Llama, they often are too heavy to run on your personal laptop (smallest models have 3-8 billion prameters and can go up to 2,000 billion). They also tend to be prioprietary (XXX vérifier) resulting in confidentiality and interpretation issues <!-- TODO reformulate -->.</li>
-<li><strong>Encoder</strong> models (also called embedding models) include BERT models and many of it’s kind (CamemBERT, RoBERTa, DeBERTa, and the list is long). They are way more frugal and can be run and finetuned on most laptops (most models have between 200 and 600 million parameters). Also, these models tend to be open source. (Which does not solve issues related to the training data and all.. but it’s better).<!-- TODO find back reference with model size and all --></li>
+<li><strong>Decoder</strong> models include GPT models and Llama, they often are too heavy to run on your personal laptop (smallest models have 3-8 billion prameters and can go up to 2,000 billion). They also tend to be prioprietary (XXX vérifier) resulting in confidentiality and interpretability issues <!-- TODO reformulate -->.</li>
+<li><strong>Encoder</strong> models (also called embedding models) include BERT models and many of it’s kind (CamemBERT, RoBERTa, DeBERTa, and the list is long). They are way more frugal and can be run and finetuned on most laptops<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> (most models have between 200 and 600 million parameters). Also, these models tend to be open source. (Which does not solve issues related to the training data and all.. but it’s better).<!-- TODO find back reference with model size and all --></li>
 </ul>
 <p>Training embedding models is a complex task that can be carried out in many different ways. For instance, BERT was trained on two tasks (Devlin et al., 2019):</p>
 <ul>
 <li>Task 1: Masked LM. Take a sentence, replace some words by a <code>[MASK]</code> token, predict what was the word.</li>
 <li>Task 2: Next Sentence Prediction. Take two sentences A and B, classify whether it makes sense for sentence B to appear after sentence A.</li>
 </ul>
-<p>In the context of training embedding models, tasks have been adapted and redesigned but they all have the same objective: modelise the semantic of words. If done correctly, this means that two words close in meaning are close in the embedding space and that the embedding calculated takes into account the context of the sentence. In most NLP applications, the similarity score is calculated as the scalar product of the embeddings also referred to as the cosine metric.</p>
+<p>In the context of training embedding models, tasks have been adapted and redesigned but they all have the same objective: <strong>modelling the semantic of words</strong>. If done correctly, this means that two words close in meaning are close in the embedding space and that the embedding calculated takes into account the context of the sentence. In most NLP applications, the similarity score is calculated as the scalar product of the embeddings also referred to as the cosine metric.</p>
 <div id="fig-similarity" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-similarity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -313,7 +313,6 @@ Figure&nbsp;2: Similarity
 </figure>
 </div>
 <p>For instance in <a href="#fig-similarity" class="quarto-xref">Figure&nbsp;2</a>, the word “apple” and “pear” are very close in meaning, so their similarity score is very high. However, in the context of Apple’s new product, the embedding has shifted with the context, now the similarity score is lower.</p>
-<p>In the case of</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Learn more the embedding space and training encoders">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -335,11 +334,15 @@ Learn more the embedding space and training encoders
 </div>
 </div>
 </div>
-<!-- TODO: add context window -->
+<p>One key parameter of all models is the “maximum context window”. The maximum context window is the maximum number of tokens that can be digested by the model at once, anything exceeding this window is simply ignored. First models used to have very short context windows (between 128 and 512 tokens maximum), meaning long texts had to be split into sentences or paragraphs. This may be a problem depending on the task at hand.</p>
+<div class="callout-example">
+<p>Let’s say you want to detect if long articles tackle environmental issues. One might need to divide the articles into paragraphs, and for each paragraph, detect if it tackles environmental issues. After inference, one would need to aggregate the results of each paragraph to obtain a global score (3 out of 6 paragraphs tackle environmental issues) or a global indicator (at leas 1 paragraph tackles environmental issues). <br> This consists of an additional difficulty and requires researcher to further precise their research question and how they might answer it.</p>
+</div>
+<p>Some techniques allow users to exceed the maximum context window, please refer to XXX @ Léo @ Alexandre</p>
 </section>
 <section id="fine-tuning-pipeline-the-essential" class="level1 page-columns page-full">
 <h1>Fine-tuning pipeline: the essential</h1>
-<p>In this section we will see the fundamentals to fine-tune encoders for a classification task. We will use a dataset introduced by Luo et al., (2020); they collected journal articles, from which they extracted sentences conveying an opinion regarding global warming. Finally, they annotated each opinion as “agreeing”, “neutral” or “disagreeing” with regard to the following statement “Climate chage/global warming is a serious concern”.</p>
+<p>In this section we will see the fundamentals to fine-tuning encoders for a classification task. We will use a dataset introduced by Luo et al., (2020); they collected journal articles, from which they extracted sentences conveying an opinion regarding global warming. Finally, they annotated each opinion as “agreeing”, “neutral” or “disagreeing” with regard to the following statement “Climate chage/global warming is a serious concern”.</p>
 <section id="load-your-data" class="level2">
 <h2 class="anchored" data-anchor-id="load-your-data">Load your data</h2>
 <p>Data is available on the <a href="https://github.com/yiweiluo/GWStance/tree/master">project’s GitHub repository</a>, we can download it from there using Pandas.</p>
@@ -349,7 +352,7 @@ Learn more the embedding space and training encoders
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_raw <span class="op">=</span> pd.read_csv(url, sep <span class="op">=</span> <span class="st">"</span><span class="ch">\t</span><span class="st">"</span>) <span class="co"># Careful here, this document is a tsv (separator="\t" and not a csv (separator = ",")</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df_raw.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>We will first need to explore the dataset, get a graps of it’s content as well as possible biases.</p>
+<p>We will first need to explore the dataset and get a graps of its content as well as possible biases.</p>
 <p>As a first step, let’s make a list of all the columns:</p>
 <ul>
 <li><code>sent_id</code>: the sentence id. It is not unique and represents something else, we will need to create a different ID.</li>
@@ -369,7 +372,7 @@ Learn more the embedding space and training encoders
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>disagrees    441</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>neutral      988</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>dtype: int64</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>We can see that there tends to be more “neutral” or “agrees” sentences. This means that “disagrees” sentences might be trickier to spot because there will be less elements to train on. We can see that e</p>
+<p>We can see that there tends to be more “neutral” or “agrees” sentences. This means that “disagrees” sentences might be trickier to spot because there will be less elements to train on. <!-- TODO balance dataset --></p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df.hist(column <span class="op">=</span> <span class="st">"sentence-len"</span>, by<span class="op">=</span><span class="st">"label_text"</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df.groupby(<span class="st">"label_text"</span>)[<span class="st">"sentence-len"</span>].describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <table class="caption-top table">
@@ -439,7 +442,7 @@ Learn more the embedding space and training encoders
 <figcaption>Length of text per label</figcaption>
 </figure>
 </div>
-<p>there does not seem to be a bias regarding the length of the documents</p>
+<p>There does not seem to be a bias regarding the length of the documents.</p>
 </section>
 <section id="preprocess-your-data" class="level2">
 <h2 class="anchored" data-anchor-id="preprocess-your-data">Preprocess your data</h2>
@@ -447,21 +450,25 @@ Learn more the embedding space and training encoders
 <h3 class="anchored" data-anchor-id="check-content-integrity">Check content integrity</h3>
 <p>The preprocessing step is one of the most important step in the NLP pipeline, one needs to know what the corpus contains. We list a number of aspects you want to keep in mind when pre-processing your data:</p>
 <ul>
-<li><strong>The length of your documents</strong>: Depending on the model used, the context window (ie the maximum length of the documents) will vary a lot (from 500 tokens to more than 8k). Also you will need to answer this question: where is the information that you’re looking for. For some tasks, you might want to work at the sentence level because you want to find specific elements of your corpus. For other tasks, working at the document or paragraph level is acceptable because you want to assess a global quantity. Depending on your task and the model chosen, you might want to split your documents. We also want to make sure that elements have roughly the same size. Indeed, we can’t really compare a sentence of 5 words to 10 paragraphs. This needs to be conceptualised.</li>
+<li><strong>Create a unique ID for each text</strong>: Creating an index for each text ensures that you will be able to aggregate the results. If your dataset does not contain an existing ID column, you can create one using the syntax of your choice. In our case, we will create an index that will look like this: <code>ID-0001</code>.</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>DF_IN_USE[<span class="st">"ID"</span>] <span class="op">=</span> [<span class="ss">f'ID-</span><span class="sc">{</span>i<span class="sc">:04}</span><span class="ss">'</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(DF_IN_USE))]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><strong>The length of your documents</strong>: Depending on the model used, the context window (ie the maximum length of the documents, <a href="#understand-the-encoder-architecture">see previous section</a>) will vary a lot (from 500 tokens to more than 8k). Also you will need to answer this question: where is the information that you’re looking for. For some tasks, you might want to work at the sentence level because you want to find specific elements of your corpus. For other tasks, working at the document or paragraph level is acceptable because you want to assess a global quantity. Depending on your task and the model chosen, you might want to split your documents. We also want to make sure that elements have roughly the same size. Indeed, we can’t really compare a sentence of 5 words to 10 paragraphs. This needs to be conceptualised.</li>
 </ul>
 <p>Let’s analyse the len of sentences in order to estimate how large will the context window be:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sentence-len"</span>] <span class="op">=</span> df[<span class="st">"sentence"</span>].<span class="bu">apply</span>(<span class="bu">len</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sentence-len"</span>].hist()</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sentence-len"</span>].describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>count    2300.000000</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>mean      109.890435</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>std        56.251317</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>min        21.000000</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>25%        70.000000</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>50%       100.000000</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>75%       145.000000</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>max       347.000000</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>Name: sentence-len, dtype: float64</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sentence-len"</span>] <span class="op">=</span> df[<span class="st">"sentence"</span>].<span class="bu">apply</span>(<span class="bu">len</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sentence-len"</span>].hist()</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sentence-len"</span>].describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>count    2300.000000</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>mean      109.890435</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>std        56.251317</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>min        21.000000</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>25%        70.000000</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>50%       100.000000</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>75%       145.000000</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>max       347.000000</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>Name: sentence-len, dtype: float64</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="fig-sentence-length-hist" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-sentence-length-hist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -472,42 +479,42 @@ Figure&nbsp;3: Sentence length
 </figcaption>
 </figure>
 </div>
-<p>In the context of our experiment, the sentences are quite short and their size is quite standard.</p>
+<p>In the context of our experiment, the sentences are quite short and their size is roughly standard. We will not exclude text inputs based on the text. Keep in mind that this model will be trained on a specific task and specific material. Performances are not guaranteed for texts too different in tone, source, date, or length from the training data.</p>
 <ul>
-<li><strong>Are there any unwanted characters</strong>: If you are used to TF-IDF techniques, you might be accoustumed to filtering punctuations and stop words. This is not something that we want to do when using transformers models. Indeed these models are trained with these characters. On top of that they convey meaningful context to the model. However, you might want to filter out elements that, for your study, do not carry semantic value. For instance, when working on social media content, depending on your problematic, you will want to either keep or remove emojis for instance<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. At the end of the day, you want to make sure that the elements you keep in your text carry semantic information necessary for the annotation process.</li>
+<li><strong>Are there any unwanted characters</strong>: If you are used to <a href="XXX">TF-IDF techniques</a>, you might be accoustumed to filtering punctuations and stop words. This is not something that we want to do when using transformers models. Indeed these models are trained with these characters. On top of that they convey meaningful context to the model. However, you might want to filter out elements that, for your study, do not carry semantic value. For instance, when working on social media content, depending on your problematic, you will want to either keep or remove emojis for instance<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>. At the end of the day, you want to make sure that the elements you keep in your text carry semantic information necessary for the annotation process.</li>
 </ul>
 <p>Our corpus is relatively clean given that the preprocessing stage happened in the earlier stages of the study. Skimming through the text entries, we can still find some irregularities regarding the punctuation. Let’s fix this:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> preprocess_text(text: <span class="bu">str</span>):</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span>(<span class="bu">isinstance</span>(text, <span class="bu">str</span>)):</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> pd.NA</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        text</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">"``"</span>, <span class="st">'"'</span>)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">"''"</span>, <span class="st">'"'</span>)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" ,"</span>, <span class="st">","</span>)</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" ."</span>, <span class="st">"."</span>)</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" !"</span>, <span class="st">"!"</span>)</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" ?"</span>, <span class="st">"?"</span>)</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" :"</span>, <span class="st">":"</span>)</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" 's"</span>, <span class="st">"'s"</span>)</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sentence-preprocessed"</span>] <span class="op">=</span> df[<span class="st">"sentence"</span>].<span class="bu">apply</span>(preprocess_text)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> preprocess_text(text: <span class="bu">str</span>):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span>(<span class="bu">isinstance</span>(text, <span class="bu">str</span>)):</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> pd.NA</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        text</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">"``"</span>, <span class="st">'"'</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">"''"</span>, <span class="st">'"'</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" ,"</span>, <span class="st">","</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" ."</span>, <span class="st">"."</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" !"</span>, <span class="st">"!"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" ?"</span>, <span class="st">"?"</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" :"</span>, <span class="st">":"</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        .replace(<span class="st">" 's"</span>, <span class="st">"'s"</span>)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sentence-preprocessed"</span>] <span class="op">=</span> df[<span class="st">"sentence"</span>].<span class="bu">apply</span>(preprocess_text)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ul>
 <li><strong>Are there any duplicates?</strong> This can be a fatal flaw as training a model with repeated elements can outweight other annotation or completely confuse it.</li>
 </ul>
 <p>Let’s see if we have duplicates elements.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df.groupby(<span class="st">"sentence"</span>).size().value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb11"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>1     2034</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>2        8</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>50       5</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>Name: count, dtype: int64</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df.groupby(<span class="st">"sentence"</span>).size().value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>1     2034</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>2        8</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>50       5</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>Name: count, dtype: int64</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>We can see that 5 elements are duplicated 50 times. Further inverstigations let us identify that sentences with indexes starting with an “s” (<code>['s0', 's1', 's2', 's3', 's4']</code>) are duplicated 50 times. Let’s remove these rows.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df_no_duplicates <span class="op">=</span> df.loc[<span class="op">~</span>df[<span class="st">"sent_id"</span>].<span class="bu">str</span>.startswith(<span class="st">"s"</span>), :] </span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>df_no_duplicates.groupby(<span class="st">"sentence"</span>).size().value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>We still need to deal with the 8 elements that have a duplicate. We would like to use the <code>drop_duplicates</code> function, but to do so, we need to make sure that the label of the two duplicates are the same. Let’s check if some sentence are the same but there is no concensus on the label:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_concensus <span class="op">=</span> df_no_duplicates.groupby(<span class="st">"sentence"</span>)[<span class="st">"label_text"</span>].agg(concensus <span class="op">=</span> <span class="kw">lambda</span> X : <span class="bu">len</span>(<span class="bu">set</span>(X)) <span class="op">==</span> <span class="dv">1</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_concensus[df_concensus[<span class="st">"concensus"</span>] <span class="op">==</span> <span class="va">False</span>].to_markdown())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_no_duplicates <span class="op">=</span> df.loc[<span class="op">~</span>df[<span class="st">"sent_id"</span>].<span class="bu">str</span>.startswith(<span class="st">"s"</span>), :] </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df_no_duplicates.groupby(<span class="st">"sentence"</span>).size().value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We still need to deal with the 8 elements that have a duplicate. We would like to use the <code>drop_duplicates</code> function, but to do so, we need to make sure that the label of the two duplicates are the same. Let’s check if some sentence are the same with a concensus on the label:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_concensus <span class="op">=</span> df_no_duplicates.groupby(<span class="st">"sentence"</span>)[<span class="st">"label_text"</span>].agg(concensus <span class="op">=</span> <span class="kw">lambda</span> X : <span class="bu">len</span>(<span class="bu">set</span>(X)) <span class="op">==</span> <span class="dv">1</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_concensus[df_concensus[<span class="st">"concensus"</span>] <span class="op">==</span> <span class="va">False</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -523,23 +530,23 @@ Figure&nbsp;3: Sentence length
 </tbody>
 </table>
 <p>One sentence does not reach a concensus, We are going to remove it by hand and then use the <code>drop_duplicates</code> function:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_no_duplicates <span class="op">=</span> df_no_duplicates.loc[</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    df_no_duplicates[<span class="st">"sentence"</span>] <span class="op">!=</span> <span class="st">"We need to get rid of fossil fuel subsidies now."</span>,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    :</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>df_no_duplicates <span class="op">=</span> df_no_duplicates.drop_duplicates(<span class="st">"sentence"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_no_duplicates <span class="op">=</span> df_no_duplicates.loc[</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    df_no_duplicates[<span class="st">"sentence"</span>] <span class="op">!=</span> <span class="st">"We need to get rid of fossil fuel subsidies now."</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    :</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>df_no_duplicates <span class="op">=</span> df_no_duplicates.drop_duplicates(<span class="st">"sentence"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>As a final check, we can use the Levenshtein distance to make sure that there are no lasting duplicates:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Levenshtein <span class="im">import</span> distance <span class="im">as</span> lev_distance</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>threshold <span class="op">=</span> <span class="dv">10</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(df_no_duplicates)):</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(i <span class="op">+</span> <span class="dv">1</span>, <span class="bu">len</span>(df_no_duplicates)):</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        s1 <span class="op">=</span> df_no_duplicates.iloc[i][<span class="st">"sentence"</span>]</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>        s2 <span class="op">=</span> df_no_duplicates.iloc[j][<span class="st">"sentence"</span>]</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        d <span class="op">=</span> lev_distance(s1, s2)</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> d <span class="op">&lt;</span> threshold:</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>d<span class="sc">}</span><span class="ss"> : </span><span class="sc">{</span>s1<span class="sc">}</span><span class="ss"> || </span><span class="sc">{</span>s2<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Levenshtein <span class="im">import</span> distance <span class="im">as</span> lev_distance</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>threshold <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(df_no_duplicates)):</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(i <span class="op">+</span> <span class="dv">1</span>, <span class="bu">len</span>(df_no_duplicates)):</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        s1 <span class="op">=</span> df_no_duplicates.iloc[i][<span class="st">"sentence"</span>]</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        s2 <span class="op">=</span> df_no_duplicates.iloc[j][<span class="st">"sentence"</span>]</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        d <span class="op">=</span> lev_distance(s1, s2)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> d <span class="op">&lt;</span> threshold:</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>d<span class="sc">}</span><span class="ss"> : </span><span class="sc">{</span>s1<span class="sc">}</span><span class="ss"> || </span><span class="sc">{</span>s2<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>With this loop, we have found 6 new sentences with duplicates:</p>
 <ul>
 <li>Global warming isn’t happening. || Global warming isn’t happening.</li>
@@ -550,50 +557,53 @@ Figure&nbsp;3: Sentence length
 <li>Climate change will continue to affect all types of weather phenomena and subsequently impact increasingly urbanised areas. || Climate change will continue to affect all types of weather phenomena and subsequently impact increasingly urbanized areas.</li>
 </ul>
 <p>From there, one can choose to remove them or not. For this tutorial we will remove one of them if the two have the same label and remove both if they don’t.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>last_duplicates <span class="op">=</span> [</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Global warming isn’t happening."</span>,<span class="st">"Global warming isn't happening."</span>),</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"There is no solid evidence of global warming."</span>,<span class="st">"There is not solid evidence of global warming."</span>),</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Balance of evidence suggests a discernible human influence on global climate."</span>,<span class="st">"The balance of evidence suggests a discernible human influence on global climate."</span>),</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"The alleged “ consensus ” behind the dangers of anthropogenic global warming is not nearly as settled among climate scientists as people imagine."</span>,<span class="st">"The alleged â consensus â behind the dangers of anthropogenic global warming is not nearly as settled among climate scientists as people imagine."</span>),</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Rising global temperatures during the 19th and 20th centuries may be linked to greater plant photosynthesis."</span>,<span class="st">"Rising global temperatures during the 19th and 20th centuries could be linked to greater plant photosynthesis."</span>),</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Climate change will continue to affect all types of weather phenomena and subsequently impact increasingly urbanised areas."</span>,<span class="st">"Climate change will continue to affect all types of weather phenomena and subsequently impact increasingly urbanized areas."</span>),</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (s1, s2) <span class="kw">in</span> last_duplicates:</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    lab_s1 <span class="op">=</span> df_no_duplicates.loc[df_no_duplicates[<span class="st">"sentence"</span>] <span class="op">==</span> s1, <span class="st">"label_text"</span>]</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    lab_s2 <span class="op">=</span> df_no_duplicates.loc[df_no_duplicates[<span class="st">"sentence"</span>] <span class="op">==</span> s2, <span class="st">"label_text"</span>]</span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> lab_s1.item() <span class="op">==</span> lab_s2.item() : </span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>        df_no_duplicates.drop(index <span class="op">=</span> lab_s2.index)</span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>: </span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>        df_no_duplicates.drop(index <span class="op">=</span> [<span class="op">*</span>lab_s1.index, <span class="op">*</span>lab_s2.index])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>last_duplicates <span class="op">=</span> [</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Global warming isn’t happening."</span>,<span class="st">"Global warming isn't happening."</span>),</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"There is no solid evidence of global warming."</span>,<span class="st">"There is not solid evidence of global warming."</span>),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Balance of evidence suggests a discernible human influence on global climate."</span>,<span class="st">"The balance of evidence suggests a discernible human influence on global climate."</span>),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"The alleged “ consensus ” behind the dangers of anthropogenic global warming is not nearly as settled among climate scientists as people imagine."</span>,<span class="st">"The alleged â consensus â behind the dangers of anthropogenic global warming is not nearly as settled among climate scientists as people imagine."</span>),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Rising global temperatures during the 19th and 20th centuries may be linked to greater plant photosynthesis."</span>,<span class="st">"Rising global temperatures during the 19th and 20th centuries could be linked to greater plant photosynthesis."</span>),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Climate change will continue to affect all types of weather phenomena and subsequently impact increasingly urbanised areas."</span>,<span class="st">"Climate change will continue to affect all types of weather phenomena and subsequently impact increasingly urbanized areas."</span>),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (s1, s2) <span class="kw">in</span> last_duplicates:</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    lab_s1 <span class="op">=</span> df_no_duplicates.loc[df_no_duplicates[<span class="st">"sentence"</span>] <span class="op">==</span> s1, <span class="st">"label_text"</span>]</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    lab_s2 <span class="op">=</span> df_no_duplicates.loc[df_no_duplicates[<span class="st">"sentence"</span>] <span class="op">==</span> s2, <span class="st">"label_text"</span>]</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> lab_s1.item() <span class="op">==</span> lab_s2.item() : </span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>        df_no_duplicates.drop(index <span class="op">=</span> lab_s2.index)</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>: </span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>        df_no_duplicates.drop(index <span class="op">=</span> [<span class="op">*</span>lab_s1.index, <span class="op">*</span>lab_s2.index])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="create-splits" class="level3">
 <h3 class="anchored" data-anchor-id="create-splits">Create splits</h3>
-<p>The final step is to create a train set, a train-eval set, test set and final-eval set (also called splits).</p>
+<p>The final step is to create a train set, a train-eval set, dev set and final-eval set (also called splits).</p>
 <ul>
-<li>the train set is the set of sentences the model will be training and actually trained on.</li>
-<li>the train-eval set is the set of sentences the model is evluated on between epochs. These sentences are “seen” by the model so using this set for final evaluation will produce boosted results.</li>
-<li>the test set is the set of sentences that are used to evaluate a model and choose Hyperparameters. They are not seen by the model but they are part of the optimisation problem.</li>
-<li>the final-eval set is the set of sentences that are used to produce realistic performance evaluation. this set of sentences is not seen by the model during training and prevent from biasing the hyperparameter optimisation.</li>
+<li>the <strong>train set</strong> is the set of sentences is used for training, weights are updated after comparing the predictions with the gold standard labels.</li>
+<li>the <strong>train-eval</strong> is the set of sentences is used for training, but weights are <strong>not</strong> updated after comparing the predictions with the gold standard labels. Instead they evaluate the model’s capabilites to generalise to unseen content. These sentences are said to be “seen” by the model; using this set for final evaluation will produce boosted results.</li>
+<li>the <strong>dev set</strong> is the set of sentences that are used to evaluate a model and choose Hyperparameters. They are not seen by the model but they are part of the optimisation process.</li>
+<li>the <strong>final-eval</strong> set is the set of sentences that are used to produce realistic performance evaluation. This set of sentences is not seen by the model during training and prevent from biasing the hyperparameter optimisation due to cherry picking.</li>
 </ul>
-<p>In general, we allocate 70% of the data to the train set, then 10% to train eval, test set and final eval set.Depending on the size of your dataset, you might want to tweak this distribution. Ultimately, you want enough data for training and evaluation for scores to be significative.</p>
-<p><strong>Stratification of the splits</strong> <!-- Move to good practices ??? --> You dataset may contain additional variation through years, or sources. To make sure that these variation do not bias your model, you may want to stratify your splits according to the said dimensions. If you have an unbalanced dataset, you can also choose to stratify your sets in order to create balanced splits.</p>
-<p>In our case, we don’t have additional metadata to stratify our splits, and classes but the classes are not this unbalanced that we have to stratify the splits. At least given the amount of data that we have to stratify by the label column. XXXXX</p>
-<p>Here is a code snippet to do it:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>stratification_column <span class="op">=</span> <span class="st">"year"</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>samples_per_stratum <span class="op">=</span> <span class="dv">500</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>df_stratified <span class="op">=</span> (</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    .groupby(stratification_column, as_index <span class="op">=</span> <span class="va">True</span>)</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(<span class="kw">lambda</span> x : x.sample(n <span class="op">=</span> samples_per_stratum))</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># .drop(["level_0", "level_1"], axis = 1) # Some additional columns will appear, you may want to drop them</span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In general, we allocate 70% of the data to the train set, then 10% to train eval, dev set and final eval set.Depending on the size of your dataset, you might want to tweak this distribution. Ultimately, you want enough data for training and evaluation for scores to be significative.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>CODE FOR CREATING A COLUMN SPLIT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Stratification of the splits</strong> <!-- Move to good practices ??? --></p>
+<p><em>The process of stratification consists of creating subgroups as defined by meta data (years for instance) and selecting a same number of texts per subgroup. This process intends to produce a dataset with uniform distribution across the selected metadata.</em></p>
+<p>You dataset may contain additional variations through years, or sources. To make sure that these variations do not bias your model, you may want to stratify your splits according to said dimensions. If your dataset contains underrepresented labels, you can also choose to stratify your sets using the label column in order to create balanced splits which will contain as many texts per label.</p>
+<p>In our case, we don’t have additional metadata to stratify our splits with, also, the label distribution is not too unbalanced that we have to stratify the splits. We will not proceed to any stratification.</p>
+<p>If you were to do stratify your dataset, here is a code snippet to do it:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>stratification_column <span class="op">=</span> [<span class="st">"year"</span>]</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>sub_groups <span class="op">=</span> df.groupby(stratification_column, as_index <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>samples_per_stratum <span class="op">=</span> <span class="bu">min</span>(sub_groups.size())</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>df_stratified <span class="op">=</span> (</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    sub_groups</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(<span class="kw">lambda</span> x : x.sample(n <span class="op">=</span> samples_per_stratum))</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># .drop(["level_0", "level_1"], axis = 1) # Some additional columns will appear, you may want to drop them</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
-<section id="choose-and-load-a-models" class="level2">
-<h2 class="anchored" data-anchor-id="choose-and-load-a-models">Choose and load a models</h2>
-<p>In this tutorial we use the Transformers package, maintained by <a href="https://huggingface.co/">HuggingFace</a>. HuggingFace is a company specialised in NLP and machine learning. They maintain many SOTA libraries such as Transformers, Datasets or Sentence Transormers. On top of maintaining the libraries, they publish posts about the latest tech, tutorials on their libraries, host a forum for debugging but also propose inference and training solutions if you don’t have the hardware necessary to do them on your own laptop.</p>
+<section id="choose-and-load-a-model" class="level2">
+<h2 class="anchored" data-anchor-id="choose-and-load-a-model">Choose and load a model</h2>
+<p>In this tutorial we use the Transformers package, maintained by <a href="https://huggingface.co/">HuggingFace</a>. HuggingFace is a company (for profit ?) specialised in NLP and machine learning. They maintain many SOTA libraries such as <a href="XXX">Transformers</a>, <a href="XXX">Datasets</a> or <a href="XXX">Sentence Transormers</a>. On top of maintaining the libraries, they publish posts about the latest tech, tutorials on their libraries, host a forum for debugging but also propose inference and training solutions if you don’t have access the required hardware.</p>
 <p>More specifically, they propose a range of open source models and datasets downlable through their API. In the context of this tutorial, we will start working with the famous BERT models named: <a href="https://huggingface.co/google-bert/bert-base-uncased">google-bert/bert-base-uncased</a></p>
 <div class="callout callout-style-default callout-note callout-titled" title="How to choose a model">
 <div class="callout-header d-flex align-content-center">
@@ -605,34 +615,34 @@ How to choose a model
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Models and their performance is highly sensible to the task and context of usage. When implementing an NLP task you might want to try several models to compare their performance. When choosing a model you want to take into account the following parametes:</p>
+<p>Models and their performance is highly sensitive to the task and context of usage. When implementing an NLP task you might want to try several models to compare their performance. When choosing a model you want to take into account the following parameters:</p>
 <ul>
-<li>What task was the model trained for? You can see the list of tasks when <a href="https://huggingface.co/models">browsing HuggingFace’s models</a>. In the context of this tutorial, we want to perform a Text Classification task.</li>
-<li>What language was the model trained on? This one is trivial. However, depending on your corpus, you might want to find models that are multilingual. Performance of multilingual models can be below monolingual models; consider trying different models. You can also try and translate your corpus into one language and use a monolingual model.</li>
-<li>What documents was the model trained on? Evaluated on? Models performance can vary a lot when used on a certain domain or another. Make sure to use models that have been XXX BENCSSMARK</li>
-<li>Last but not least: How big is the model? You won’t get away with it, your laptop has limited computation capabilities, large models won’t run on a mere laptop. Know your hardware and don’t be greedy</li>
+<li>What task was the model trained for? You can see the list of tasks when <a href="https://huggingface.co/models">browsing HuggingFace’s models</a>. In the context of this tutorial, we want to perform a <strong>Text Classification</strong> task.</li>
+<li>What language was the model trained on? This one is trivial. However, depending on your corpus, you might want to find models that are multilingual. Performance of multilingual models can be below monolingual models; consider trying different models (is it still true ?? @ Léo). You can also try and translate your corpus into one language and use a monolingual model.</li>
+<li>What documents was the model trained on? Evaluated on? Models performance can vary a lot when used on a certain domain or another. Make sure to use models that have been XXX BENCSSMARK @ Etienne @ Paul</li>
+<li>Last but not least: How big is the model? You won’t get away with it, your laptop has limited computation capabilities, large models won’t run on any laptip. Know your hardware and check what model you can run <a href="XXX">using this method</a>. <!-- TODO find a method lols --></li>
 </ul>
 </div>
 </div>
 <p>To load the model we just need to use one of the AutoModel instance. Auto Classes are ready-to-use classes that will set up the right architecture depending on your task. In our case we are going to use the <a href="https://huggingface.co/docs/transformers/en/model_doc/auto#transformers.AutoModelForSequenceClassification"><code>AutoModelForSequenceClassification</code></a>. To load the model we use the following command:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoModelForSequenceClassification</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> <span class="bu">list</span>(df[<span class="st">"label_text"</span>].unique())</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>num_labels <span class="op">=</span> <span class="bu">len</span>(labels)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>id2label <span class="op">=</span> {<span class="bu">id</span>:label <span class="cf">for</span> <span class="bu">id</span>, label <span class="kw">in</span> <span class="bu">enumerate</span>(labels)}</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>label2id <span class="op">=</span> {label:<span class="bu">id</span>  <span class="cf">for</span> <span class="bu">id</span>, label <span class="kw">in</span> <span class="bu">enumerate</span>(labels)}</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>MODEL_NAME <span class="op">=</span> <span class="st">"google-bert/bert-base-uncased"</span></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> AutoModelForSequenceClassification.from_pretrained(</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    MODEL_NAME, </span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    num_labels<span class="op">=</span>num_labels,</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    id2label<span class="op">=</span>id2label,</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    label2id<span class="op">=</span>label2id, </span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    device<span class="op">=</span><span class="st">"cpu"</span>                                          </span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoModelForSequenceClassification</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> <span class="bu">list</span>(df[<span class="st">"label_text"</span>].unique())</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>num_labels <span class="op">=</span> <span class="bu">len</span>(labels)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>id2label <span class="op">=</span> {<span class="bu">id</span>:label <span class="cf">for</span> <span class="bu">id</span>, label <span class="kw">in</span> <span class="bu">enumerate</span>(labels)}</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>label2id <span class="op">=</span> {label:<span class="bu">id</span>  <span class="cf">for</span> <span class="bu">id</span>, label <span class="kw">in</span> <span class="bu">enumerate</span>(labels)}</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>MODEL_NAME <span class="op">=</span> <span class="st">"google-bert/bert-base-uncased"</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> AutoModelForSequenceClassification.from_pretrained(</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    MODEL_NAME, </span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    num_labels<span class="op">=</span>num_labels,</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    id2label<span class="op">=</span>id2label,</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    label2id<span class="op">=</span>label2id, </span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    device<span class="op">=</span><span class="st">"cpu"</span>                                          </span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Nota: for some models you might need to set <code>trust_remote_code</code> to <code>True</code>. Make sure you trust the model you are downloading.</em></p>
 <p>We can easily observe the general architecture of the model by typing:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="callout callout-style-default callout-note callout-titled" title="Model description">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -643,72 +653,72 @@ Model description
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<div class="sourceCode" id="cb20"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>BertForSequenceClassification(</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  (bert): BertModel(</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    &gt;&gt;&gt; This is the first step of the encoding process, use ready made embeddings </span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    that will be modified with attention. We can find useful information: </span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    - 30522 is the vocab size, there are 30522 entities for which there is a ready </span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    made embedding.</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    - 768 is the dimension of the output embeddings</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    (embeddings): BertEmbeddings(</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>      (word_embeddings): Embedding(30522, 768, padding_idx=0)</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>      (position_embeddings): Embedding(512, 768)</span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>      (token_type_embeddings): Embedding(2, 768)</span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>      (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)</span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>      (dropout): Dropout(p=0.1, inplace=False)</span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    &gt;&gt;&gt; This is where the attention takes place. You can see that the encoder is a</span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>    stack of 12 BERTlayers, themselves containing a self attention module. We find </span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    again the dimension of the output embeddings: 768</span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>    (encoder): BertEncoder(</span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>      (layer): ModuleList(</span>
-<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>        (0-11): 12 x BertLayer(</span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>          (attention): BertAttention(</span>
-<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>            (self): BertSdpaSelfAttention(</span>
-<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>              (query): Linear(in_features=768, out_features=768, bias=True)</span>
-<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>              (key): Linear(in_features=768, out_features=768, bias=True)</span>
-<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>              (value): Linear(in_features=768, out_features=768, bias=True)</span>
-<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>              (dropout): Dropout(p=0.1, inplace=False)</span>
-<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>            )</span>
-<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>            (output): BertSelfOutput(</span>
-<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>              (dense): Linear(in_features=768, out_features=768, bias=True)</span>
-<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>              (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)</span>
-<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>              (dropout): Dropout(p=0.1, inplace=False)</span>
-<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>            )</span>
-<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a>          )</span>
-<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a>          (intermediate): BertIntermediate(</span>
-<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a>            (dense): Linear(in_features=768, out_features=3072, bias=True)</span>
-<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a>            (intermediate_act_fn): GELUActivation()</span>
-<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>          )</span>
-<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a>          (output): BertOutput(</span>
-<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a>            (dense): Linear(in_features=3072, out_features=768, bias=True)</span>
-<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a>            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)</span>
-<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a>            (dropout): Dropout(p=0.1, inplace=False)</span>
-<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a>          )</span>
-<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a>    &gt;&gt;&gt; This pooler is the component that will take the embedding of each token in </span>
-<span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a>    the sequence and produce a unique embedding, supposedly best representing the sequene.</span>
-<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a>    (pooler): BertPooler(</span>
-<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a>      (dense): Linear(in_features=768, out_features=768, bias=True)</span>
-<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a>      (activation): Tanh()</span>
-<span id="cb20-57"><a href="#cb20-57" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb20-58"><a href="#cb20-58" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb20-59"><a href="#cb20-59" aria-hidden="true" tabindex="-1"></a>  (dropout): Dropout(p=0.1, inplace=False)</span>
-<span id="cb20-60"><a href="#cb20-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-61"><a href="#cb20-61" aria-hidden="true" tabindex="-1"></a>  &gt;&gt;&gt; This last component is the classifier layer, a neural network composed of 768 </span>
-<span id="cb20-62"><a href="#cb20-62" aria-hidden="true" tabindex="-1"></a>  + 3 nodes. The out_features=3 corresponds to the number of label we are using for </span>
-<span id="cb20-63"><a href="#cb20-63" aria-hidden="true" tabindex="-1"></a>  annotation! </span>
-<span id="cb20-64"><a href="#cb20-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-65"><a href="#cb20-65" aria-hidden="true" tabindex="-1"></a>  (classifier): Linear(in_features=768, out_features=3, bias=True)</span>
-<span id="cb20-66"><a href="#cb20-66" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>BertForSequenceClassification(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  (bert): BertModel(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    &gt;&gt;&gt; This is the first step of the encoding process, use ready made embeddings </span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    that will be modified with attention. We can find useful information: </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    - 30522 is the vocab size, there are 30522 entities for which there is a ready </span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    made embedding.</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    - 768 is the dimension of the output embeddings</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    (embeddings): BertEmbeddings(</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>      (word_embeddings): Embedding(30522, 768, padding_idx=0)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>      (position_embeddings): Embedding(512, 768)</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>      (token_type_embeddings): Embedding(2, 768)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>      (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>      (dropout): Dropout(p=0.1, inplace=False)</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    &gt;&gt;&gt; This is where the attention takes place. You can see that the encoder is a</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    stack of 12 BERTlayers, themselves containing a self attention module. We find </span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    again the dimension of the output embeddings: 768</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    (encoder): BertEncoder(</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>      (layer): ModuleList(</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>        (0-11): 12 x BertLayer(</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>          (attention): BertAttention(</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>            (self): BertSdpaSelfAttention(</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>              (query): Linear(in_features=768, out_features=768, bias=True)</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>              (key): Linear(in_features=768, out_features=768, bias=True)</span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>              (value): Linear(in_features=768, out_features=768, bias=True)</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>              (dropout): Dropout(p=0.1, inplace=False)</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>            (output): BertSelfOutput(</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>              (dense): Linear(in_features=768, out_features=768, bias=True)</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>              (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>              (dropout): Dropout(p=0.1, inplace=False)</span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>          )</span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>          (intermediate): BertIntermediate(</span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>            (dense): Linear(in_features=768, out_features=3072, bias=True)</span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>            (intermediate_act_fn): GELUActivation()</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>          )</span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>          (output): BertOutput(</span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>            (dense): Linear(in_features=3072, out_features=768, bias=True)</span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)</span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>            (dropout): Dropout(p=0.1, inplace=False)</span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>          )</span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb22-49"><a href="#cb22-49" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-50"><a href="#cb22-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-51"><a href="#cb22-51" aria-hidden="true" tabindex="-1"></a>    &gt;&gt;&gt; This pooler is the component that will take the embedding of each token in </span>
+<span id="cb22-52"><a href="#cb22-52" aria-hidden="true" tabindex="-1"></a>    the sequence and produce a unique embedding, supposedly best representing the sequene.</span>
+<span id="cb22-53"><a href="#cb22-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-54"><a href="#cb22-54" aria-hidden="true" tabindex="-1"></a>    (pooler): BertPooler(</span>
+<span id="cb22-55"><a href="#cb22-55" aria-hidden="true" tabindex="-1"></a>      (dense): Linear(in_features=768, out_features=768, bias=True)</span>
+<span id="cb22-56"><a href="#cb22-56" aria-hidden="true" tabindex="-1"></a>      (activation): Tanh()</span>
+<span id="cb22-57"><a href="#cb22-57" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-58"><a href="#cb22-58" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb22-59"><a href="#cb22-59" aria-hidden="true" tabindex="-1"></a>  (dropout): Dropout(p=0.1, inplace=False)</span>
+<span id="cb22-60"><a href="#cb22-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-61"><a href="#cb22-61" aria-hidden="true" tabindex="-1"></a>  &gt;&gt;&gt; This last component is the classifier layer, a neural network composed of 768 </span>
+<span id="cb22-62"><a href="#cb22-62" aria-hidden="true" tabindex="-1"></a>  + 3 nodes. The out_features=3 corresponds to the number of labels we are using for </span>
+<span id="cb22-63"><a href="#cb22-63" aria-hidden="true" tabindex="-1"></a>  annotation! </span>
+<span id="cb22-64"><a href="#cb22-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-65"><a href="#cb22-65" aria-hidden="true" tabindex="-1"></a>  (classifier): Linear(in_features=768, out_features=3, bias=True)</span>
+<span id="cb22-66"><a href="#cb22-66" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Tips and tricks regarding the model">
@@ -721,45 +731,45 @@ Tips and tricks regarding the model
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The <code>AutoConfig</code> class is very convenient for retrieveing information that may difficult to get otherwise. We load it like this:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoConfig</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(AutoConfig.from_pretrained(MODEL_NAME))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb22"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>BertConfig {</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  "architectures": [</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    "BertForMaskedLM"</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  ],</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  "attention_probs_dropout_prob": 0.1,</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  "classifier_dropout": null,</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  "gradient_checkpointing": false,</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  "hidden_act": "gelu",</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  "hidden_dropout_prob": 0.1,</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  &gt;&gt;&gt; Embedding dimension </span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  "hidden_size": 768,</span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  "initializer_range": 0.02,</span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  "intermediate_size": 3072,</span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  "layer_norm_eps": 1e-12,</span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>  &gt;&gt;&gt; Maximum context window</span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>  "max_position_embeddings": 512,</span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>  "model_type": "bert",</span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>  "num_attention_heads": 12,</span>
-<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>  "num_hidden_layers": 12,</span>
-<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>  "pad_token_id": 0,</span>
-<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>  "position_embedding_type": "absolute",</span>
-<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>  "transformers_version": "4.52.4",</span>
-<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>  "type_vocab_size": 2,</span>
-<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>  "use_cache": true,</span>
-<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>  &gt;&gt;&gt; Vocab size identified earlier</span>
-<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>  "vocab_size": 30522</span>
-<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>AutoConfig</code> class is very convenient for retrieveing information that may be difficult to access otherwise. We load it like this:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoConfig</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(AutoConfig.from_pretrained(MODEL_NAME))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>BertConfig {</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  "architectures": [</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    "BertForMaskedLM"</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  ],</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  "attention_probs_dropout_prob": 0.1,</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  "classifier_dropout": null,</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  "gradient_checkpointing": false,</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  "hidden_act": "gelu",</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  "hidden_dropout_prob": 0.1,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  &gt;&gt;&gt; Embedding dimension </span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  "hidden_size": 768,</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  "initializer_range": 0.02,</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  "intermediate_size": 3072,</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  "layer_norm_eps": 1e-12,</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  &gt;&gt;&gt; Maximum context window</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>  "max_position_embeddings": 512,</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>  "model_type": "bert",</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>  "num_attention_heads": 12,</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>  "num_hidden_layers": 12,</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>  "pad_token_id": 0,</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>  "position_embedding_type": "absolute",</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>  "transformers_version": "4.52.4",</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>  "type_vocab_size": 2,</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>  "use_cache": true,</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>  &gt;&gt;&gt; Vocab size identified earlier</span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>  "vocab_size": 30522</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>If you ever wanted to work with another model that has already been fine-tuned and wanted to only train the classification layer, there are two solutions:</p>
 <ul>
-<li>You either generate the embeddings, save them, and train a scikit-learn classifier on top of it.</li>
-<li>You use <a href="https://huggingface.co/docs/setfit/index">Setfit</a></li>
+<li>Generate the embeddings with <a href="XXX">Sentence Embeddings</a>, save them, and train a <a href="XXX">scikit-learn</a> classifier on top of it.</li>
+<li>Use <a href="https://huggingface.co/docs/setfit/index">Setfit</a></li>
 </ul>
 </div>
 </div>
@@ -784,114 +794,123 @@ What are tokens already?
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>XXXX</p>
+<p>Tokens are parts of words, whole words, or even punctuations and emojis. They are created using a <a href="">NAME OF THE ALGORITHM BYTE SOMETHING???</a>. They are used to subdivise the text and assign ready made embeddings that will be modified by the attention mechanism.</p>
+<p><a href="Jurafsky chapter on tokens">Read more</a></p>
 </div>
 </div>
 <p>The tokenizer needs to be loaded just as we did with the model:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoTokenizer</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(MODEL_NAME)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoTokenizer</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(MODEL_NAME)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Then choosing the parameters for the tokenizer and writing a preprocessing function:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datasets <span class="im">import</span> DatasetDict, Dataset</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dataset from the splits we created before</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>grouped_ds_split <span class="op">=</span> df_split.groupby(<span class="st">"split"</span>)</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>dsd <span class="op">=</span> DatasetDict({</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    split : Dataset.from_pandas(grouped_ds_split.get_group(split))</span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> split <span class="kw">in</span> [<span class="st">"train"</span>, <span class="st">"train_eval"</span>, <span class="st">"test"</span>, <span class="st">"final_test"</span>]</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>tokenizer_parameters <span class="op">=</span> {</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"truncation"</span>:<span class="va">True</span>, </span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"padding"</span>:<span class="st">"max_length"</span>,</span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_length"</span>:<span class="dv">400</span>,</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"return_tensors"</span>:<span class="st">"pt"</span></span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> preprocess_dataset(row: <span class="bu">dict</span>):</span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    tokenized_entry <span class="op">=</span> tokenizer(row[<span class="st">"sentence-preprocessed"</span>], <span class="op">**</span>tokenizer_parameters)</span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>        <span class="op">**</span>row.copy(),</span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"labels"</span>: <span class="bu">int</span>(label2id[row[<span class="st">"label_text"</span>]]),</span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"attention_mask"</span> : tokenized_entry[<span class="st">"attention_mask"</span>].reshape(<span class="op">-</span><span class="dv">1</span>).to(device <span class="op">=</span> <span class="st">"mps"</span>),</span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"input_ids"</span> : tokenized_entry[<span class="st">"input_ids"</span>].reshape(<span class="op">-</span><span class="dv">1</span>).to(device<span class="op">=</span><span class="st">"mps"</span>)</span>
-<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>dsd <span class="op">=</span> dsd.<span class="bu">map</span>(preprocess_dataset, batch_size<span class="op">=</span><span class="dv">32</span>)</span>
-<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>dsd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datasets <span class="im">import</span> DatasetDict, Dataset</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dataset from the splits we created before</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>grouped_ds_split <span class="op">=</span> df_split.groupby(<span class="st">"split"</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>dsd <span class="op">=</span> DatasetDict({</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    split : Dataset.from_pandas(grouped_ds_split.get_group(split))</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> split <span class="kw">in</span> [<span class="st">"train"</span>, <span class="st">"train_eval"</span>, <span class="st">"test"</span>, <span class="st">"final_test"</span>]</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>tokenizer_parameters <span class="op">=</span> {</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"truncation"</span>:<span class="va">True</span>, </span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"padding"</span>:<span class="st">"max_length"</span>,</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_length"</span>:<span class="dv">400</span>,</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"return_tensors"</span>:<span class="st">"pt"</span></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> preprocess_dataset(row: <span class="bu">dict</span>):</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>    tokenized_entry <span class="op">=</span> tokenizer(row[<span class="st">"sentence-preprocessed"</span>], <span class="op">**</span>tokenizer_parameters)</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>        <span class="op">**</span>row.copy(),</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"labels"</span>: <span class="bu">int</span>(label2id[row[<span class="st">"label_text"</span>]]),</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>        <span class="op">**</span>tokenized_entry</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>dsd <span class="op">=</span> dsd.<span class="bu">map</span>(preprocess_dataset, batch_size<span class="op">=</span><span class="dv">32</span>)</span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>dsd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The data is ready to be used for Training!</p>
 </section>
 <section id="understand-the-ins-and-outs-of-the-pipeline" class="level3">
 <h3 class="anchored" data-anchor-id="understand-the-ins-and-outs-of-the-pipeline">Understand the ins and outs of the pipeline</h3>
 <!-- Move to experts? -->
-<div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>entry <span class="op">=</span> [</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Hello World"</span>,</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"This is a second query"</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>tokenizer_parameters <span class="op">=</span> {</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"truncation"</span>:<span class="va">True</span>, </span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"padding"</span>:<span class="st">"max_length"</span>,</span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_length"</span>:<span class="dv">400</span>,</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"return_tensors"</span>:<span class="st">"pt"</span></span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>model_input <span class="op">=</span> tokenizer(entry,<span class="op">**</span>tokenizer_parameters)</span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>base_model_output <span class="op">=</span> classif_model.base_model(<span class="op">**</span>model_input)</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>classif_model_output <span class="op">=</span> classif_model(<span class="op">**</span>model_input)</span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'''</span></span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a><span class="ss"># model input keys: </span><span class="sc">{</span><span class="st">', '</span><span class="sc">.</span>join(model_input)<span class="sc">}</span></span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a><span class="ss">model input shape (pytorch tensor): </span><span class="sc">{</span>model_input[<span class="st">"input_ids"</span>]<span class="sc">.</span>shape<span class="sc">}</span></span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a><span class="ss">base model output keys: </span><span class="sc">{</span><span class="st">', '</span><span class="sc">.</span>join(base_model_output)<span class="sc">}</span></span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a><span class="ss">base model output last_hidden_state shape (pytorch tensor): </span><span class="sc">{</span>base_model_output<span class="sc">.</span>last_hidden_state<span class="sc">.</span>shape<span class="sc">}</span></span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a><span class="ss">classification model output key: </span><span class="sc">{</span><span class="st">', '</span><span class="sc">.</span>join(classif_model_output)<span class="sc">}</span></span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a><span class="ss">classification model output logits shape (pytorch tensor): </span><span class="sc">{</span>classif_model_output<span class="sc">.</span>logits<span class="sc">.</span>shape<span class="sc">}</span></span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a><span class="ss">'''</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Before training the model, we wanted to demonstrate each step of the classification:</p>
+<ul>
+<li>Tokenizing the texts</li>
+<li>Passing the tokens to the model</li>
+<li>Create embeddings</li>
+<li>Classify the embeddings</li>
+</ul>
+<div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>entry <span class="op">=</span> [</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Hello World"</span>,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"This is a second query"</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>tokenizer_parameters <span class="op">=</span> {</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"truncation"</span>:<span class="va">True</span>, </span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"padding"</span>:<span class="st">"max_length"</span>,</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_length"</span>:<span class="dv">400</span>,</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"return_tensors"</span>:<span class="st">"pt"</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>model_input <span class="op">=</span> tokenizer(entry,<span class="op">**</span>tokenizer_parameters)</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>base_model_output <span class="op">=</span> classif_model.base_model(<span class="op">**</span>model_input)</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>classif_model_output <span class="op">=</span> classif_model(<span class="op">**</span>model_input)</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'''</span></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a><span class="ss"># model input keys: </span><span class="sc">{</span><span class="st">', '</span><span class="sc">.</span>join(model_input)<span class="sc">}</span></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a><span class="ss">model input shape (pytorch tensor): </span><span class="sc">{</span>model_input[<span class="st">"input_ids"</span>]<span class="sc">.</span>shape<span class="sc">}</span></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a><span class="ss">base model output keys: </span><span class="sc">{</span><span class="st">', '</span><span class="sc">.</span>join(base_model_output)<span class="sc">}</span></span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a><span class="ss">base model output last_hidden_state shape (pytorch tensor): </span><span class="sc">{</span>base_model_output<span class="sc">.</span>last_hidden_state<span class="sc">.</span>shape<span class="sc">}</span></span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a><span class="ss">classification model output key: </span><span class="sc">{</span><span class="st">', '</span><span class="sc">.</span>join(classif_model_output)<span class="sc">}</span></span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a><span class="ss">classification model output logits shape (pytorch tensor): </span><span class="sc">{</span>classif_model_output<span class="sc">.</span>logits<span class="sc">.</span>shape<span class="sc">}</span></span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a><span class="ss">'''</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<!-- TODO Add a  picture to comment the output-->
+<!-- TODO Explain the idea of logits and activation function -->
 </section>
 <section id="sec-training-parameters" class="level3">
 <h3 class="anchored" data-anchor-id="sec-training-parameters">Setup Training parameters</h3>
-<p>The training parameters are store in the <code>TrainingArguments</code> object. We have selected the main parameters that you’ll want to look for during training but you can browse the <a href="https://huggingface.co/docs/transformers/v4.49.0/en/main_classes/trainer#transformers.TrainingArguments">117 parameters it can take</a>. You’ll find more information about tuning the hyperparameters at the <a href="#sec-hyperparameters-tuning" class="quarto-xref">Section&nbsp;4.1</a>.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> TrainingArguments, Trainer, DataCollatorWithPadding</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>training_arguments <span class="op">=</span> TrainingArguments(</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Hyperparameters</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    num_train_epochs <span class="op">=</span> <span class="dv">5</span>,</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    learning_rate <span class="op">=</span> <span class="fl">5e-5</span>,</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    weight_decay  <span class="op">=</span> <span class="fl">0.0</span>,</span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    warmup_ratio  <span class="op">=</span> <span class="fl">0.0</span>,</span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    optim <span class="op">=</span> <span class="st">"adamw_torch_fused"</span>,</span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Second order hyperparameters</span></span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    per_device_train_batch_size <span class="op">=</span> <span class="dv">4</span>,</span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    per_device_eval_batch_size <span class="op">=</span> <span class="dv">4</span>,</span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    gradient_accumulation_steps <span class="op">=</span> <span class="dv">8</span>,</span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Metrics</span></span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># metric_for_best_model="f1_macro",</span></span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Pipe</span></span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>    output_dir <span class="op">=</span> <span class="st">"./models/training"</span>,</span>
-<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>    overwrite_output_dir<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>    eval_strategy <span class="op">=</span> <span class="st">"epoch"</span>,</span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>    logging_strategy <span class="op">=</span> <span class="st">"epoch"</span>,</span>
-<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>    save_strategy <span class="op">=</span> <span class="st">"epoch"</span>,</span>
-<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    load_best_model_at_end <span class="op">=</span> <span class="va">True</span>,</span>
-<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    save_total_limit <span class="op">=</span> <span class="dv">5</span> <span class="op">+</span> <span class="dv">1</span>,</span>
-<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>    disable_tqdm <span class="op">=</span> <span class="va">False</span>,</span>
-<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The training parameters are stored in the <code>TrainingArguments</code> object. We have selected the main parameters that you’ll want to look for during training but you can browse the <a href="https://huggingface.co/docs/transformers/v4.49.0/en/main_classes/trainer#transformers.TrainingArguments">117 parameters it can take</a>. You’ll find more information about tuning the hyperparameters at the <a href="#sec-hyperparameters-tuning" class="quarto-xref">Section&nbsp;4.1</a>.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> TrainingArguments, Trainer, DataCollatorWithPadding</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>training_arguments <span class="op">=</span> TrainingArguments(</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Hyperparameters</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    num_train_epochs <span class="op">=</span> <span class="dv">5</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    learning_rate <span class="op">=</span> <span class="fl">5e-5</span>,</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    weight_decay  <span class="op">=</span> <span class="fl">0.0</span>,</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    warmup_ratio  <span class="op">=</span> <span class="fl">0.0</span>,</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    optim <span class="op">=</span> <span class="st">"adamw_torch_fused"</span>,</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Second order hyperparameters</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    per_device_train_batch_size <span class="op">=</span> <span class="dv">4</span>,</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    per_device_eval_batch_size <span class="op">=</span> <span class="dv">4</span>,</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    gradient_accumulation_steps <span class="op">=</span> <span class="dv">8</span>,</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Metrics</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># metric_for_best_model="f1_macro", # </span><span class="al">TODO</span><span class="co"> implement F1 as metric</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Pipe</span></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>    output_dir <span class="op">=</span> <span class="st">"./models/training"</span>,</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>    overwrite_output_dir<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>    eval_strategy <span class="op">=</span> <span class="st">"epoch"</span>, <span class="co"># </span><span class="al">TODO</span><span class="co"> CHANGE THAT TO HAVE MORE dots</span></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>    logging_strategy <span class="op">=</span> <span class="st">"epoch"</span>,</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>    save_strategy <span class="op">=</span> <span class="st">"epoch"</span>,</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>    load_best_model_at_end <span class="op">=</span> <span class="va">True</span>,</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>    save_total_limit <span class="op">=</span> <span class="dv">5</span> <span class="op">+</span> <span class="dv">1</span>,</span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>    disable_tqdm <span class="op">=</span> <span class="va">False</span>,</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="launch-training" class="level3">
 <h3 class="anchored" data-anchor-id="launch-training">Launch training</h3>
 <p>Finally, we can start the training.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>trainer <span class="op">=</span> Trainer(</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> classif_model, </span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    args <span class="op">=</span> training_arguments,</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    train_dataset<span class="op">=</span>dsd[<span class="st">"train"</span>],</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    eval_dataset<span class="op">=</span>dsd[<span class="st">"train_eval"</span>],</span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>trainer.train()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>trainer <span class="op">=</span> Trainer(</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> classif_model, </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    args <span class="op">=</span> training_arguments,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    train_dataset<span class="op">=</span>dsd[<span class="st">"train"</span>],</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    eval_dataset<span class="op">=</span>dsd[<span class="st">"train_eval"</span>],</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>trainer.train()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <!-- TODO SETUP F1 macro as metric -->
 <!-- TODO add training table -->
-<p>As a result you will get get a list of folders (depending on the “save_strategy” you set), each containing the following documents:</p>
+<p>As a result you will get get a list of folders (depending on the <code>save_strategy</code> you set), each containing the following documents:</p>
 <ul>
 <li><code>config.json</code>: a dictionnary with the config, similar to <code>AutoConfig</code>.</li>
 <li><code>model.safetensors</code>: a file containing all the weights of the Model.</li>
@@ -900,41 +919,46 @@ What are tokens already?
 <li><code>training_args.bin</code>: a copy of the training arguments.</li>
 </ul>
 <p>The model can be loaded like before:</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>reload_model <span class="op">=</span> AutoModelForSequenceClassification.from_pretrained(</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"./models/training/checkpoint-4/"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>reload_model <span class="op">=</span> AutoModelForSequenceClassification.from_pretrained(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"./models/training/checkpoint-4/"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="predict-the-labels-for-the-full-dataset" class="level2">
 <h2 class="anchored" data-anchor-id="predict-the-labels-for-the-full-dataset">Predict the labels for the full dataset</h2>
-<p>To predict the labels, we just need to use the model’s <code>__call__</code> method and retrieve the predicted logit. From there, using the <code>np.argmax</code> function, we retrieve the predicted label and save the results to avoid re-running the inference.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>labels_true : <span class="bu">list</span>[<span class="bu">int</span>] <span class="op">=</span> []</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>labels_pred : <span class="bu">list</span>[<span class="bu">int</span>] <span class="op">=</span> []</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> batch <span class="kw">in</span> dsd[<span class="st">"test"</span>].batch(batch_size<span class="op">=</span><span class="dv">16</span>, drop_last_batch<span class="op">=</span><span class="va">False</span>):</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    model_input <span class="op">=</span> {</span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'input_ids'</span> : batch[<span class="st">'input_ids'</span>],</span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'attention_mask'</span> : batch[<span class="st">'attention_mask'</span>]</span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    logits : np.ndarray <span class="op">=</span> model(<span class="op">**</span>model_input).logits.detach().numpy()</span>
-<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    batch_of_true_label <span class="op">=</span> [np.argmax(row).item() <span class="cf">for</span> row <span class="kw">in</span> batch[<span class="st">"labels"</span>]]</span>
-<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>    labels_true.extend(batch_of_true_label)</span>
-<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    batch_of_pred_label <span class="op">=</span> [np.argmax(row).item() <span class="cf">for</span> row <span class="kw">in</span> logits]</span>
-<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>    labels_pred.extend(batch_of_pred_label)</span>
-<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>(</span>
-<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame({</span>
-<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"predict"</span> : labels_pred, </span>
-<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"gold_standard"</span>: labels_true</span>
-<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>    .to_csv(<span class="st">"./outputs/prediction"</span>, index <span class="op">=</span> <span class="va">False</span>)</span>
-<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To predict the labels, we just need to use the model’s <code>__call__</code> method and retrieve the predicted logits. From there, using the <code>np.argmax</code> function, we retrieve the predicted labels and save the results to avoid re-running the inference.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>text_id : <span class="bu">list</span>[<span class="bu">int</span>] <span class="op">=</span> []</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>labels_true : <span class="bu">list</span>[<span class="bu">int</span>] <span class="op">=</span> []</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>labels_pred : <span class="bu">list</span>[<span class="bu">int</span>] <span class="op">=</span> []</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> batch <span class="kw">in</span> dsd[<span class="st">"test"</span>].batch(batch_size<span class="op">=</span><span class="dv">16</span>, drop_last_batch<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    model_input <span class="op">=</span> {</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'input_ids'</span> : batch[<span class="st">'input_ids'</span>],</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">'attention_mask'</span> : batch[<span class="st">'attention_mask'</span>]</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    logits : np.ndarray <span class="op">=</span> model(<span class="op">**</span>model_input).logits.detach().numpy()</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    text_id.extend(batch[<span class="st">"ID"</span>]) <span class="co"># todo check if works</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    batch_of_true_label <span class="op">=</span> [np.argmax(row).item() <span class="cf">for</span> row <span class="kw">in</span> batch[<span class="st">"labels"</span>]]<span class="co"># ça marche ça ?</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>    labels_true.extend(batch_of_true_label)</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>    batch_of_pred_label <span class="op">=</span> [np.argmax(row).item() <span class="cf">for</span> row <span class="kw">in</span> logits]</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>    labels_pred.extend(batch_of_pred_label)</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame({</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"ID"</span>: text_id,</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"predict"</span> : labels_pred, </span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"gold_standard"</span>: labels_true</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>    .set_index(<span class="st">"ID"</span>)</span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>    .to_csv(<span class="st">"./outputs/prediction.csv"</span>)</span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="evaluate-performance" class="level2">
 <h2 class="anchored" data-anchor-id="evaluate-performance">Evaluate performance</h2>
-<p>To evaluate classification, we have many options. We list the main metrics use to evaluate the metrics performance :</p>
+<p>We have many options to evaluate classification performances. We list the main metrics use to evaluate the metrics performance :</p>
+<!-- FIXME the equations don't work  -->
 <div class="columns">
 <div class="column" style="width:70%;">
 <ul>
@@ -974,45 +998,45 @@ Figure&nbsp;4: precision and recall
 </div>
 </div>
 </div>
-<p>In general, we recommand using the macro F1 as it is the most representative of the model performance and works well with imbalanced datasets. Either way, you can use <a href="https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics"><code>scikit-learn</code></a> to compute all metrics. The <code>classification_report</code> summarises all the metrics presented above:</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> classification_report</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(classification_report(y_true <span class="op">=</span> labels_true, y_pred <span class="op">=</span> labels_pred))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb31"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>              precision    recall  f1-score   support</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>      agrees       0.70      0.75      0.72        75</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>   disagrees       0.56      0.49      0.52        45</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>     neutral       0.73      0.74      0.73        84</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    accuracy                           0.69       204</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>   macro avg       0.66      0.66      0.66       204</span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>weighted avg       0.68      0.69      0.68       204</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Here we can see that the model is sub optimal to say the least. The model</p>
+<p>In general, we recommand using the macro F1 as it is the most representative of the model performance and works well with unbalanced datasets. Either way, you can use <a href="https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics"><code>scikit-learn</code></a> to compute all metrics. The <code>classification_report</code> summarises all the metrics presented above:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> classification_report</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(classification_report(y_true <span class="op">=</span> labels_true, y_pred <span class="op">=</span> labels_pred))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>              precision    recall  f1-score   support</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>      agrees       0.70      0.75      0.72        75</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>   disagrees       0.56      0.49      0.52        45</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>     neutral       0.73      0.74      0.73        84</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    accuracy                           0.69       204</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>   macro avg       0.66      0.66      0.66       204</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>weighted avg       0.68      0.69      0.68       204</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Here we can see that the model performance for the labels “agrees” and “neutral” is correct, but would benefit from further hyperparameter tuning. On the other hand, the model does not manage to recognise the “disagrees” label. All in all, the current finetuning leads to mediocre results. We will tweak the hyperparameters to reach better results. The first step is reading the learning curve.</p>
 </section>
 <section id="read-the-learning-curve" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="read-the-learning-curve">Read the learning curve</h2>
-<p>Another key insight is the learning curve. We can retrieve it by using the logs in the <code>trainer_state.json</code>. Let’s retrieve it and plot it:</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px </span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"./models/training/trainer_state.json"</span>, <span class="st">"r"</span>) <span class="im">as</span> <span class="bu">file</span>:  <span class="co"># MODIFY !!!</span></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    training_state <span class="op">=</span> json.load(<span class="bu">file</span>)</span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>loss <span class="op">=</span> []</span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> log <span class="kw">in</span> training_state [<span class="st">"log_history"</span>]:</span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    step <span class="op">=</span> log[<span class="st">"step"</span>]</span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">"loss"</span> <span class="kw">in</span> log:</span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">+=</span> [{<span class="st">"step"</span>: step, <span class="st">"loss"</span>: log[<span class="st">"loss"</span>], <span class="st">"split"</span>: <span class="st">"train"</span>}]</span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> <span class="st">"eval_loss"</span> <span class="kw">in</span> log:</span>
-<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">+=</span> [{<span class="st">"step"</span>: step, <span class="st">"loss"</span>: log[<span class="st">"eval_loss"</span>], <span class="st">"split"</span>: <span class="st">"eval"</span>}]</span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>: </span>
-<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># thweird</span></span>
-<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(log)</span>
-<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>loss <span class="op">=</span> pd.DataFrame(loss)</span>
-<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>px.line(loss, x <span class="op">=</span> <span class="st">"step"</span>, y <span class="op">=</span> <span class="st">"loss"</span>, color <span class="op">=</span>  <span class="st">"split"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The learning curve provides the evolution of the model’s performance using the loss function<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> evaluated on the train set and the train-eval set. We can retrieve it by using the logs in the <code>trainer_state.json</code>; plot it:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px </span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"./models/training/trainer_state.json"</span>, <span class="st">"r"</span>) <span class="im">as</span> <span class="bu">file</span>:  <span class="co"># MODIFY !!!</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    training_state <span class="op">=</span> json.load(<span class="bu">file</span>)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>loss <span class="op">=</span> []</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> log <span class="kw">in</span> training_state [<span class="st">"log_history"</span>]:</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>    step <span class="op">=</span> log[<span class="st">"step"</span>]</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">"loss"</span> <span class="kw">in</span> log:</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">+=</span> [{<span class="st">"step"</span>: step, <span class="st">"loss"</span>: log[<span class="st">"loss"</span>], <span class="st">"split"</span>: <span class="st">"train"</span>}]</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> <span class="st">"eval_loss"</span> <span class="kw">in</span> log:</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">+=</span> [{<span class="st">"step"</span>: step, <span class="st">"loss"</span>: log[<span class="st">"eval_loss"</span>], <span class="st">"split"</span>: <span class="st">"eval"</span>}]</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>: </span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># thweird</span></span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(log)</span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>loss <span class="op">=</span> pd.DataFrame(loss)</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>px.line(loss, x <span class="op">=</span> <span class="st">"step"</span>, y <span class="op">=</span> <span class="st">"loss"</span>, color <span class="op">=</span>  <span class="st">"split"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="fig-learning-curve" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-learning-curve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1026,11 +1050,6 @@ Figure&nbsp;5: Learning curve
 <div class="columns page-columns page-full">
 <div class="column-body">
 <p>The learning curve follows the expected pattern. The loss curve for the train split decreases and reaches 0 over time whereas the loss curve on the train-eval split decreases until it reaches a minimum and then increases. We want the learning curve to look like that, and we want the minimum to be as low as possible.</p>
-<ul>
-<li>If the loss curves do not decrease or too little, this might be a sign that the learning rate was to low. Nothing’s been learned</li>
-<li>If the loss do not decrease, this might be a sign that the learning rate is too high. The model is un-learning.</li>
-<li>If the loss curve on the training split decreases but not the loss curve on the train-eval split, this means that the model cannot generalise well. In that case, consider increasing the weight decay.</li>
-</ul>
 </div>
 <div class="no-row-height column-margin column-container"><div class="">
 <div id="fig-01-01" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1044,6 +1063,93 @@ Figure&nbsp;6: Typical learning curve
 </figure>
 </div>
 </div></div></div>
+<p>Here are additional examples:</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>The perfect case scenario</strong></p>
+<ul>
+<li>Both curves went down during training: the model has learned</li>
+<li>Both curves have the same loss values: no overfitting</li>
+<li>The curves are flat at the end: nothing more to be learned, apparently</li>
+</ul>
+<p>Now you only have to look at the evaluation metrics to see if you are satisfied with the prediction quality.</p>
+</div><div class="column" style="width:50%;">
+<p><img src="./assets/bertrain-good.png" class="img-fluid"></p>
+</div>
+</div>
+<hr>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>The model has <strong>overfitted</strong></p>
+<ul>
+<li>Both curves went down during training: the model has learned</li>
+<li>But the training curve is much lower than the evaluation curve</li>
+</ul>
+<p>What to do:</p>
+<ul>
+<li>choose a lower learning rate, for slower weight updates</li>
+<li>use larger batches<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>, in order to smooth training over more examples per training step</li>
+<li>choose higher weight decay: this will prevent the weights from getting to large</li>
+<li>annotate more data, you may not have enough examples for the model to learn from</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><img src="./assets/bertrain-overfit.png" class="img-fluid"></p>
+</div>
+</div>
+<hr>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>The model has <strong>underfitted</strong>: Both curves are flat, the model learned nothing</p>
+<p>What to do:</p>
+<ul>
+<li>choose a higher learning rates, for faster weight updates</li>
+<li>use smaller batches, as this will result in more training steps</li>
+<li>choose lower weight decay: too high regularization can prevent proper learning</li>
+<li>annotate more data, you may not have enough examples for the model to learn from</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><img src="./assets/bertrain-flat.png" class="img-fluid"></p>
+</div>
+</div>
+<hr>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>You’re on the right track</strong></p>
+<ul>
+<li>Both curves went down during training: the model has learned</li>
+<li>Both curves have the same loss values: no overfitting</li>
+<li>But there is no plateau at the end, the curves are still going down</li>
+</ul>
+<p>What to do:</p>
+<ul>
+<li>use more epochs, to give the model time to learn more</li>
+<li>choose a higher learning rate, for faster weight updates</li>
+<li>use smaller batches, as this will result in more training steps</li>
+<li>choose lower weight decay: too high regularization can prevent proper learning</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><img src="./assets/bertrain-more.png" class="img-fluid"></p>
+</div>
+</div>
+<hr>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>The model is trying to learn too fast:</p>
+<ul>
+<li>Curves should be going down, not up and down</li>
+<li>Some learning has occured, but you can probably do better</li>
+</ul>
+<p>What to do:</p>
+<ul>
+<li>choose a lower learning rate, for slower weight updates</li>
+<li>use larger batches, in order to smooth training over more examples per training step</li>
+<li>choose higher weight decay: this will prevent the weights from getting to large</li>
+<li>annotate more data, you may not have enough examples for the model to learn from</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><img src="./assets/bertrain-chaos.png" class="img-fluid"></p>
+</div>
+</div>
 </section>
 </section>
 <section id="training-pipeline-advanced-practices" class="level1">
@@ -1117,44 +1223,46 @@ Figure&nbsp;6: Typical learning curve
 </section>
 <section id="use-gpu-for-faster-training" class="level2">
 <h2 class="anchored" data-anchor-id="use-gpu-for-faster-training">Use GPU for faster training</h2>
-<p>For now we have only used the CPU to perform the training, but it is slow and alternatives exist. If you have a NVIDIA GPU<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> and have set up your cuda<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> environment, you may accelerate the process. Also, if you have a Mac with an MX chip, you can use mps to accelerate the training.</p>
+<p>For now we have only used the CPU to perform the training, but it is slow and alternatives exist. If you have a NVIDIA GPU<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> and have set up your cuda<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a> environment, you may accelerate the process. Also, if you have a Mac with an MX chip, you can use mps to accelerate the training.</p>
 <p>You can check if your environment is ready to use cuda and mps with the following lines:</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.cuda <span class="im">import</span> is_available <span class="im">as</span> cuda_available</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.mps <span class="im">import</span> is_available <span class="im">as</span> mps_available</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"CUDA: "</span>, cuda_available())</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"MPS: "</span>, mps_available())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.cuda <span class="im">import</span> is_available <span class="im">as</span> cuda_available</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.mps <span class="im">import</span> is_available <span class="im">as</span> mps_available</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"CUDA: "</span>, cuda_available())</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"MPS: "</span>, mps_available())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>From there, you will need to be aware of where your objects are. Indeed, in order to use the model on CUDA (or MPS), the input and the model need to be stored on the same hardware. The code becomes:</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch <span class="im">import</span> Tensor </span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>DEVICE <span class="op">=</span> <span class="st">"cuda"</span> <span class="co"># or "mps", or "cpu"</span></span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>entry <span class="op">=</span> [</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Hello World"</span>,</span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"This is a second query"</span></span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>tokenizer_parameters <span class="op">=</span> {</span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"truncation"</span>:<span class="va">True</span>, </span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"padding"</span>:<span class="st">"max_length"</span>,</span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_length"</span>:<span class="dv">400</span>,</span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"return_tensors"</span>:<span class="st">"pt"</span></span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> model.to(device <span class="op">=</span> DEVICE)</span>
-<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>model_input <span class="op">=</span> tokenizer(entry,<span class="op">**</span>tokenizer_parameters)</span>
-<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>model_input <span class="op">=</span> {</span>
-<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a>  <span class="st">"input_ids"</span> <span class="op">=</span> Tensor(model_input[<span class="st">"input_ids"</span>]).to(device <span class="op">=</span> DEVICE),</span>
-<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">"attention_mask"</span> <span class="op">=</span> Tensor(model_input[<span class="st">"attention_mask"</span>]).to(device <span class="op">=</span> DEVICE)</span>
-<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a>base_model_output <span class="op">=</span> model.base_model(<span class="op">**</span>model_input)</span>
-<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a>classif_model_output <span class="op">=</span> model(<span class="op">**</span>model_input)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch <span class="im">import</span> Tensor </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>DEVICE <span class="op">=</span> <span class="st">"cuda"</span> <span class="co"># or "mps", or "cpu"</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>entry <span class="op">=</span> [</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Hello World"</span>,</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"This is a second query"</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>tokenizer_parameters <span class="op">=</span> {</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"truncation"</span>:<span class="va">True</span>, </span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"padding"</span>:<span class="st">"max_length"</span>,</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_length"</span>:<span class="dv">400</span>,</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"return_tensors"</span>:<span class="st">"pt"</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> model.to(device <span class="op">=</span> DEVICE)</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>model_input <span class="op">=</span> tokenizer(entry,<span class="op">**</span>tokenizer_parameters)</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>model_input <span class="op">=</span> {</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>  <span class="st">"input_ids"</span> <span class="op">=</span> Tensor(model_input[<span class="st">"input_ids"</span>]).to(device <span class="op">=</span> DEVICE),</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">"attention_mask"</span> <span class="op">=</span> Tensor(model_input[<span class="st">"attention_mask"</span>]).to(device <span class="op">=</span> DEVICE)</span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>base_model_output <span class="op">=</span> model.base_model(<span class="op">**</span>model_input)</span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>classif_model_output <span class="op">=</span> model(<span class="op">**</span>model_input)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>If you don’t move the elements properly, you will face this error:</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu! (when checking argument for argument index in method wrapper_CUDA__index_select)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>Expected all tensors to be on the same device, but found at least </span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>two devices, cuda:0 and cpu! (when checking argument for argument </span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>index in method wrapper_CUDA__index_select)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>When using a <code>Dataset</code> or <code>DatasetDict</code>, you can force all arrays to be automatically stored on a same device using this command:</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> ds.with_format(<span class="st">"torch"</span>, device <span class="op">=</span> DEVICE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> ds.with_format(<span class="st">"torch"</span>, device <span class="op">=</span> DEVICE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="callout callout-style-default callout-note callout-titled" title="Training arguments to chose the device to use">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1168,62 +1276,65 @@ Training arguments to chose the device to use
 <p>The Training arguments object accepts the following arguments <code>use_cpu</code>, <code>use_mps</code>, <code>use_cuda</code> which supposedly handles everything for you. However, we would advise to manually move your objects on the right device and set:</p>
 <pre><code>training_args = TrainingArguments(
   ...
-  use_mps   = DEVICE == "mps",
-  use_cuda  = DEVICE == "cuda",
-  use_cpu   = DEVICE == "cpu",
+  use_mps_device   = DEVICE == "mps" ,
+  no_cuda          = DEVICE != "cuda",
+  use_cpu          = DEVICE == "cpu" ,
 )</code></pre>
+<p>weird, i can’t seem to be able to force using cpu -&gt; you can’t update, you have to set it when creating the instance</p>
+<p>arggg je sais pas si c’est un bon conseil</p>
 </div>
 </div>
 <p>The final step is to clean your GPU after using it. Otherwise you risk clogging the memory and flushing it becomes a hassle. Best practices include working inside a <code>try/except/finally</code> loop to make sure the memory is clean after use.</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gc <span class="im">import</span> collect <span class="im">as</span> gc_collect</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.cuda <span class="im">import</span> empty_cache, synchronize, ipc_collect</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.cuda <span class="im">import</span> is_available <span class="im">as</span> cuda_available</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean():</span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">"""Flush GPU memory"""</span></span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  empty_cache()</span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> cuda_available():</span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>      synchronize()</span>
-<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>      ipc_collect()</span>
-<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  gc_collect()</span>
-<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="st">"Memory flushed"</span>)</span>
-<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>tokenizer, model, dsd, trainer <span class="op">=</span> (<span class="va">None</span>, ) <span class="op">*</span> <span class="dv">4</span> <span class="co"># All objects that are moved to the GPU</span></span>
-<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>: </span>
-<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>  tokenize <span class="op">=</span> ...</span>
-<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>  model <span class="op">=</span> ...</span>
-<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a>  model <span class="op">=</span> ...</span>
-<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"# ERROR"</span> <span class="op">+</span> <span class="st">"#"</span> <span class="op">*</span> <span class="dv">93</span>)</span>
-<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(e)</span>
-<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a>    print<span class="st">"#"</span> <span class="op">*</span> <span class="dv">100</span>)</span>
-<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a><span class="cf">finally</span>:</span>
-<span id="cb38-26"><a href="#cb38-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">del</span> tokenizer, model, dsd, trainer <span class="co"># All objects that are moved to the GPU</span></span>
-<span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a>    clean_memory()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gc <span class="im">import</span> collect <span class="im">as</span> gc_collect</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.cuda <span class="im">import</span> empty_cache, synchronize, ipc_collect</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.cuda <span class="im">import</span> is_available <span class="im">as</span> cuda_available</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean():</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">"""Flush GPU memory"""</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  empty_cache()</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> cuda_available():</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>      synchronize()</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>      ipc_collect()</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>  gc_collect()</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="st">"Memory flushed"</span>)</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>tokenizer, model, dsd, trainer <span class="op">=</span> (<span class="va">None</span>, ) <span class="op">*</span> <span class="dv">4</span> <span class="co"># All objects that are moved to the GPU</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>: </span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>  tokenize <span class="op">=</span> ...</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>  model <span class="op">=</span> ...</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>  model <span class="op">=</span> ...</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"# ERROR"</span> <span class="op">+</span> <span class="st">"#"</span> <span class="op">*</span> <span class="dv">93</span>)</span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(e)</span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>    print<span class="st">"#"</span> <span class="op">*</span> <span class="dv">100</span>)</span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a><span class="cf">finally</span>:</span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">del</span> tokenizer, model, dsd, trainer <span class="co"># All objects that are moved to the GPU</span></span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a>    clean_memory()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="read-the-errors" class="level2">
 <h2 class="anchored" data-anchor-id="read-the-errors">Read the errors</h2>
-<p>You will face many, many errors. Sometimes they are random and rerunning the script / restarting the kernel will solves the issue. Others are subtle and difficult to identify. In such case, copy pase the error in google (genAI is less likely to provide you the right answer), you’ll find forums with people who faced the same issue. As stressed in the introduction, downgrading/upgrading some libraries is likely to solve the issue.</p>
+<p>You will face many, many errors. Sometimes they are random and rerunning the script / restarting the kernel will solve the issue. Others are subtle and difficult to identify. In such case, copy pase the error in google (genAI is less likely to provide you the right answer), you’ll find forums with people who faced the same issue. As stressed in the introduction, downgrading/upgrading some libraries is likely to solve the issue.</p>
 <p>Many errors are raised due to the functions assuming that your columns are well named and that the data has the right format. Make sure to have the following:</p>
 <ul>
-<li>“text” column with the text as string</li>
-<li>“labels” column with the labels as int; if you have multiple labels. Make sure this is a Tensor of integers</li>
-<li>“input_ids” a column with the tokens truncated and padded to the same length. Make sure this is a Tensor of integers</li>
-<li>“attention_mask” a column with the tokens truncated and padded to the same length. Make sure this is a Tensor of integers</li>
+<li><code>"text"</code> column with the text as string</li>
+<li><code>"labels"</code> column with the labels as int; if you have multiple labels. Make sure this is a Tensor of integers</li>
+<li><code>"input_ids"</code> a column with the tokens truncated and padded to the same length. Make sure this is a Tensor of integers</li>
+<li><code>"attention_mask"</code> a column with the tokens truncated and padded to the same length. Make sure this is a Tensor of integers</li>
 </ul>
 <p>Also, depending on the model you’re using these columns can have different names. Make sure to check the huggingface documentation related to the model you are using as well as forums.</p>
 <p>If you face this error:</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>NVML_SUCCESS == r INTERNAL ASSERT FAILED at "/home/conda/feedstock_root/build_artifacts/libtorch_1750199048837/work/c10/cuda/CUDACachingAllocator.cpp":1016, please report a bug to PyTorch.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>NVML_SUCCESS == r INTERNAL ASSERT FAILED at "/home/conda/feedstock_root/build_artifacts/libtorch_1750199048837/work/c10/cuda/CUDACachingAllocator.cpp":1016, please report a bug to PyTorch.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>It is likely that you have reached the memory limit of your hardware. Reducing the batch size or using a smaller model is likely to solve your issue.</p>
+<p>Same: “Invalid buffer size:” on CPU</p>
 </section>
 </section>
 <section id="some-good-practices" class="level1">
 <h1>Some good practices</h1>
 <section id="save-your-model-and-results" class="level2">
 <h2 class="anchored" data-anchor-id="save-your-model-and-results">Save your model and results</h2>
-<p>??? necessary ???</p>
+<p>??? necessary ??? -&gt; Export to hugging face for reproducibility and open science</p>
 </section>
 <section id="on-annotating-your-dataset" class="level2">
 <h2 class="anchored" data-anchor-id="on-annotating-your-dataset">On annotating your Dataset</h2>
@@ -1234,9 +1345,15 @@ Training arguments to chose the device to use
 <p>@ Etienne @ Julien</p>
 </section>
 </section>
-<section id="limits-of-using-encoder-models-for-classification" class="level1">
-<h1>Limits of using encoder models for classification</h1>
-<p>Biased error,</p>
+<section id="pros-and-cons-of-using-an-encoder-vs-decoder-model-for-text-classification" class="level1">
+<h1>Pros and cons of using an encoder vs decoder model for text classification</h1>
+<p><strong>Coding skills</strong></p>
+<p>As this tutorial demonstrates, fine tuning an encoder model requires more coding skills than making API requests to an external servers. This can be an advantage if you want to develop your skills and refine your understanding of language models, but it takes more time and effort.</p>
+<p><strong>Accessibility to a server</strong></p>
+<p>Fine tuning an encoder model requires hardware and a clean environment as demonstrated trhoughout this tutorial; on the other hand, making API calls requires an API key with credit. This raises concerns regarding the equal access to such technologies.</p>
+<p><strong>Control on the model</strong></p>
+<p>Most models do not disclose the training data used for pretraining the model we use, this represent an hard limit when it comes to controlling the model used and the interpretability of the results. However, encoder models allow for more reproducibility (you own the model used for inference) and interpretability (you own the data used for fine tuning, XXX additional techniques to probe the model???).</p>
+<p>XXX More limits</p>
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
@@ -1252,9 +1369,14 @@ Training arguments to chose the device to use
 
 <ol>
 <li id="fn1"><p><a href="https://www.youtube.com/watch?v=sDCtY9Z1bqE">Set up your cuda environment</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>you need to make sure that the model that you are using does recognise emojis<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p><a href="https://www.tutorialpedia.org/blog/is-it-possible-to-run-cuda-on-amd-gpus/#2-closed-source-ecosystem">AMD GPUs do not have access to cuda</a> but you can work you way out with alternative solutions like <a href="https://github.com/vosen/ZLUDA">ZLuda</a><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p><a href="https://www.youtube.com/watch?v=pPStdjuYzSI">What is cuda in 3 mins</a>; <a href="https://developer.nvidia.com/cuda-downloads">Install cuda on your machine</a><a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p><a href="XXX">More on UV</a>, XXXX<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>The effective batch size is the system batch size times the gradient accumulation.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>It tends to be less likely as newer models tend to be larger. Read more in the <a href="#choose-and-load-a-model">Choose and load a model</a> section<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>you need to make sure that the model that you are using does recognise emojis<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>The loss function is a function measuring the distance between the predicted labels and the gold standard labels.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>The effective batch size is the system batch size times the gradient accumulation.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p><a href="https://www.tutorialpedia.org/blog/is-it-possible-to-run-cuda-on-amd-gpus/#2-closed-source-ecosystem">AMD GPUs do not have access to cuda</a> but you can work you way out with alternative solutions like <a href="https://github.com/vosen/ZLUDA">ZLuda</a><a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p><a href="https://www.youtube.com/watch?v=pPStdjuYzSI">What is cuda in 3 mins</a>; <a href="https://developer.nvidia.com/cuda-downloads">Install cuda on your machine</a><a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
