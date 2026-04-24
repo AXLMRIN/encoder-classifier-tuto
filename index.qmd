@@ -11,11 +11,15 @@ toc-depth: 3
 
 # Introduction
 
-It is now common practice to use LLMs (encoders or decoders) to annotate texts in the context of social science research (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). This approach does not replace the theoretical work and manual annotation, as one must define the labels and what they represent, as well as annotate some elements that will be used to evaluate the LLMs’ ability to perform the classification task. On the other hand, LLMs provide cost-effective and rapid alternatives for scaling studies.
+It is now common practice to use LLMs ~~(encoders or decoders)~~ to annotate texts in the context of social science research (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). If LLMs provide cost-effective and rapid alternatives for scaling studies, there is different way to use them.
 
-There are several strategies to use LLMs to annotate texts:
+Not all uses are the same, and different architecture of LLMs can be used. Especially, one important distinction is the one between encoders and decoders architecture, leading to 2 different strategies to annotate texts:
 
-- Using encoder models: from texts, models create embeddings (a vector of several hundred of values) used as predictors to perform the classification. This strategy is illustrated in the Augmented Social Scientist tutorial, which requires some coding skills as well as a computer capable of loading and running the model.
+::: {.callout-warning}
+Je commencerai le tutoriel de manière un peu plus douce sur les principales notions, là ça rentre vraiment dans le dur rapidement. Plus, il y a trois stratégies : encoder non finetuné, encoder finetuné et décodeur en inférence non ? On ne parle pas de plongement seuls + ML. Donc peut être un peu mieux situer l'approche, de manière un peu plus intuitive. Et peut être aussi introduire ici le fait qu'un humain est capable d'annoter et qu'on veut étendre cette équation humaine. 
+:::
+
+- Using encoder models: from texts, models create embeddings to represent each text (a vector of several hundred of values) used then as predictors to perform the classification. This strategy is illustrated in the Augmented Social Scientist tutorial, which requires some coding skills as well as a computer capable of loading and running the model.
 - Using decoder models: from a prompt, ie the concatenation of the text to annotate as well as the codebook, we ask a model to generate the labels as text. This strategy is easier to implement as fewer coding skills are required, and models run on external machines. This nonetheless has drawbacks,   <!-- TODO Reprendre les conclusions du tuto decoder -->
 
 In a previous tutorial, we demonstrated how to make API calls with the `openai`library ([available here](https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/)). In this tutorial, we explore the other solution: fine-tuning an encoder model. Alternatively, you can use ActiveTigger, a software developed by our team that facilitates the use of models in the social sciences.
@@ -24,14 +28,14 @@ In a previous tutorial, we demonstrated how to make API calls with the `openai`l
 
 ## Objectives and materials
 
-In this tutorial we will present an overview of the techniques used to this day and experiment on a dataset of journal articles created by Luo et al. (2020). What you will learn: 
+In this tutorial we will :
 
 - Understand the general pipeline for text classification with encoder models
 - Develop some familiarity with preprocessing and training techniques
 - Evaluate models' performance and their impact on downstream tasks
-- Develop good practices for your research
+- Develop good practices for your research and discussing GPU issues
 
-We have also included a section discussing how to train models on GPUs.
+We will use the dataset of journal articles created by Luo et al. (2020). What you will learn: 
 
 ## Install environment: 
 
@@ -40,7 +44,7 @@ For this tutorial we use Python version 3.12 and setup the environment with the 
 ```bash
 pip install -qU pandas "transformers==4.52.4" datasets ipykernel matplotlib torch "accelerate>=0.26.0" scikit-learn plotly "nbformat>=4.2.0"
 ```
-However, you should know that, however convenient [PyTorch](XXX), [accelerate](XXX), and [transformers](XXX) are, these libraries may be unstable depending on your computer and environment. You **will face issues** related to your version. We recommand using conda[^4] (or the virtual environments manager of your choice[^5]) to correctly setup your environment and create a requirement file[^6] of your own once you've reached a stable workspace. Don't hesitate downgrading your libraries as they are likely to be more stable. 
+However, you should know that, however convenient [PyTorch](XXX), [accelerate](XXX), and [transformers](XXX) are, these libraries may be unstable depending on your computer and environment. You **will face issues** related to your version. We recommand using conda[^4] (or the virtual environments manager of your choice[^5]) to correctly setup your environment and create a requirement file[^6] of your own once you've reached a stable workspace. Don't hesitate downgrading your libraries as they are likely to be more stable. [ES : mettre cette partie en note de bas de page ou en box warning]
 
 [^4]: [Set up your cuda environment](https://www.youtube.com/watch?v=sDCtY9Z1bqE)
 
@@ -50,27 +54,40 @@ However, you should know that, however convenient [PyTorch](XXX), [accelerate](X
 
 <!-- TODO: add requirement files -->
 
-# Understand the encoder architecture
+# What is in a BERT : the encoder architecture
+
+::: {.callout-warning}
+Question : est-ce qu'on parle d'autres encodeurs que des BERT dans ce tytorial, si non : pourquoi ne pas se concentrer sur les BERT ?
+:::
 
 In this section we provide common knowledge about the encoder architecture and training; if you want to refine your understanding of the theory, we list a number of state-of-the-art resources. 
 
-All models are neural network models with fancy architectures (activation nodes, pooling layers or feedback loops). Ultimately, one can see models as a sequence of matrix multiplication and vectors addition where the coefficients of the matrices and vectors (the weights) have been optimised for a certain task. The Transformer architecture, is one way of agencing nodes together. In one of the most famous paper in NLP (["Attention is all you need"](https://en.wikipedia.org/wiki/Attention_Is_All_You_Need)), a team from Google introduced the concept of *attention* which attempts to take into account the context in which a word is used.  
+All models we discuss here are neural network models (ES: ajouter un lien ? Mentionner le deep learning ?) with specific architectures (activation nodes, pooling layers or feedback loops). Ultimately, one can see models as a sequence of matrix multiplication and vectors addition where the coefficients of the matrices and vectors (the weights) have been optimised for a certain task. The Transformer architecture, is one way of agencing nodes together. In one of the most famous paper in NLP (["Attention is all you need"](https://en.wikipedia.org/wiki/Attention_Is_All_You_Need)), a team from Google introduced the concept of *attention* which attempts to take into account the context in which a word is used.  
 
 ![Transformer architecture](./assets/encoder-architecture.jpg){#fig-transformer-architecture width=50%}
 
-The transformer contains two parts, the encoder and the decoder
+This transformer structure contains two parts, the encoder and the decoder
+
+::: {.callout-warning}
+Pas clair, tu passes de l'architecture aux modèles disponibles et utilisés; Je pense qu'il faut séparer clairement qu'il y a des conceptions d'une part, et des gens qui créent les modèles et les utilisent de l'autre. Là c'est trop lié ensemble. Notamment, l'architecture n'est pas entièrement liée à la taille (nombre de paramètres). 
+:::
 
 - **Decoder** models include GPT models and Llama, they often are too heavy to run on your personal laptop (smallest models have 3-8 billion prameters and can go up to 2,000 billion). They also tend to be prioprietary (XXX vérifier) resulting in confidentiality and interpretability issues <!-- TODO reformulate -->. 
 - **Encoder** models (also called embedding models) include BERT models and many of it's kind (CamemBERT, RoBERTa, DeBERTa, and the list is long). They are way more frugal and can be run and finetuned on most laptops[^7] (most models have between 200 and 600 million parameters). Also, these models tend to be open source. (Which does not solve issues related to the training data and all.. but it's better).<!-- TODO find back reference with model size and all -->
 
 [^7]: It tends to be less likely as newer models tend to be larger. Read more in the [Choose and load a model](#choose-and-load-a-model) section
 
-Training embedding models is a complex task that can be carried out in many different ways. For instance, BERT was trained on two tasks (Devlin et al., 2019): 
+Those models are pre-trained on large corpus on a specific tasks that allows them to catch the pattern of the language. Training encoders (or embedding models) models is a complex task that can be carried out in many different ways. For instance, BERT was trained on two tasks (Devlin et al., 2019): [ES: les deux entrainement sont des taches complexes, il faut que tu précises que tu vas te concentrer sur les encodeurs non ?]
 
 - Task 1: Masked LM. Take a sentence, replace some words by a `[MASK]` token, predict what was the word.
 - Task 2: Next Sentence Prediction. Take two sentences A and B, classify whether it makes sense for sentence B to appear after sentence A. 
 
-In the context of training embedding models, tasks have been adapted and redesigned but they all have the same objective: **modelling the semantic of words**. If done correctly, this means that two words close in meaning are close in the embedding space and that the embedding calculated takes into account the context of the sentence. In most NLP applications, the similarity score is calculated as the scalar product of the embeddings also referred to as the cosine metric.
+In the context of training embedding models, tasks have been adapted and redesigned but they all have the same objective [ES: pas clair ce que ça veut dire le début de phrase]: **modelling the semantic of words in context**. If done correctly, this means that two words close in meaning are close in the embedding space and that the embedding calculated takes into account the context of the sentence. In most NLP applications, the similarity score is calculated as the scalar product of the embeddings also referred to as the cosine metric.
+
+::: {.callout-warning}
+En fait là tu expliques ce que sont les embeddings... est-ce que cette notion n'est pas plus générale que les transformers, et devrait arriver avant ?
+:::
+
 
 ![Similarity](./assets/similarity.png){#fig-similarity width=100%}
 
@@ -88,7 +105,11 @@ For instance in @fig-similarity, the word "apple" and "pear" are very close in m
 
 One key parameter of all models is the "maximum context window". The maximum context window is the maximum number of tokens that can be digested by the model at once, anything exceeding this window is simply ignored. First models used to have very short context windows (between 128 and 512 tokens maximum), meaning long texts had to be split into sentences or paragraphs. This may be a problem depending on the task at hand.
 
-:::callout-example
+
+
+::: {.callout-example}
+
+[ES: pas convaincu de cette partie ici, tu es encore sur la théorie et là tu viens avec un aspect très précis de tâche alors qu'on a pas vraiment parlé de labellisation encore]
 
 Let's say you want to detect if long articles tackle environmental issues. One might need to divide the articles into paragraphs, and for each paragraph, detect if it tackles environmental issues. After inference, one would need to aggregate the results of each paragraph to obtain a global score (3 out of 6 paragraphs tackle environmental issues) or a global indicator (at leas 1 paragraph tackles environmental issues).
 <br/>
@@ -100,7 +121,16 @@ Some techniques allow users to exceed the maximum context window, please refer t
 
 # Fine-tuning pipeline: the essential
 
-In this section we will see the fundamentals to fine-tuning encoders for a classification task. We will use a dataset introduced by Luo et al., (2020); they collected journal articles, from which they extracted sentences conveying an opinion regarding global warming. Finally, they annotated each opinion as "agreeing", "neutral" or "disagreeing" with regard to the following statement "Climate chage/global warming is a serious concern".
+In this section we will see the fundamentals to fine-tuning encoders for a classification task. We will first load a dataset introduced by Luo et al., (2020); they collected journal articles, from which they extracted sentences conveying an opinion regarding global warming. Finally, they annotated each opinion as "agreeing", "neutral" or "disagreeing" with regard to the following statement "Climate chage/global warming is a serious concern".
+
+[ES: plutôt annoncer les étape se ce que toi tu vas faire, que de parler du papier]
+
+## What is fine-tuning
+
+::: {.callout-warning}
+Tu ne devrais pas expliquer ce qu'est le fine-tuning? 
+:::
+
 
 ## Load your data 
 
@@ -204,7 +234,9 @@ Name: sentence-len, dtype: float64
 
 In the context of our experiment, the sentences are quite short and their size is roughly standard. We will not exclude text inputs based on the text. Keep in mind that this model will be trained on a specific task and specific material. Performances are not guaranteed for texts too different in tone, source, date, or length from the training data.
 
-- **Are there any unwanted characters**: If you are used to [TF-IDF techniques](XXX), you might be accoustumed to filtering punctuations and stop words. This is not something that we want to do when using transformers models. Indeed these models are trained with these characters. On top of that they convey meaningful context to the model. However, you might want to filter out elements that, for your study, do not carry semantic value. For instance, when working on social media content, depending on your problematic, you will want to either keep or remove emojis for instance[^1]. At the end of the day, you want to make sure that the elements you keep in your text carry semantic information necessary for the annotation process.
+**Are there any unwanted characters**
+
+If you are used to [TF-IDF techniques](XXX), you might be accoustumed to filtering punctuations and stop words. This is not something that we want to do when using transformers models. Indeed these models are trained with these characters. On top of that they convey meaningful context to the model. However, you might want to filter out elements that, for your study, do not carry semantic value. For instance, when working on social media content, depending on your problematic, you will want to either keep or remove emojis for instance[^1]. At the end of the day, you want to make sure that the elements you keep in your text carry semantic information necessary for the annotation process.
 
 [^1]: you need to make sure that the model that you are using does recognise emojis
 
@@ -252,6 +284,8 @@ df_no_duplicates.groupby("sentence").size().value_counts()
 ```
 
 We still need to deal with the 8 elements that have a duplicate. We would like to use the `drop_duplicates` function, but to do so, we need to make sure that the label of the two duplicates are the same. Let's check if some sentence are the same with a concensus on the label: 
+
+[ES: C'est vraiment la règle à suivre ? On garde des éléments identiques avec des annotations discordantes ? Question de curiosité]
 
 ```python 
 df_concensus = df_no_duplicates.groupby("sentence")["label_text"].agg(concensus = lambda X : len(set(X)) == 1)
@@ -327,7 +361,9 @@ The final step is to create a train set, a train-eval set, dev set and final-eva
 - the **dev set** is the set of sentences that are used to evaluate a model and choose Hyperparameters. They are not seen by the model but they are part of the optimisation process.
 - the **final-eval** set is the set of sentences that are used to produce realistic performance evaluation. This set of sentences is not seen by the model during training and prevent from biasing the hyperparameter optimisation due to cherry picking.
 
-In general, we allocate 70% of the data to the train set, then 10% to train eval, dev set and final eval set.Depending on the size of your dataset, you might want to tweak this distribution. Ultimately, you want enough data for training and evaluation for scores to be significative.
+[ES: la terminologie est différente de ActiveTigger, sur quoi on se base pour ne pas avoir eval / test ? JE pense que ça doit être cohérent entre nos outils et nos leçons non ?]
+
+In general, we allocate 70% of the data to the train set, then 10% to train eval, dev set and final eval set. Depending on the size of your dataset, you might want to tweak this distribution. Ultimately, you want enough data for training and evaluation for scores to be significative.
 
 ```python 
 CODE FOR CREATING A COLUMN SPLIT
@@ -357,9 +393,12 @@ df_stratified = (
 
 ## Choose and load a model
 
-In this tutorial we use the Transformers package, maintained by [HuggingFace](https://huggingface.co/). HuggingFace is a company (for profit ?) specialised in NLP and machine learning. They maintain many SOTA libraries such as [Transformers](XXX), [Datasets](XXX) or [Sentence Transormers](XXX). On top of maintaining the libraries, they publish posts about the latest tech, tutorials on their libraries, host a forum for debugging but also propose inference and training solutions if you don't have access the required hardware.
+We will start with a pre-trained model and then fine-tune it on our specific data. How to choose such model ?
 
-More specifically, they propose a range of open source models and datasets downlable through their API. In the context of this tutorial, we will start working with the famous BERT models named: [google-bert/bert-base-uncased](https://huggingface.co/google-bert/bert-base-uncased)
+In this tutorial we use the Transformers package, maintained by [HuggingFace](https://huggingface.co/)[^huggingface]. They propose a range of open source models and datasets downlable through their API. In the context of this tutorial, we will start working with the famous BERT models named: [google-bert/bert-base-uncased](https://huggingface.co/google-bert/bert-base-uncased)
+
+[^huggingface]: HuggingFace is a company (for profit ?) specialised in NLP and machine learning. They maintain many SOTA libraries such as [Transformers](XXX), [Datasets](XXX) or [Sentence Transormers](XXX). On top of maintaining the libraries, they publish posts about the latest tech, tutorials on their libraries, host a forum for debugging but also propose inference and training solutions if you don't have access the required hardware.
+
 
 :::{.callout-note title="How to choose a model"}
 
@@ -369,6 +408,7 @@ Models and their performance is highly sensitive to the task and context of usag
 - What language was the model trained on? This one is trivial. However, depending on your corpus, you might want to find models that are multilingual. Performance of multilingual models can be below monolingual models; consider trying different models (is it still true ?? @ Léo). You can also try and translate your corpus into one language and use a monolingual model. 
 - What documents was the model trained on? Evaluated on? Models performance can vary a lot when used on a certain domain or another. Make sure to use models that have been XXX BENCSSMARK @ Etienne @ Paul 
 - Last but not least: How big is the model? You won't get away with it, your laptop has limited computation capabilities, large models won't run on any laptip. Know your hardware and check what model you can run [using this method](XXX). <!-- TODO find a method lols -->
+- Is the model still relevant : look how many time the model is download to have a sense of the community using them. Don't hestiate to look if newer model are available since models also have versions.
 
 :::
 
@@ -525,17 +565,19 @@ If you ever wanted to work with another model that has already been fine-tuned a
 
 ## Train the model
 
-We are finally going to train the model. To do so, we are going to follow the 3 folowing steps:  
+We are finally going to fine-tune the model on our specific data. To do so, we are going to follow the 3 folowing steps:  
 
 - Tokenize your dataset
 - Setup the training arguments
 - Launch training
 
-### Tokenize the dataset: 
+### Tokenize the dataset
+
+Models manipulate matrices of numbers; to convert text to numbers, a specific step is tokenization. Different models can have different way of tokenization.
 
 :::{.callout-note title="What are tokens already?"}
 
-Tokens are parts of words, whole words, or even punctuations and emojis. They are created using a [NAME OF THE ALGORITHM BYTE SOMETHING???](). They are used to subdivise the text and assign ready made embeddings that will be modified by the attention mechanism.
+Tokens are a way to divide textual content (there are different rules : words, part of the word, character...). They are the way a pattern can be assigned to a specific id, and then to a numeric value. They are created using a [NAME OF THE ALGORITHM BYTE SOMETHING???](). They are used to subdivise the text and assign ready made embeddings that will be modified by the attention mechanism.
 
 [Read more](Jurafsky chapter on tokens)
 
@@ -587,7 +629,9 @@ The data is ready to be used for Training!
 
 <!-- Move to experts? -->
 
-Before training the model, we wanted to demonstrate each step of the classification: 
+[ES: je ne comprends pas le rôle de cette partie ; si c'est comprendre l'inférence avec un modèle, je pense que ça doit arriver bien plus tôt quand tu présentes charger un modèle, une partie "l'utiliser out of the box" avant le fine-tuning]
+
+Before fine-tuning the model, we wanted to demonstrate each step of the classification: 
 
 - Tokenizing the texts
 - Passing the tokens to the model
@@ -625,6 +669,8 @@ classification model output logits shape (pytorch tensor): {classif_model_output
 
 ### Setup Training parameters{#sec-training-parameters}
 
+There is multiple parameters that are involved in the fine-tuning process. There are quite generic, so you will encounter them.
+
 The training parameters are stored in the `TrainingArguments` object. We have selected the main parameters that you'll want to look for during training but you can browse the [117 parameters it can take](https://huggingface.co/docs/transformers/v4.49.0/en/main_classes/trainer#transformers.TrainingArguments). You'll find more information about tuning the hyperparameters at the @sec-hyperparameters-tuning.
 
 ```python 
@@ -655,9 +701,15 @@ training_arguments = TrainingArguments(
 )
 ```
 
-### Launch training
+### Launch fine-tuning
 
-Finally, we can start the training. 
+:::{.callout-warning}
+
+Est-ce qu'il ne faudrait pas que tu développe un peu plus ce qui se passe lors de la phrase de fine-tuning?
+
+:::
+
+Finally, we can start the fine-tuning. 
 
 ```python
 trainer = Trainer(
@@ -690,6 +742,11 @@ reload_model = AutoModelForSequenceClassification.from_pretrained(
 ```
 
 ## Predict the labels for the full dataset
+
+:::{.callout-warning}
+
+C'est dur à comprendre comme partie, je suis un peu perdu
+:::
 
 To predict the labels, we just need to use the model's `__call__` method and retrieve the predicted logits. From there, using the `np.argmax` function, we retrieve the predicted labels and save the results to avoid re-running the inference.
 
@@ -789,6 +846,12 @@ weighted avg       0.68      0.69      0.68       204
 Here we can see that the model performance for the labels "agrees" and "neutral" is correct, but would benefit from further hyperparameter tuning. On the other hand, the model does not manage to recognise the "disagrees" label. All in all, the current finetuning leads to mediocre results. We will tweak the hyperparameters to reach better results. The first step is reading the learning curve.
 
 ## Read the learning curve
+
+:::{.callout-warning}
+
+Ca devrait arriver au moment de l'entrainement, avec l'explication de ce qui va se passer, pas après si ?
+
+:::
 
 The learning curve provides the evolution of the model's performance using the loss function[^lossFunction] evaluated on the train set and the train-eval set. We can retrieve it by using the logs in the `trainer_state.json`; plot it: 
 
