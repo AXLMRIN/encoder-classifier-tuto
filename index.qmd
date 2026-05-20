@@ -11,12 +11,12 @@ toc-depth: 3
 
 # Introduction
 
-It is now common practice to use LLMs ~~(encoders or decoders)~~ to annotate texts in the context of social science research (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). If LLMs provide cost-effective and rapid alternatives for scaling studies, there is different way to use them.
-
-Not all uses are the same, and different architecture of LLMs can be used. Especially, one important distinction is the one between encoders and decoders architecture, leading to 2 different strategies to annotate texts:
+It is now common practice to use LLMs to annotate texts in the context of social science research (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). There are many ways to use LLMs as an annotator, and the optimal solution depends on your research question. Here are the two main routes : 
 
 ::: {.callout-warning}
 Je commencerai le tutoriel de manière un peu plus douce sur les principales notions, là ça rentre vraiment dans le dur rapidement. Plus, il y a trois stratégies : encoder non finetuné, encoder finetuné et décodeur en inférence non ? On ne parle pas de plongement seuls + ML. Donc peut être un peu mieux situer l'approche, de manière un peu plus intuitive. Et peut être aussi introduire ici le fait qu'un humain est capable d'annoter et qu'on veut étendre cette équation humaine. 
+
+-> OK
 :::
 
 - Using encoder models: from texts, models create embeddings to represent each text (a vector of several hundred of values) used then as predictors to perform the classification. This strategy is illustrated in the Augmented Social Scientist tutorial, which requires some coding skills as well as a computer capable of loading and running the model.
@@ -44,7 +44,10 @@ For this tutorial we use Python version 3.12 and setup the environment with the 
 ```bash
 pip install -qU pandas "transformers==4.52.4" datasets ipykernel matplotlib torch "accelerate>=0.26.0" scikit-learn plotly "nbformat>=4.2.0"
 ```
-However, you should know that, however convenient [PyTorch](XXX), [accelerate](XXX), and [transformers](XXX) are, these libraries may be unstable depending on your computer and environment. You **will face issues** related to your version. We recommand using conda[^4] (or the virtual environments manager of your choice[^5]) to correctly setup your environment and create a requirement file[^6] of your own once you've reached a stable workspace. Don't hesitate downgrading your libraries as they are likely to be more stable. [ES : mettre cette partie en note de bas de page ou en box warning]
+
+:::{.callout-warning}
+However, you should know that, however convenient [PyTorch](XXX), [accelerate](XXX), and [transformers](XXX) are, these libraries may be unstable depending on your computer and environment. You **will face issues** related to your version. We recommand using conda[^4] (or the virtual environments manager of your choice[^5]) to correctly setup your environment and create a requirement file[^6] of your own once you've reached a stable workspace. Don't hesitate downgrading your libraries as they are likely to be more stable.
+:::
 
 [^4]: [Set up your cuda environment](https://www.youtube.com/watch?v=sDCtY9Z1bqE)
 
@@ -54,22 +57,28 @@ However, you should know that, however convenient [PyTorch](XXX), [accelerate](X
 
 <!-- TODO: add requirement files -->
 
-# What is in a BERT : the encoder architecture
+# Understand the encoder architecture
+
+**ES spotted many flaws in the structure. Will re-write this section entirely.**
 
 ::: {.callout-warning}
 Question : est-ce qu'on parle d'autres encodeurs que des BERT dans ce tytorial, si non : pourquoi ne pas se concentrer sur les BERT ?
+
+AM: Non, c'est vrai mais si on se concentre sur des BERTs des non-initiés risqueraient de ne pas faire le lien entre BERT et encodeurs. Je me dis si on définit largement les encodeurs c'est plus facile de dire : "nous on se concentre sur les BERTs qui est un type d'encodeur". Opinion?
 :::
 
 In this section we provide common knowledge about the encoder architecture and training; if you want to refine your understanding of the theory, we list a number of state-of-the-art resources. 
 
-All models we discuss here are neural network models (ES: ajouter un lien ? Mentionner le deep learning ?) with specific architectures (activation nodes, pooling layers or feedback loops). Ultimately, one can see models as a sequence of matrix multiplication and vectors addition where the coefficients of the matrices and vectors (the weights) have been optimised for a certain task. The Transformer architecture, is one way of agencing nodes together. In one of the most famous paper in NLP (["Attention is all you need"](https://en.wikipedia.org/wiki/Attention_Is_All_You_Need)), a team from Google introduced the concept of *attention* which attempts to take into account the context in which a word is used.  
+All models we discuss here are neural [network models](https://en.wikipedia.org/wiki/Neural_network_(machine_learning))[^neural-networks] with specific architectures (activation nodes, pooling layers or feedback loops). Ultimately, one can see models as a sequence of matrix multiplication and vectors addition where the coefficients of the matrices and vectors (the weights) have been optimised for a certain task. The Transformer architecture, is one way of agencing nodes together. In one of the most famous paper in NLP (["Attention is all you need"](https://en.wikipedia.org/wiki/Attention_Is_All_You_Need)), a team from Google introduced the concept of *attention* which attempts to take into account the context in which a word is used.  
+
+[^neural-networks]: Wikipedia: "A neural network consists of connected units or nodes called artificial neurons [...].Each artificial neuron receives signals from connected neurons, then processes them and sends a signal to other connected neurons. <br/>Groups of neurons are aggregated into layers [...]. Each layer performs a transformation on its inputs. Signals travel from the first layer (the input layer) to the last layer (the output layer), typically passing through multiple intermediate layers (hidden layers). A network is typically called a **deep neural** network if it has at least two hidden layers. Deep neural networks are capable of learning sophyisticated hierarchical representations.
 
 ![Transformer architecture](./assets/encoder-architecture.jpg){#fig-transformer-architecture width=50%}
 
 This transformer structure contains two parts, the encoder and the decoder
 
 ::: {.callout-warning}
-Pas clair, tu passes de l'architecture aux modèles disponibles et utilisés; Je pense qu'il faut séparer clairement qu'il y a des conceptions d'une part, et des gens qui créent les modèles et les utilisent de l'autre. Là c'est trop lié ensemble. Notamment, l'architecture n'est pas entièrement liée à la taille (nombre de paramètres). 
+Pas clair, tu passes de l'architecture aux modèles disponibles et utilisés; Je pense qu'il faut séparer clairement qu'il y a des conceptions d'une part, et des gens qui créent les modèles et les utilisent de l'autre. Là c'est trop lié ensemble. Notamment, l'architecture n'est pas entièrement liée à la taille (nombre de paramètres).  
 :::
 
 - **Decoder** models include GPT models and Llama, they often are too heavy to run on your personal laptop (smallest models have 3-8 billion prameters and can go up to 2,000 billion). They also tend to be prioprietary (XXX vérifier) resulting in confidentiality and interpretability issues <!-- TODO reformulate -->. 
@@ -119,18 +128,18 @@ This consists of an additional difficulty and requires researcher to further pre
 
 Some techniques allow users to exceed the maximum context window, please refer to XXX @ Léo @ Alexandre
 
-# Fine-tuning pipeline: the essential
-
-In this section we will see the fundamentals to fine-tuning encoders for a classification task. We will first load a dataset introduced by Luo et al., (2020); they collected journal articles, from which they extracted sentences conveying an opinion regarding global warming. Finally, they annotated each opinion as "agreeing", "neutral" or "disagreeing" with regard to the following statement "Climate chage/global warming is a serious concern".
-
-[ES: plutôt annoncer les étape se ce que toi tu vas faire, que de parler du papier]
-
 ## What is fine-tuning
 
 ::: {.callout-warning}
 Tu ne devrais pas expliquer ce qu'est le fine-tuning? 
 :::
 
+
+# Fine-tuning pipeline: the essential
+
+In this section we will see the fundamentals to fine-tuning encoders for a classification task. We will use a dataset introduced by Luo et al., (2020); they collected journal articles, from which they extracted sentences conveying an opinion regarding global warming. Finally, they annotated each opinion as "agreeing", "neutral" or "disagreeing" with regard to the following statement "Climate chage/global warming is a serious concern".
+
+TODO ANNONCER CE QUE NOUS ALLONS FAIRE
 
 ## Load your data 
 
@@ -285,7 +294,7 @@ df_no_duplicates.groupby("sentence").size().value_counts()
 
 We still need to deal with the 8 elements that have a duplicate. We would like to use the `drop_duplicates` function, but to do so, we need to make sure that the label of the two duplicates are the same. Let's check if some sentence are the same with a concensus on the label: 
 
-[ES: C'est vraiment la règle à suivre ? On garde des éléments identiques avec des annotations discordantes ? Question de curiosité]
+[ES: C'est vraiment la règle à suivre ? On garde des éléments identiques avec des annotations discordantes ? AM: Question de curiosité; Il vaut mieux éviter les doublons oui, sinon tu créé du bruit ou tu suraligne avec une phrase. Je pense que c'est pas critique mais je trouvais ça important de s'y arrêter. Opinions?]
 
 ```python 
 df_concensus = df_no_duplicates.groupby("sentence")["label_text"].agg(concensus = lambda X : len(set(X)) == 1)
@@ -361,7 +370,7 @@ The final step is to create a train set, a train-eval set, dev set and final-eva
 - the **dev set** is the set of sentences that are used to evaluate a model and choose Hyperparameters. They are not seen by the model but they are part of the optimisation process.
 - the **final-eval** set is the set of sentences that are used to produce realistic performance evaluation. This set of sentences is not seen by the model during training and prevent from biasing the hyperparameter optimisation due to cherry picking.
 
-[ES: la terminologie est différente de ActiveTigger, sur quoi on se base pour ne pas avoir eval / test ? JE pense que ça doit être cohérent entre nos outils et nos leçons non ?]
+[ES: la terminologie est différente de ActiveTigger, sur quoi on se base pour ne pas avoir eval / test ? JE pense que ça doit être cohérent entre nos outils et nos leçons non ? AM: Je suis d'accord. Cependant la terminologie a souvent été confuse pour certaines personnes. Est ce que ça vaudrait pas le coup de réfléchir à une terminologie claire et mettre à jour ce tuto ET AT?]
 
 In general, we allocate 70% of the data to the train set, then 10% to train eval, dev set and final eval set. Depending on the size of your dataset, you might want to tweak this distribution. Ultimately, you want enough data for training and evaluation for scores to be significative.
 
@@ -393,9 +402,11 @@ df_stratified = (
 
 ## Choose and load a model
 
-We will start with a pre-trained model and then fine-tune it on our specific data. How to choose such model ?
+We will start with a pre-trained model and then fine-tune it on our specific data. How to choose such model ? XXX
 
 In this tutorial we use the Transformers package, maintained by [HuggingFace](https://huggingface.co/)[^huggingface]. They propose a range of open source models and datasets downlable through their API. In the context of this tutorial, we will start working with the famous BERT models named: [google-bert/bert-base-uncased](https://huggingface.co/google-bert/bert-base-uncased)
+
+[AM: Je pensais qu'on voulait présenter HF, pourquoi mettre ça en note de bas de page?]
 
 [^huggingface]: HuggingFace is a company (for profit ?) specialised in NLP and machine learning. They maintain many SOTA libraries such as [Transformers](XXX), [Datasets](XXX) or [Sentence Transormers](XXX). On top of maintaining the libraries, they publish posts about the latest tech, tutorials on their libraries, host a forum for debugging but also propose inference and training solutions if you don't have access the required hardware.
 
@@ -567,13 +578,15 @@ If you ever wanted to work with another model that has already been fine-tuned a
 
 We are finally going to fine-tune the model on our specific data. To do so, we are going to follow the 3 folowing steps:  
 
+[AM: Je suis d'accord que fine-tune c'est plus fiable avec les concepts mais la méthode c'est vraiment trainer.train() et pas fine_tuner.fine_tune() ... Je sais pas ce qui est mieux]
+
 - Tokenize your dataset
 - Setup the training arguments
 - Launch training
 
 ### Tokenize the dataset
 
-Models manipulate matrices of numbers; to convert text to numbers, a specific step is tokenization. Different models can have different way of tokenization.
+Models manipulate matrices of numbers; to convert text to numbers, a specific step is tokenization. Different models can have different way of tokenization. XXX rephrase
 
 :::{.callout-note title="What are tokens already?"}
 
@@ -629,7 +642,7 @@ The data is ready to be used for Training!
 
 <!-- Move to experts? -->
 
-[ES: je ne comprends pas le rôle de cette partie ; si c'est comprendre l'inférence avec un modèle, je pense que ça doit arriver bien plus tôt quand tu présentes charger un modèle, une partie "l'utiliser out of the box" avant le fine-tuning]
+[ES: je ne comprends pas le rôle de cette partie ; si c'est comprendre l'inférence avec un modèle, je pense que ça doit arriver bien plus tôt quand tu présentes charger un modèle, une partie "l'utiliser out of the box" avant le fine-tuning. AM: Je vois ce que tu veux dire, mais aussi y'a besoin de présenter tous les objets avant de les appeler. Je pense pas qu'on peut le faire plus tôt. Ou alors il faut le faire avec les mains et pas avec du code. C'est peut être mieux ? ]
 
 Before fine-tuning the model, we wanted to demonstrate each step of the classification: 
 
@@ -701,15 +714,9 @@ training_arguments = TrainingArguments(
 )
 ```
 
-### Launch fine-tuning
+### Launch training
 
-:::{.callout-warning}
-
-Est-ce qu'il ne faudrait pas que tu développe un peu plus ce qui se passe lors de la phrase de fine-tuning?
-
-:::
-
-Finally, we can start the fine-tuning. 
+Finally, we can start the training. 
 
 ```python
 trainer = Trainer(
@@ -850,6 +857,8 @@ Here we can see that the model performance for the labels "agrees" and "neutral"
 :::{.callout-warning}
 
 Ca devrait arriver au moment de l'entrainement, avec l'explication de ce qui va se passer, pas après si ?
+
+On re-écrit et on rediscute de sa place après !
 
 :::
 
