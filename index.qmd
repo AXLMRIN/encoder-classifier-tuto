@@ -20,12 +20,17 @@ Je commencerai le tutoriel de manière un peu plus douce sur les principales not
 -> OK
 :::
 
-It is now common practice to use LLMs (encoders or decoders) to annotate texts in the context of social science research (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). This approach does not replace the theoretical work and manual annotation, as one must define the labels and what they represent, as well as annotate some elements that will be used to evaluate the LLMs’ ability to perform the classification task. On the other hand, LLMs provide cost-effective and rapid alternatives for scaling studies.
+To describe a phenomenon, social scientists can collect a large sample of documents (tweets, abstracts, newspaper articles, videos, ...) and assign one or more labels each, this task is called "annotation". Annotating corpus of texts has long been a long and cumbersome task for social scientists or interns. Many strategies have been developped to reduce the annotating cost such as hiring interns, externalise the task to a company such as MTurk, or use computers to do the job (SOURCE of fun fact ?). Since the development of LLMs, it has now become a common practice to use them as annotators in social science contexts (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). For instance Claesson (2026) annotated 4.5 million tweets addressed to French members of the parliament. Each tweet could be assigned the labels "attack", "critique" or "support". With these annotations, she was able to describe the conditions of hate speech on twitter. <!-- TODO reformulate --> In the Machine Learning jargon, the annotation task is referred to as a "classification task".
 
-- Using encoder models: from texts, models create embeddings to represent each text (a vector of several hundred of values) used then as predictors to perform the classification. This strategy is illustrated in the Augmented Social Scientist tutorial, which requires some coding skills as well as a computer capable of loading and running the model.
-- Using decoder models: from a prompt, ie the concatenation of the text to annotate as well as the codebook, we ask a model to generate the labels as text. This strategy is easier to implement as fewer coding skills are required, and models run on external machines. This nonetheless has drawbacks,   <!-- TODO Reprendre les conclusions du tuto decoder -->
+In this series of tutorials we dive into the technicalities of the classification pipeline using LLMs as annotators. In a previous [tutoriel](https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/), we demonstrated how to use generative AI (genAI) for this task; the pipeline consisted of creating an appropriate prompt and retrieving the label in the genAI response. In this tutorial however we demonstrate how to use an encoder model (an LLM that does not generate texts) to perform this task. This technique requires more NLP knowledge and coding skills, therefore this tutorial is longer and introduces many concepts that could be overlooked when using black box models. 
 
-In a previous tutorial, we demonstrated how to make API calls with the `openai`library ([available here](https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/)). In this tutorial, we explore the other solution: fine-tuning an encoder model. Alternatively, you can use [ActiveTigger](https://www.activetigger.com), a software developed by our team that facilitates the use of these models for social science.
+_AM: INCLUDE SOMEWHERE: This approach does not replace the theoretical work and manual annotation, as one must define the labels and what they represent, as well as annotate some elements that will be used to evaluate the LLMs’ ability to perform the classification task. On the other hand, LLMs provide cost-effective and rapid alternatives for scaling studies._
+
+_AM: Mention Active Tigger_
+
+The main objective of this tutorial is to **fine-tune** an **encoder model** and introduce the key concepts so you can adapt the code to your specific task. 
+
+After presenting the objectives, materials and setup steps, we introduce the key NLP and Machine Learning concepts, we will break down the pipeline starting with loading the dataset and format it, then load the model and setting the finetuning parameters to finally launch the finetuning process. Once the finetuning is done, we will assess the performance and discuss how we can tweak the hyperparameters to reach optimum performance. We conclude this tutorial with advices on how to correctly incorporate the results in a social science project. Throughout the tutoriel we provide practical insights on how to best use your hardware.
 
 <!-- TODO: write a pros and cons of the two methods -->
 
@@ -33,12 +38,23 @@ In a previous tutorial, we demonstrated how to make API calls with the `openai`l
 
 In this tutorial we will :
 
-- Understand the general pipeline for text classification with encoder models
-- Develop some familiarity with preprocessing and training techniques
-- Evaluate models' performance and their impact on downstream tasks and discussing GPU issues <!-- JB: Le tuto ne mentionne pas vraiment "impact on downstream tasks" il me semble. => supprimer ?  AM: supprimer oui, on fera juste une mention dans la conclusion-->
-- Develop good practices for your research
+- Identify the main NLP and Machine Learning concepts.
+- Understand the general pipeline for text classification with encoder models.
+- Develop some familiarity with preprocessing and training techniques.
+- Introduce the key metrics to evaluate models' performance.
+- Discuss how to properly incorporate this step in your research using state-of-the-art practices for your research.
 
-We have also included a section discussing how to train models on GPUs.
+In this tutorial, we will NOT cover : 
+
+- The Python syntax, we expect readers to already have some knowledge of the coding language. See Lino's course for an introduction 
+- The fundamentals of NLP and the intersection of linguistics and computer science, we will only introduce concepts necessary to understanding this tutorial. See Jurafsky 
+- The conceptualisation of your research question to fall into the automatic annotation framework, we expect readers to be able to design their protocol and motivate it using appropriate social sciences and any domain speficic concepts.
+
+Available materials:
+
+-
+
+<!-- TODO faire un dépot Zenodo -->
 
 ## Install environment: 
 
@@ -48,21 +64,16 @@ For this tutorial we use Python version 3.12 and setup the environment with the 
 pip install -qU pandas "transformers==4.52.4" datasets ipykernel matplotlib torch "accelerate>=0.26.0" scikit-learn plotly "nbformat>=4.2.0"
 ```
 
-:::{.callout-warning}
-However, you should know that, however convenient [PyTorch](XXX), [accelerate](XXX), and [transformers](XXX) are, these libraries may be unstable depending on your computer and environment. You **will face issues** related to your version. We recommand using conda[^4] (or the virtual environments manager of your choice[^5]) to correctly setup your environment and create a requirement file[^6] of your own once you've reached a stable workspace. Don't hesitate downgrading your libraries as they are likely to be more stable.
-:::
+We use SOTA Python librairies such as [PyTorch](https://pytorch.org/) and [Transformers](https://huggingface.co/docs/transformers/index). These librairies are well documented and large online communities of users have posted much valuable content to assist you during your journey. More specifically, it is likely that you will face implementation issues related to the versions of the libraries; many forums will guide you into choosing the adequate librairies versions to install depending on your task and model of choice. For this reason, we recommend using a virtual environments manager such as conda[^4] or uv[^5] and keep track of your versions to save painful debugging time in the long run.
 
 [^4]: [Set up your cuda environment](https://www.youtube.com/watch?v=sDCtY9Z1bqE)
 
 [^5]: [More on UV](XXX), XXXX
 
-[^6]: (link to conda env > .yml) + for UV
+# Key concepts and valuable resources to start your NLP journey
 
-<!-- TODO: add requirement files -->
+In this tutorial we will **fine-tune** a **pretrained language model** of type **encoder** to perform a **classification** task. The description itself needs clarification, we will endeavor ourselves to shed light on all of these keywords while remaining on the surface level to keep this tutorial legible. At each step, we provide valuable resources to further understand the concepts.
 
-# Understand the encoder architecture
-
-**ES spotted many flaws in the structure. Will re-write this section entirely.**
 
 ::: {.callout-warning}
 Question : est-ce qu'on parle d'autres encodeurs que des BERT dans ce tytorial, si non : pourquoi ne pas se concentrer sur les BERT ?
@@ -70,30 +81,101 @@ Question : est-ce qu'on parle d'autres encodeurs que des BERT dans ce tytorial, 
 AM: Non, c'est vrai mais si on se concentre sur des BERTs des non-initiés risqueraient de ne pas faire le lien entre BERT et encodeurs. Je me dis si on définit largement les encodeurs c'est plus facile de dire : "nous on se concentre sur les BERTs qui est un type d'encodeur". Opinion?
 :::
 
-In this section we provide common knowledge about the encoder architecture and training; if you want to refine your understanding of the theory, we list a number of state-of-the-art resources. 
+**The classification task**
 
-<!-- TODO mix and match the paragraphs  -->
+The classification task is a concept from Machine Learning, it refers to an algorithm that will use input data (= predictors) to assign a class / label to each input. [Scikit-Learn](scikit-learn.org/stable)[^scikit-learn] puts it this way: _Identifying which category an object belongs to._ In the context of annotation, the connection is fairly direct, each text input needs to be assigned a label, therefore it is a classification task. 
 
-All models we discuss here are neural [network models](https://en.wikipedia.org/wiki/Neural_network_(machine_learning))[^neural-networks] with specific architectures (activation nodes, pooling layers or feedback loops). Ultimately, one can see models as a sequence of matrix multiplication and vectors addition where the coefficients of the matrices and vectors (the weights) have been optimised for a certain task. The Transformer architecture, is one way of agencing nodes together. In one of the most famous paper in NLP (["Attention is all you need"](https://en.wikipedia.org/wiki/Attention_Is_All_You_Need)), a team from Google introduced the concept of *attention* which attempts to take into account the context in which a word is used.  
+[^scikit-learn]: Most famous Python library for Machine Learning. This library has had a major impact in the coding community, notably it imposed the `.fit` `.transform` syntax.
 
-All models presented here are deep neural networks. This is a very large family of algorithms, with infinite architecture variations and subtleties, but ultimately they can be seen as a long sequence of simple matrix operations (sums and multiplications) and nonlinear transformations, that map some input data into some output data. The specific sequence of operations in a model is called its architecture, and the matrix values that are used in the process of transforming the input data are called its weights. These weights are optimized during a training process, by minimizing a loss function that measures how well the model is performing for its given task. 
+Classification is part of the **supervised learning** family in machine learning: this means that to be able to assign labels, the algorithm will first need to be **fitted** onto some **training data**, i.e. handmade annotations. The fitting/training process consists of providing inputs and labels, so the algorithm can adapt to the task and _"learn"_. This mean that social scientists will first need to annotate a small set of texts in order to train the classifier. 
 
-The Transformer architecture has become the de facto standard for contemporary artificial intelligence, in its many forms. It was introduced in 2017 by a team from Google, in perhaps the most influential paper in contemporary NLP and beyond, (["Attention is all you need"](https://en.wikipedia.org/wiki/Attention_Is_All_You_Need)). The cornerstone of this architecture is *self-attention*, which is an efficient way of taking into account the context in which a word is used.
+Classifiers often have structuring parameters called **Hyperparameters** that alter the algorithm and are not changed during training.
 
-![Transformer architecture](./assets/encoder-architecture.jpg){#fig-transformer-architecture width=50%}
+::::{.columns}
+
+:::{.column width=70%}
+To evaluate classifiers we use [normalised metrics](https://scikit-learn.org/stable/modules/model_evaluation.html#which-scoring-function-should-i-use) such as [Precision](https://en.wikipedia.org/wiki/Precision_and_recall), [Recall](https://en.wikipedia.org/wiki/Precision_and_recall), [Accuracy](https://en.wikipedia.org/wiki/Accuracy_and_precision#In_binary_classification) and [F1 score](https://en.wikipedia.org/wiki/F-score#Definition). Depending on your research you may want to optimise one metric or another. 
+
+- Precision: _"out of all the elements predicted of class A, how many were indeed of class A?"_, this metric is rather conservative, optimising this score will limit the number of false positives.
+- Recall: _"out of all the elements that should have been classified as A, how many were indeed classified as A?"_, this metric is XXX, optimising this score will limit the number of false negatives.
+- Accuracy: _"across all classes, how many elements were classified correctly?"_, XXX critique of this metric JB?
+- F1 score: this score is an harmonic mean of recall an precision
+
+:::
+
+:::{.column width=30%}
+![precision and recall](./assets/precision_recall.jpg){#fig-precision-recall width=100%}
+:::
+
+::::
+
+To correctly assess a model evaluation and prevent cherry-picking, we proceed to separate evaluation on distinct subsets of texts:
+
+- The training set: these items will be shown to the algorithm to _learn_. Metrics on the train set will be boosted.
+- The dev set: these items will be used to assess the performance of the algorithm on new data. This set is used to choose the hyperparameters. Metrics on the dev set are likely to be boosted due to the fact that the hyperparameters are chosen to optimise this score.
+- The test set: these items will be used to assess the performance of the algorithm with the chosen hyperparameters on new data. Metrics on the test dev are is representative of the expected performance of the algorithm on new data. Scientists are encouraged to communicate on metrics computed on the test set to prevent from cherry picking the performance metrics. 
+
+**Models**
+
+In this context, models are [deep neural network models](https://en.wikipedia.org/wiki/Neural_network_(machine_learning))[^neural-networks]. Neural Network consist of connected nodes _(neurons)_ that receives signals from other neurons, processes the signal, and send the outcome to other neurons. Neurons are grouped into layers, and signals travel from the first layer to the last one transforming the input information into an output signal. A neural network is considered deep if it has more than 2 layers. Each neuron contains information called **weights** and **biases**. 
+
+To be usable, Neural Networks must be trained on a certain task, for instance a classification task. As described before, the algorithm/neural network will adapt to the training data. In this case, the adaptation consists of updating the **weights** and **biases** in each neuron in order for the neural network to perform the task. 
+
+Ultimately, they can be seen as a long sequence of simple transformations, each transformation being conditioned by the **weights** and **biases**, that optimised to perform a certain task.
+
+```{mermaid}
+graph LR
+
+N0((Neuron))
+subgraph prevLayer["Previous Layer"]
+  direction TB
+  NP1((Neuron))
+  NP2((Neuron))
+  NP3((Neuron))
+end
+
+subgraph nextLayer["Next Layer"]
+  direction TB
+  NN1((Neuron))
+  NN2((Neuron))
+  NN3((Neuron))
+end
+
+NP1 --> N0
+NP2 --> N0
+NP3 --> N0
+
+N0 --> NN1
+N0 --> NN2
+N0 --> NN3
+```
+
+**Language Models**
+
+Language models encompasses a large family of neural network models with infinite architecture variations. Their goal is to perform a text related tasks like generating a summary, or in our case, classify text inputs.
+
+Across all architechures, the **Transformer architecture** has become the _de facto_ standard for contemporary artificial intelligence. It was introduced in 2017 by a team from Google, in perhaps the most influential paper in contemporary NLP and beyond, (["Attention is all you need"](https://en.wikipedia.org/wiki/Attention_Is_All_You_Need)). The cornerstone of this architecture is *self-attention*, which is an efficient way of taking into account the context in which a word is used.
+
+**Language Models of type Encoder**
 
 The original transformer was made up of two parts, the encoder and the decoder, but most of its subsequent applications use only one of these parts:
 
 - **Decoder** models, including the GPT and Llama families, are generative models, meaning they are able to produce text. They are typically very large, with billions of weights that take up gigabytes of disk and memory space. While the smallest ones (a few billion weights) can be run on a laptop, today's frontier models use trillions of parameters and can only be run in datacenters, so that you can only use them through APIs. When these APIs are commercial, this can raise serious confidentiality issues for social science uses <!-- TODO reformulate -->. 
 - **Encoder** models are not generative, and are only intended to capture the semantic properties of their input text, which can then be used for downstream tasks. They include BERT and its hundreds of variations: RoBERTa, DeBERTa, ... their name usually gives them away. They are much more frugal (below 1 billion parameters), so that in many cases they can be used on a laptop[^7]. 
 
+[^7]: It tends to be less likely as newer models tend to be larger. Read more in the [Choose and load a model](#choose-and-load-a-model) section.
+
+![Transformer architecture](./assets/encoder-architecture.jpg){#fig-transformer-architecture width=50%}
+
+**BERT models**
+
+The first BERT model was published by Google in 
+
 ::: {.callout-warning}
 Pas clair, tu passes de l'architecture aux modèles disponibles et utilisés; Je pense qu'il faut séparer clairement qu'il y a des conceptions d'une part, et des gens qui créent les modèles et les utilisent de l'autre. Là c'est trop lié ensemble. Notamment, l'architecture n'est pas entièrement liée à la taille (nombre de paramètres).  
 :::
 
 <!-- TODO distinction train et fine-tune -->
-
-[^7]: It tends to be less likely as newer models tend to be larger. Read more in the [Choose and load a model](#choose-and-load-a-model) section.
 
 Training embedding models is a complex task that can be carried out in many different ways. For instance, BERT was trained on two tasks (Devlin et al., 2019): 
 
