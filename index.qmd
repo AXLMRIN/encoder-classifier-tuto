@@ -161,38 +161,46 @@ Across all architechures, the **Transformer architecture** has become the _de fa
 The original transformer was made up of two parts, the encoder and the decoder, but most of its subsequent applications use only one of these parts:
 
 - **Decoder** models, including the GPT and Llama families, are generative models, meaning they are able to produce text. They are typically very large, with billions of weights that take up gigabytes of disk and memory space. While the smallest ones (a few billion weights) can be run on a laptop, today's frontier models use trillions of parameters and can only be run in datacenters, so that you can only use them through APIs. When these APIs are commercial, this can raise serious confidentiality issues for social science uses <!-- TODO reformulate -->. 
-- **Encoder** models are not generative, and are only intended to capture the semantic properties of their input text, which can then be used for downstream tasks. They include BERT and its hundreds of variations: RoBERTa, DeBERTa, ... their name usually gives them away. They are much more frugal (below 1 billion parameters), so that in many cases they can be used on a laptop[^7]. 
+- **Encoder** models are intended to capture the semantic properties of their input text, which can then be used for downstream tasks. The output of an encoder model is a vector of several hundreds of dimensions called an **embedding**. They are much more frugal (below 1 billion parameters), so that in many cases they can be used on a laptop[^7]. 
+
+@sec-pros-cons, lists a number of pros and cons for both decoder and encoder models when used for classification.
 
 [^7]: It tends to be less likely as newer models tend to be larger. Read more in the [Choose and load a model](#choose-and-load-a-model) section.
 
 ![Transformer architecture](./assets/encoder-architecture.jpg){#fig-transformer-architecture width=50%}
 
-**BERT models**
-
-The first BERT model was published by Google in 
-
-::: {.callout-warning}
-Pas clair, tu passes de l'architecture aux modèles disponibles et utilisés; Je pense qu'il faut séparer clairement qu'il y a des conceptions d'une part, et des gens qui créent les modèles et les utilisent de l'autre. Là c'est trop lié ensemble. Notamment, l'architecture n'est pas entièrement liée à la taille (nombre de paramètres).  
-:::
-
-<!-- TODO distinction train et fine-tune -->
-
-Training embedding models is a complex task that can be carried out in many different ways. For instance, BERT was trained on two tasks (Devlin et al., 2019): 
-
-- Task 1: Masked LM. Take a sentence, replace some words by a `[MASK]` token, predict what was the word.
-- Task 2: Next Sentence Prediction. Take two sentences A and B, classify whether it makes sense for sentence B to appear after sentence A. 
-
-In the context of training embedding models, tasks have been adapted and redesigned but they all have the same objective [ES: pas clair ce que ça veut dire le début de phrase]: **modelling the semantic of words in context**. If done correctly, this means that two words close in meaning are close in the embedding space and that the embedding calculated takes into account the context of the sentence. In most NLP applications, the similarity score is calculated as the scalar product of the embeddings also referred to as the cosine metric.
-
-::: {.callout-warning}
-En fait là tu expliques ce que sont les embeddings... est-ce que cette notion n'est pas plus générale que les transformers, et devrait arriver avant ?
-:::
-
+In general, encoder models (AM: or maybe embedding models ? JB what's the difference?) are trained to **model the semantic of words in given context**. A well designed encoder model can tell if two words are close in meaning or not using a "semantic distance" metric. In most NLP applications, the metric used is the cosinus distance, also referred to as the "similarity score".
 
 ![Similarity](./assets/similarity.png){#fig-similarity width=100%}
 
 For instance in @fig-similarity, the word "apple" and "pear" are very close in meaning, so their similarity score is very high. However, in the context of Apple's new product, the embedding has shifted with the context, now the similarity score is lower.
 
+In the context of classification using en encoder model, the goal is to use the output of the language model, the embeddings, as predictors for the label. If the classification is "left/right", the embedding should capture the semantic similarities between left-wing texts and right-wing texts in order to classify them.
+
+One key parameter of all models is the "maximum context window". The maximum context window is the maximum[^max-window-size-actually] number of tokens[^tokens-def] that can be digested by the model at once, anything exceeding this window is simply ignored. First models used to have very short context windows (between 128 and 512 tokens maximum), meaning long texts had to be split into sentences or paragraphs. This may be a problem depending on the task at hand.
+
+[^max-window-size-actually]: Some techniques allow users to exceed the maximum context window, please refer to XXX @ Léo @ Alexandre
+
+[^tokens-def]: Texts cannot be used directly and must undergo a tokenization process. Models come with a vocabulary of tokens, each text is therefore a combination of "tokens" from the vocabulary. 
+
+**BERT models**
+
+The first BERT model was published by Google in 2019 (Devlin et al., 2019). "BERT" refers to a specific arrangement of Transformers layers with some tweaks that proved great overall performance at the time and has become a reference in the realm of encoder model. As a consequence, many other BERT-like models were published, working off of these foundations, each new model proposing modifications or improvements like ModernBERT being larger with a much greater context window size, CamemBERT trained on French data, RoBERTa changing the training process. 
+
+**Pretrained Language Model**
+
+We mentioned that language models were deep neural networks trained on a natural language task, but a model is not usable before it was trained to recognise language patterns and semantic. "Pretrained" refers to the training process that make a language model _understand_ language by training it to perform different tasks. In practice, the weights and biases are updated to optimize one or more tasks. For instance, BERT is trained on two tasks : 
+
+- Task 1: Masked LM. Take a sentence, replace some words by a `[MASK]` token, predict what was the word.
+- Task 2: Next Sentence Prediction. Take two sentences A and B, classify whether it makes sense for sentence B to appear after sentence A. 
+
+This pre-training is the most time and power consuming step as the process can take from dozens of hours to several days, weeks or even months. This task is only performed by specialised organisations that have access to high end hardware and large amount of data (let it be from legal or illegal source). Once the process is done, the model can reach moderate to high performance on a large range of tasks.
+
+**Fine-tuning**
+
+The "pre-training" implies there is a "training", or more specifically, a "fine-tuning". This fine-tuning process only takes a few minutes on a regular laptop and can last a few hours at best. This process is intends to adapt the model to **your** task and **your** data, going from moderate to, hopefully, very high performance. 
+
+In our case, we will be fine-tuning the model on a classification task, by providing text inputs and hand labels. In practice, this process updates the weights and biases but at a much lower order of magnitude. This fine-tuning process will transform the language model into a classifier model for text data. This means that the fine tuning is assessed the with the same metrics (F1 score, ...) and following the same framework (train, dev, test splits) as another classifier. 
 
 :::{.callout-note  collapse="true" title="Learn more the embedding space and training encoders"}
 
@@ -203,10 +211,6 @@ For instance in @fig-similarity, the word "apple" and "pear" are very close in m
 
 :::
 
-One key parameter of all models is the "maximum context window". The maximum context window is the maximum number of tokens that can be digested by the model at once, anything exceeding this window is simply ignored. First models used to have very short context windows (between 128 and 512 tokens maximum), meaning long texts had to be split into sentences or paragraphs. This may be a problem depending on the task at hand.
-
-
-
 ::: {.callout-example}
 
 [ES: pas convaincu de cette partie ici, tu es encore sur la théorie et là tu viens avec un aspect très précis de tâche alors qu'on a pas vraiment parlé de labellisation encore]
@@ -215,34 +219,6 @@ Let's say you want to detect if long articles tackle environmental issues. One m
 <br/>
 This consists of an additional difficulty and requires researcher to further precise their research question and how they might answer it.
 
-:::
-
-Some techniques allow users to exceed the maximum context window, please refer to XXX @ Léo @ Alexandre
-
-# Pros and cons of using an encoder vs decoder model for text classification 
-
-**Coding skills**
-
-As this tutorial demonstrates, fine tuning an encoder model requires more coding skills than making API requests to an external servers. This can be an advantage if you want to develop your skills and refine your understanding of language models, but it takes more time and effort.
-
-**Accessibility to a server**
-
-Fine tuning an encoder model requires hardware and a clean environment as demonstrated trhoughout this tutorial; on the other hand, making API calls requires an API key with credit. This raises concerns regarding the equal access to such technologies.
-
-**Control on the model**
-
-Most models do not disclose the training data used for pretraining the model we use, this represent an hard limit when it comes to controlling the model used and the interpretability of the results. However, encoder models allow for more reproducibility (you own the model used for inference) and interpretability (you own the data used for fine tuning, XXX additional techniques to probe the model???).
-
-**Open weights**
-
-XXX
-
-**Confidentiality**
-
-XXX
-
-::: {.callout-warning}
-Tu ne devrais pas expliquer ce qu'est le fine-tuning? 
 :::
 
 
@@ -1319,6 +1295,29 @@ Same: "Invalid buffer size: " on CPU
 
 @ Etienne @ Julien
 
+# Pros and cons of using an encoder vs decoder model for text classification{#sec-pros-cons}
+
+**Coding skills**
+
+As this tutorial demonstrates, fine tuning an encoder model requires more coding skills than making API requests to an external servers. This can be an advantage if you want to develop your skills and refine your understanding of language models, but it takes more time and effort.
+
+**Accessibility to a server**
+
+Fine tuning an encoder model requires hardware and a clean environment as demonstrated trhoughout this tutorial; on the other hand, making API calls requires an API key with credit. This raises concerns regarding the equal access to such technologies.
+
+**Control on the model**
+
+Most models do not disclose the training data used for pretraining the model we use, this represent an hard limit when it comes to controlling the model used and the interpretability of the results. However, encoder models allow for more reproducibility (you own the model used for inference) and interpretability (you own the data used for fine tuning, XXX additional techniques to probe the model???).
+
+**Open weights**
+
+XXX
+
+**Confidentiality**
+
+XXX
+
 # Conclusion 
+
 
 # Bibliography 
