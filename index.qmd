@@ -20,7 +20,7 @@ Je commencerai le tutoriel de manière un peu plus douce sur les principales not
 -> OK
 :::
 
-To describe a phenomenon, social scientists can collect a large sample of documents (tweets, abstracts, newspaper articles, videos, ...) and assign one or more labels each, this task is called "annotation". Annotating corpus of texts has long been a long and cumbersome task for social scientists or interns. Many strategies have been developped to reduce the annotating cost such as hiring interns, externalise the task to a company such as MTurk, or use computers to do the job (SOURCE of fun fact ?). Since the development of LLMs, it has now become a common practice to use them as annotators in social science contexts (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). For instance Claesson (2026) annotated 4.5 million tweets addressed to French members of the parliament. Each tweet could be assigned the labels "attack", "critique" or "support". With these annotations, she was able to describe the conditions of hate speech on twitter. <!-- TODO reformulate --> In the Machine Learning jargon, the annotation task is referred to as a "classification task".
+To describe a phenomenon, social scientists can collect a large sample of documents (tweets, abstracts, newspaper articles, videos, ...) and assign one or more labels each, this task is called "annotation". Annotating corpus of texts has long been a long and cumbersome task for social scientists or interns. Many strategies have been developped to reduce the annotating cost such as hiring interns, externalise the task to a company such as MTurk, or use computers to do the job (SOURCE of fun fact ?). Since the development of LLMs, it has now become a common practice to use them as annotators in social science contexts (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). For instance Claesson (2026) annotated 4.5 million tweets addressed to French members of the parliament. Each tweet could be assigned the labels "attack", "critique" or "support". With these annotations, she was able to describe the conditions of hate speech towards French parliamentaries on twitter. <!-- TODO reformulate --> In the Machine Learning jargon, the annotation task is referred to as a "classification task".
 
 In this series of tutorials we dive into the technicalities of the classification pipeline using LLMs as annotators. In a previous [tutoriel](https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/), we demonstrated how to use generative AI (genAI) for this task; the pipeline consisted of creating an appropriate prompt and retrieving the label in the genAI response. In this tutorial however we demonstrate how to use an encoder model (an LLM that does not generate texts) to perform this task. This technique requires more NLP knowledge and coding skills, therefore this tutorial is longer and introduces many concepts that could be overlooked when using black box models. 
 
@@ -30,7 +30,7 @@ _AM: Mention Active Tigger_
 
 The main objective of this tutorial is to **fine-tune** an **encoder model** and introduce the key concepts so you can adapt the code to your specific task. 
 
-After presenting the objectives, materials and setup steps, we introduce the key NLP and Machine Learning concepts, we will break down the pipeline starting with loading the dataset and format it, then load the model and setting the finetuning parameters to finally launch the finetuning process. Once the finetuning is done, we will assess the performance and discuss how we can tweak the hyperparameters to reach optimum performance. We conclude this tutorial with advices on how to correctly incorporate the results in a social science project. Throughout the tutoriel we provide practical insights on how to best use your hardware.
+After presenting the objectives, materials and setup steps, we introduce the key NLP and Machine Learning concepts, we will break down the pipeline starting with loading the dataset and format it, then load the model and set the finetuning parameters, finally launch the finetuning process. Once the finetuning is done, we will assess the performance and discuss how we can tweak the hyperparameters to reach satisfying performance. We conclude this tutorial with advices on how to correctly incorporate the results in a social science project. Throughout the tutoriel we provide practical insights on how to best use your hardware.
 
 <!-- TODO: write a pros and cons of the two methods -->
 
@@ -48,7 +48,7 @@ In this tutorial, we will NOT cover :
 
 - The Python syntax, we expect readers to already have some knowledge of the coding language. See Lino's course for an introduction 
 - The fundamentals of NLP and the intersection of linguistics and computer science, we will only introduce concepts necessary to understanding this tutorial. See Jurafsky 
-- The conceptualisation of your research question to fall into the automatic annotation framework, we expect readers to be able to design their protocol and motivate it using appropriate social sciences and any domain speficic concepts.
+- The conceptualisation of your research question to fall into the automatic annotation framework, we expect readers to be able to design their protocol and motivate it using appropriate social sciences or any domain speficic concepts.
 
 Available materials:
 
@@ -72,7 +72,7 @@ We use SOTA Python librairies such as [PyTorch](https://pytorch.org/) and [Trans
 
 # Key concepts and valuable resources to start your NLP journey
 
-In this tutorial we will **fine-tune** a **pretrained language model** of type **encoder** to perform a **classification** task. The description itself needs clarification, we will endeavor ourselves to shed light on all of these keywords while remaining on the surface level to keep this tutorial legible. At each step, we provide valuable resources to further understand the concepts.
+In this tutorial we will **fine-tune** a **pretrained language model** of type **encoder** to perform a **classification** task. The description itself needs clarification, we will endeavor to shed light on all of these keywords while remaining on the surface level to keep this tutorial legible. At each step, we provide valuable resources to further understand the concepts.
 
 
 ::: {.callout-warning}
@@ -87,9 +87,9 @@ The classification task is a concept from Machine Learning, it refers to an algo
 
 [^scikit-learn]: Most famous Python library for Machine Learning. This library has had a major impact in the coding community, notably it imposed the `.fit` `.transform` syntax.
 
-Classification is part of the **supervised learning** family in machine learning: this means that to be able to assign labels, the algorithm will first need to be **fitted** onto some **training data**, i.e. handmade annotations. The fitting/training process consists of providing inputs and labels, so the algorithm can adapt to the task and _"learn"_. This mean that social scientists will first need to annotate a small set of texts in order to train the classifier. 
+Classification is part of the **supervised learning** family in machine learning: this means that to be able to assign labels, the algorithm will first need to be **fitted** onto some **training data**, _in our case handmade annotations_. The fitting/training process consists of providing inputs and labels, so the algorithm can adapt to the task and _"learn"_. This means that social scientists will first need to annotate a small set of texts in order to train the classifier. 
 
-Classifiers often have structuring parameters called **Hyperparameters** that alter the algorithm and are not changed during training.
+Classifiers often have structuring parameters called **hyperparameters** that alter the algorithm and are not changed during training. These parameters must be set with great care in order to reach satisfying performance.
 
 ::::{.columns}
 
@@ -99,7 +99,7 @@ To evaluate classifiers we use [normalised metrics](https://scikit-learn.org/sta
 - Precision: _"out of all the elements predicted of class A, how many were indeed of class A?"_, this metric is rather conservative, optimising this score will limit the number of false positives.
 - Recall: _"out of all the elements that should have been classified as A, how many were indeed classified as A?"_, this metric is XXX, optimising this score will limit the number of false negatives.
 - Accuracy: _"across all classes, how many elements were classified correctly?"_, XXX critique of this metric JB?
-- F1 score: this score is an harmonic mean of recall an precision
+- F1 score: this score is an harmonic mean of recall an precision.
 
 :::
 
@@ -109,19 +109,19 @@ To evaluate classifiers we use [normalised metrics](https://scikit-learn.org/sta
 
 ::::
 
-To correctly assess a model evaluation and prevent cherry-picking, we proceed to separate evaluation on distinct subsets of texts:
+To correctly assess a model evaluation and prevent cherry-picking, we proceed to separate evaluations on distinct subsets of texts:
 
 - The training set: these items will be shown to the algorithm to _learn_. Metrics on the train set will be boosted.
 - The dev set: these items will be used to assess the performance of the algorithm on new data. This set is used to choose the hyperparameters. Metrics on the dev set are likely to be boosted due to the fact that the hyperparameters are chosen to optimise this score.
-- The test set: these items will be used to assess the performance of the algorithm with the chosen hyperparameters on new data. Metrics on the test dev are is representative of the expected performance of the algorithm on new data. Scientists are encouraged to communicate on metrics computed on the test set to prevent from cherry picking the performance metrics. 
+- The test set: these items will be used to assess the performance of the algorithm with the chosen hyperparameters on new data. Metrics on the test set are meant to be representative of algorithm's performance on new data. Scientists are encouraged to communicate on metrics computed on the test set to prevent from cherry picking the performance metrics. 
 
 **Models**
 
-In this context, models are [deep neural network models](https://en.wikipedia.org/wiki/Neural_network_(machine_learning))[^neural-networks]. Neural Network consist of connected nodes _(neurons)_ that receives signals from other neurons, processes the signal, and send the outcome to other neurons. Neurons are grouped into layers, and signals travel from the first layer to the last one transforming the input information into an output signal. A neural network is considered deep if it has more than 2 layers. Each neuron contains information called **weights** and **biases**. 
+In this context, models are [deep neural network models](https://en.wikipedia.org/wiki/Neural_network_(machine_learning)). Neural Networks consist of connected nodes _(neurons)_ that receive signals from other neurons, process the signal, and send the outcome to other neurons. Neurons are grouped into layers, and signals travel from the first layer to the last one transforming the input signal into an output signal. A neural network is considered deep if it has more than 2 layers. Each neuron contains information called **weights** and **biases**. 
 
 To be usable, Neural Networks must be trained on a certain task, for instance a classification task. As described before, the algorithm/neural network will adapt to the training data. In this case, the adaptation consists of updating the **weights** and **biases** in each neuron in order for the neural network to perform the task. 
 
-Ultimately, they can be seen as a long sequence of simple transformations, each transformation being conditioned by the **weights** and **biases**, that optimised to perform a certain task.
+Ultimately, they can be seen as a long sequence of simple transformations, each transformation being conditioned by the **weights** and **biases**, to perform a certain task.
 
 ```{mermaid}
 graph LR
@@ -160,8 +160,8 @@ Across all architechures, the **Transformer architecture** has become the _de fa
 
 The original transformer was made up of two parts, the encoder and the decoder, but most of its subsequent applications use only one of these parts:
 
-- **Decoder** models, including the GPT and Llama families, are generative models, meaning they are able to produce text. They are typically very large, with billions of weights that take up gigabytes of disk and memory space. While the smallest ones (a few billion weights) can be run on a laptop, today's frontier models use trillions of parameters and can only be run in datacenters, so that you can only use them through APIs. When these APIs are commercial, this can raise serious confidentiality issues for social science uses <!-- TODO reformulate -->. 
-- **Encoder** models are intended to capture the semantic properties of their input text, which can then be used for downstream tasks. The output of an encoder model is a vector of several hundreds of dimensions called an **embedding**. They are much more frugal (below 1 billion parameters), so that in many cases they can be used on a laptop[^7]. 
+- **Decoder** models, including the GPT and Llama families, are generative models, meaning they are able to produce text. They are typically very large (from $10^6$ to $10^9$ weights), it is unlikely to run one on a personal computer and are often used through an API as demonstrated in the [previous tutorial](XXX).
+- **Encoder** models are intended to capture the semantic properties of their input text, which can then be used for downstream tasks. The output of an encoder model is a vector of several hundreds of dimensions called an **embedding**. They are much more frugal (< $10^6$ weights), it is likely that you can run one on a personal computer[^7]. 
 
 @sec-pros-cons, lists a number of pros and cons for both decoder and encoder models when used for classification.
 
@@ -175,7 +175,7 @@ In general, encoder models (AM: or maybe embedding models ? JB what's the differ
 
 For instance in @fig-similarity, the word "apple" and "pear" are very close in meaning, so their similarity score is very high. However, in the context of Apple's new product, the embedding has shifted with the context, now the similarity score is lower.
 
-In the context of classification using en encoder model, the goal is to use the output of the language model, the embeddings, as predictors for the label. If the classification is "left/right", the embedding should capture the semantic similarities between left-wing texts and right-wing texts in order to classify them.
+In the context of classification using an encoder model, the goal is to use the output of the language model, the embeddings, as predictors for the label. If the classification is "left/right", the embedding should capture the semantic similarities between left-wing texts and right-wing texts in order to classify them.
 
 One key parameter of all models is the "maximum context window". The maximum context window is the maximum[^max-window-size-actually] number of tokens[^tokens-def] that can be digested by the model at once, anything exceeding this window is simply ignored. First models used to have very short context windows (between 128 and 512 tokens maximum), meaning long texts had to be split into sentences or paragraphs. This may be a problem depending on the task at hand.
 
@@ -185,11 +185,11 @@ One key parameter of all models is the "maximum context window". The maximum con
 
 **BERT models**
 
-The first BERT model was published by Google in 2019 (Devlin et al., 2019). "BERT" refers to a specific arrangement of Transformers layers with some tweaks that proved great overall performance at the time and has become a reference in the realm of encoder model. As a consequence, many other BERT-like models were published, working off of these foundations, each new model proposing modifications or improvements like ModernBERT being larger with a much greater context window size, CamemBERT trained on French data, RoBERTa changing the training process. 
+The first BERT model was published by Google in 2019 (Devlin et al., 2019). "BERT" refers to a specific arrangement of Transformers layers with some tweaks that demonstrated great overall performance at the time and has become a reference in the realm of encoder model. As a consequence, many other BERT-like models were published, working off of these foundations, each new model proposing modifications or improvements like ModernBERT greatly increasing the context window size, CamemBERT trained on French texts or RoBERTa changing the training tasks. 
 
 **Pretrained Language Model**
 
-We mentioned that language models were deep neural networks trained on a natural language task, but a model is not usable before it was trained to recognise language patterns and semantic. "Pretrained" refers to the training process that make a language model _understand_ language by training it to perform different tasks. In practice, the weights and biases are updated to optimize one or more tasks. For instance, BERT is trained on two tasks : 
+We mentioned that language models were deep neural networks trained on a natural language task, but a model is not usable before it was trained to recognise language patterns and semantic. "Pretrained" refers to the training process that makes a language model _understand_ texts by training it to perform some tasks. In practice, the weights and biases are updated to optimize one or more tasks, just as any neural network. For instance, BERT is trained on two tasks : 
 
 - Task 1: Masked LM. Take a sentence, replace some words by a `[MASK]` token, predict what was the word.
 - Task 2: Next Sentence Prediction. Take two sentences A and B, classify whether it makes sense for sentence B to appear after sentence A. 
@@ -200,7 +200,7 @@ This pre-training is the most time and power consuming step as the process can t
 
 The "pre-training" implies there is a "training", or more specifically, a "fine-tuning". This fine-tuning process only takes a few minutes on a regular laptop and can last a few hours at best. This process is intends to adapt the model to **your** task and **your** data, going from moderate to, hopefully, very high performance. 
 
-In our case, we will be fine-tuning the model on a classification task, by providing text inputs and hand labels. In practice, this process updates the weights and biases but at a much lower order of magnitude. This fine-tuning process will transform the language model into a classifier model for text data. This means that the fine tuning is assessed the with the same metrics (F1 score, ...) and following the same framework (train, dev, test splits) as another classifier. 
+In our case, we will be fine-tuning the model on a classification task, by providing text inputs and hand labels. In practice, this process updates the weights and biases but at a much lower order of magnitude. This fine-tuning process will transform the language model into a classifier model for text data. This means that the fine tuning is assessed using the same metrics (F1 score, ...) and following the same framework (train, dev, test splits) as any other classifier. 
 
 :::{.callout-note  collapse="true" title="Learn more the embedding space and training encoders"}
 
@@ -224,7 +224,11 @@ This consists of an additional difficulty and requires researcher to further pre
 
 # Fine-tuning pipeline: the essential
 
+Let's finally dive into the implementation of fine-tuning a pretrained language model of type encoder to perform a classification task!
+
 In this section we will see the fundamentals to fine-tuning encoders for a classification task. We will use a dataset introduced by Luo et al., (2020); they collected journal articles, from which they extracted sentences conveying an opinion regarding global warming. Finally, they annotated each opinion as "agreeing", "neutral" or "disagreeing" with regard to the following statement "Climate chage/global warming is a serious concern".
+
+First 
 
 TODO ANNONCER CE QUE NOUS ALLONS FAIRE
 
