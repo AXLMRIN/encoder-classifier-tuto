@@ -101,6 +101,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -181,7 +184,7 @@ window.Quarto = {
   <li><a href="#objectives-and-materials" id="toc-objectives-and-materials" class="nav-link" data-scroll-target="#objectives-and-materials">Objectives and materials</a></li>
   <li><a href="#install-environment" id="toc-install-environment" class="nav-link" data-scroll-target="#install-environment">Install environment:</a></li>
   </ul></li>
-  <li><a href="#understand-the-encoder-architecture" id="toc-understand-the-encoder-architecture" class="nav-link" data-scroll-target="#understand-the-encoder-architecture">Understand the encoder architecture</a></li>
+  <li><a href="#key-concepts-and-valuable-resources-to-start-your-nlp-journey" id="toc-key-concepts-and-valuable-resources-to-start-your-nlp-journey" class="nav-link" data-scroll-target="#key-concepts-and-valuable-resources-to-start-your-nlp-journey">Key concepts and valuable resources to start your NLP journey</a></li>
   <li><a href="#fine-tuning-pipeline-the-essential" id="toc-fine-tuning-pipeline-the-essential" class="nav-link" data-scroll-target="#fine-tuning-pipeline-the-essential">Fine-tuning pipeline: the essential</a>
   <ul class="collapse">
   <li><a href="#load-your-data" id="toc-load-your-data" class="nav-link" data-scroll-target="#load-your-data">Load your data</a></li>
@@ -214,7 +217,7 @@ window.Quarto = {
   <li><a href="#on-annotating-your-dataset" id="toc-on-annotating-your-dataset" class="nav-link" data-scroll-target="#on-annotating-your-dataset">On annotating your Dataset</a></li>
   <li><a href="#whats-a-good-score" id="toc-whats-a-good-score" class="nav-link" data-scroll-target="#whats-a-good-score">What’s a good score?</a></li>
   </ul></li>
-  <li><a href="#pros-and-cons-of-using-an-encoder-vs-decoder-model-for-text-classification" id="toc-pros-and-cons-of-using-an-encoder-vs-decoder-model-for-text-classification" class="nav-link" data-scroll-target="#pros-and-cons-of-using-an-encoder-vs-decoder-model-for-text-classification">Pros and cons of using an encoder vs decoder model for text classification</a></li>
+  <li><a href="#sec-pros-cons" id="toc-sec-pros-cons" class="nav-link" data-scroll-target="#sec-pros-cons">Pros and cons of using an encoder vs decoder model for text classification</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">Bibliography</a></li>
   </ul>
@@ -235,7 +238,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>A. Morin <a href="mailto:axel.morin@polytechnique.etu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+             <p>A. Morin <a href="mailto:axel.morin@polytechnique.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
           </div>
   </div>
     
@@ -248,73 +251,196 @@ window.Quarto = {
 </header>
 
 
+<!-- JB: Not sure we need to use the term Augmentation here, we're getting a bit more frileux on this :) -->
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<p>It is now common practice to use LLMs (encoders or decoders) to annotate texts in the context of social science research (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). This approach does not replace the theoretical work and manual annotation, as one must define the labels and what they represent, as well as annotate some elements that will be used to evaluate the LLMs’ ability to perform the classification task. On the other hand, LLMs provide cost-effective and rapid alternatives for scaling studies.</p>
-<p>There are several strategies to use LLMs to annotate texts:</p>
-<ul>
-<li>Using encoder models: from texts, models create embeddings (a vector of several hundred of values) used as predictors to perform the classification. This strategy is illustrated in the Augmented Social Scientist tutorial, which requires some coding skills as well as a computer capable of loading and running the model.</li>
-<li>Using decoder models: from a prompt, ie the concatenation of the text to annotate as well as the codebook, we ask a model to generate the labels as text. This strategy is easier to implement as fewer coding skills are required, and models run on external machines. This nonetheless has drawbacks, <!-- TODO Reprendre les conclusions du tuto decoder --></li>
-</ul>
-<p>In a previous tutorial, we demonstrated how to make API calls with the <code>openai</code>library (<a href="https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/">available here</a>). In this tutorial, we explore the other solution: fine-tuning an encoder model. Alternatively, you can use ActiveTigger, a software developed by our team that facilitates the use of models in the social sciences.</p>
+<!-- JB: Start by explaining what text annotation is -->
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Je commencerai le tutoriel de manière un peu plus douce sur les principales notions, là ça rentre vraiment dans le dur rapidement. Plus, il y a trois stratégies : encoder non finetuné, encoder finetuné et décodeur en inférence non ? On ne parle pas de plongement seuls + ML. Donc peut être un peu mieux situer l’approche, de manière un peu plus intuitive. Et peut être aussi introduire ici le fait qu’un humain est capable d’annoter et qu’on veut étendre cette équation humaine.</p>
+<p>-&gt; OK</p>
+</div>
+</div>
+<p>To describe a phenomenon, social scientists can collect a large sample of documents (tweets, abstracts, newspaper articles, videos, …) and assign one or more labels each, this task is called “annotation”. Annotating corpus of texts has long been a long and cumbersome task for social scientists or interns. Many strategies have been developped to reduce the annotating cost such as hiring interns, externalise the task to a company such as MTurk, or use computers to do the job (SOURCE of fun fact ?). Since the development of LLMs, it has now become a common practice to use them as annotators in social science contexts (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). For instance Claesson (2026) annotated 4.5 million tweets addressed to French members of the parliament. Each tweet could be assigned the labels “attack”, “critique” or “support”. With these annotations, she was able to describe the conditions of hate speech towards French parliamentaries on twitter. <!-- TODO reformulate --> In the Machine Learning jargon, the annotation task is referred to as a “classification task”.</p>
+<p>In this series of tutorials we dive into the technicalities of the classification pipeline using LLMs as annotators. In a previous <a href="https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/">tutoriel</a>, we demonstrated how to use generative AI (genAI) for this task; the pipeline consisted of creating an appropriate prompt and retrieving the label in the genAI response. In this tutorial however we demonstrate how to use an encoder model (an LLM that does not generate texts) to perform this task. This technique requires more NLP knowledge and coding skills, therefore this tutorial is longer and introduces many concepts that could be overlooked when using black box models.</p>
+<p><em>AM: INCLUDE SOMEWHERE: This approach does not replace the theoretical work and manual annotation, as one must define the labels and what they represent, as well as annotate some elements that will be used to evaluate the LLMs’ ability to perform the classification task. On the other hand, LLMs provide cost-effective and rapid alternatives for scaling studies.</em></p>
+<p><em>AM: Mention Active Tigger</em></p>
+<p>The main objective of this tutorial is to <strong>fine-tune</strong> an <strong>encoder model</strong> and introduce the key concepts so you can adapt the code to your specific task.</p>
+<p>After presenting the objectives, materials and setup steps, we introduce the key NLP and Machine Learning concepts, we will break down the pipeline starting with loading the dataset and format it, then load the model and set the finetuning parameters, finally launch the finetuning process. Once the finetuning is done, we will assess the performance and discuss how we can tweak the hyperparameters to reach satisfying performance. We conclude this tutorial with advices on how to correctly incorporate the results in a social science project. Throughout the tutoriel we provide practical insights on how to best use your hardware.</p>
 <!-- TODO: write a pros and cons of the two methods -->
 <section id="objectives-and-materials" class="level2">
 <h2 class="anchored" data-anchor-id="objectives-and-materials">Objectives and materials</h2>
-<p>In this tutorial we will present an overview of the techniques used to this day and experiment on a dataset of journal articles created by Luo et al.&nbsp;(2020). What you will learn:</p>
+<p>In this tutorial we will :</p>
 <ul>
-<li>Understand the general pipeline for text classification with encoder models</li>
-<li>Develop some familiarity with preprocessing and training techniques</li>
-<li>Evaluate models’ performance and their impact on downstream tasks</li>
-<li>Develop good practices for your research</li>
+<li>Identify the main NLP and Machine Learning concepts.</li>
+<li>Understand the general pipeline for text classification with encoder models.</li>
+<li>Develop some familiarity with preprocessing and training techniques.</li>
+<li>Introduce the key metrics to evaluate models’ performance.</li>
+<li>Discuss how to properly incorporate this step in your research using state-of-the-art practices for your research.</li>
 </ul>
-<p>We have also included a section discussing how to train models on GPUs.</p>
+<p>In this tutorial, we will NOT cover :</p>
+<ul>
+<li>The Python syntax, we expect readers to already have some knowledge of the coding language. See Lino’s course for an introduction</li>
+<li>The fundamentals of NLP and the intersection of linguistics and computer science, we will only introduce concepts necessary to understanding this tutorial. See Jurafsky</li>
+<li>The conceptualisation of your research question to fall into the automatic annotation framework, we expect readers to be able to design their protocol and motivate it using appropriate social sciences or any domain speficic concepts.</li>
+</ul>
+<p>Available materials:</p>
+<ul>
+<li></li>
+</ul>
+<!-- TODO faire un dépot Zenodo -->
 </section>
 <section id="install-environment" class="level2">
 <h2 class="anchored" data-anchor-id="install-environment">Install environment:</h2>
 <p>For this tutorial we use Python version 3.12 and setup the environment with the following command:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-qU</span> pandas <span class="st">"transformers==4.52.4"</span> datasets ipykernel matplotlib torch <span class="st">"accelerate&gt;=0.26.0"</span> scikit-learn plotly <span class="st">"nbformat&gt;=4.2.0"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>However, you should know that, however convenient <a href="XXX">PyTorch</a>, <a href="XXX">accelerate</a>, and <a href="XXX">transformers</a> are, these libraries may be unstable depending on your computer and environment. You <strong>will face issues</strong> related to your version. We recommand using conda<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> (or the virtual environments manager of your choice<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>) to correctly setup your environment and create a requirement file<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> of your own once you’ve reached a stable workspace. Don’t hesitate downgrading your libraries as they are likely to be more stable.</p>
-<!-- TODO: add requirement files -->
+<p>We use SOTA Python librairies such as <a href="https://pytorch.org/">PyTorch</a> and <a href="https://huggingface.co/docs/transformers/index">Transformers</a>. These librairies are well documented and large online communities of users have posted much valuable content to assist you during your journey. More specifically, it is likely that you will face implementation issues related to the versions of the libraries; many forums will guide you into choosing the adequate librairies versions to install depending on your task and model of choice. For this reason, we recommend using a virtual environments manager such as conda<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> or uv<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> and keep track of your versions to save painful debugging time in the long run.</p>
 </section>
 </section>
-<section id="understand-the-encoder-architecture" class="level1">
-<h1>Understand the encoder architecture</h1>
-<p>In this section we provide common knowledge about the encoder architecture and training; if you want to refine your understanding of the theory, we list a number of state-of-the-art resources.</p>
-<p>All models are neural network models with fancy architectures (activation nodes, pooling layers or feedback loops). Ultimately, one can see models as a sequence of matrix multiplication and vectors addition where the coefficients of the matrices and vectors (the weights) have been optimised for a certain task. The Transformer architecture, is one way of agencing nodes together. In one of the most famous paper in NLP (<a href="https://en.wikipedia.org/wiki/Attention_Is_All_You_Need">“Attention is all you need”</a>), a team from Google introduced the concept of <em>attention</em> which attempts to take into account the context in which a word is used.</p>
+<section id="key-concepts-and-valuable-resources-to-start-your-nlp-journey" class="level1">
+<h1>Key concepts and valuable resources to start your NLP journey</h1>
+<p>In this tutorial we will <strong>fine-tune</strong> a <strong>pretrained language model</strong> of type <strong>encoder</strong> to perform a <strong>classification</strong> task. The description itself needs clarification, we will endeavor to shed light on all of these keywords while remaining on the surface level to keep this tutorial legible. At each step, we provide valuable resources to further understand the concepts.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Question : est-ce qu’on parle d’autres encodeurs que des BERT dans ce tytorial, si non : pourquoi ne pas se concentrer sur les BERT ?</p>
+<p>AM: Non, c’est vrai mais si on se concentre sur des BERTs des non-initiés risqueraient de ne pas faire le lien entre BERT et encodeurs. Je me dis si on définit largement les encodeurs c’est plus facile de dire : “nous on se concentre sur les BERTs qui est un type d’encodeur”. Opinion?</p>
+</div>
+</div>
+<p><strong>The classification task</strong></p>
+<p>The classification task is a concept from Machine Learning, it refers to an algorithm that will use input data (= predictors) to assign a class / label to each input. <a href="scikit-learn.org/stable">Scikit-Learn</a><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> puts it this way: <em>Identifying which category an object belongs to.</em> In the context of annotation, the connection is fairly direct, each text input needs to be assigned a label, therefore it is a classification task.</p>
+<p>Classification is part of the <strong>supervised learning</strong> family in machine learning: this means that to be able to assign labels, the algorithm will first need to be <strong>fitted</strong> onto some <strong>training data</strong>, <em>in our case handmade annotations</em>. The fitting/training process consists of providing inputs and labels, so the algorithm can adapt to the task and <em>“learn”</em>. This means that social scientists will first need to annotate a small set of texts in order to train the classifier.</p>
+<p>Classifiers often have structuring parameters called <strong>hyperparameters</strong> that alter the algorithm and are not changed during training. These parameters must be set with great care in order to reach satisfying performance.</p>
+<div class="columns">
+<div class="column" style="width:70%;">
+<p>To evaluate classifiers we use <a href="https://scikit-learn.org/stable/modules/model_evaluation.html#which-scoring-function-should-i-use">normalised metrics</a> such as <a href="https://en.wikipedia.org/wiki/Precision_and_recall">Precision</a>, <a href="https://en.wikipedia.org/wiki/Precision_and_recall">Recall</a>, <a href="https://en.wikipedia.org/wiki/Accuracy_and_precision#In_binary_classification">Accuracy</a> and <a href="https://en.wikipedia.org/wiki/F-score#Definition">F1 score</a>. Depending on your research you may want to optimise one metric or another.</p>
+<ul>
+<li>Precision: <em>“out of all the elements predicted of class A, how many were indeed of class A?”</em>, this metric is rather conservative, optimising this score will limit the number of false positives.</li>
+<li>Recall: <em>“out of all the elements that should have been classified as A, how many were indeed classified as A?”</em>, this metric is XXX, optimising this score will limit the number of false negatives.</li>
+<li>Accuracy: <em>“across all classes, how many elements were classified correctly?”</em>, XXX critique of this metric JB?</li>
+<li>F1 score: this score is an harmonic mean of recall an precision.</li>
+</ul>
+</div><div class="column" style="width:30%;">
+<div id="fig-precision-recall" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-precision-recall-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="./assets/precision_recall.jpg" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-precision-recall-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: precision and recall
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>To correctly assess a model evaluation and prevent cherry-picking, we proceed to separate evaluations on distinct subsets of texts:</p>
+<ul>
+<li>The training set: these items will be shown to the algorithm to <em>learn</em>. Metrics on the train set will be boosted.</li>
+<li>The dev set: these items will be used to assess the performance of the algorithm on new data. This set is used to choose the hyperparameters. Metrics on the dev set are likely to be boosted due to the fact that the hyperparameters are chosen to optimise this score.</li>
+<li>The test set: these items will be used to assess the performance of the algorithm with the chosen hyperparameters on new data. Metrics on the test set are meant to be representative of algorithm’s performance on new data. Scientists are encouraged to communicate on metrics computed on the test set to prevent from cherry picking the performance metrics.</li>
+</ul>
+<p><strong>Models</strong></p>
+<p>In this context, models are <a href="https://en.wikipedia.org/wiki/Neural_network_(machine_learning)">deep neural network models</a>. Neural Networks consist of connected nodes <em>(neurons)</em> that receive signals from other neurons, process the signal, and send the outcome to other neurons. Neurons are grouped into layers, and signals travel from the first layer to the last one transforming the input signal into an output signal. A neural network is considered deep if it has more than 2 layers. Each neuron contains information called <strong>weights</strong> and <strong>biases</strong>.</p>
+<p>To be usable, Neural Networks must be trained on a certain task, for instance a classification task. As described before, the algorithm/neural network will adapt to the training data. In this case, the adaptation consists of updating the <strong>weights</strong> and <strong>biases</strong> in each neuron in order for the neural network to perform the task.</p>
+<p>Ultimately, they can be seen as a long sequence of simple transformations, each transformation being conditioned by the <strong>weights</strong> and <strong>biases</strong>, to perform a certain task.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+
+N0((Neuron))
+subgraph prevLayer["Previous Layer"]
+  direction TB
+  NP1((Neuron))
+  NP2((Neuron))
+  NP3((Neuron))
+end
+
+subgraph nextLayer["Next Layer"]
+  direction TB
+  NN1((Neuron))
+  NN2((Neuron))
+  NN3((Neuron))
+end
+
+NP1 --&gt; N0
+NP2 --&gt; N0
+NP3 --&gt; N0
+
+N0 --&gt; NN1
+N0 --&gt; NN2
+N0 --&gt; NN3
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p><strong>Language Models</strong></p>
+<p>Language models encompasses a large family of neural network models with infinite architecture variations. Their goal is to perform a text related tasks like generating a summary, or in our case, classify text inputs.</p>
+<p>Across all architechures, the <strong>Transformer architecture</strong> has become the <em>de facto</em> standard for contemporary artificial intelligence. It was introduced in 2017 by a team from Google, in perhaps the most influential paper in contemporary NLP and beyond, (<a href="https://en.wikipedia.org/wiki/Attention_Is_All_You_Need">“Attention is all you need”</a>). The cornerstone of this architecture is <em>self-attention</em>, which is an efficient way of taking into account the context in which a word is used.</p>
+<p><strong>Language Models of type Encoder</strong></p>
+<p>The original transformer was made up of two parts, the encoder and the decoder, but most of its subsequent applications use only one of these parts:</p>
+<ul>
+<li><strong>Decoder</strong> models, including the GPT and Llama families, are generative models, meaning they are able to produce text. They are typically very large (from <span class="math inline">\(10^6\)</span> to <span class="math inline">\(10^9\)</span> weights), it is unlikely to run one on a personal computer and are often used through an API as demonstrated in the <a href="XXX">previous tutorial</a>.</li>
+<li><strong>Encoder</strong> models are intended to capture the semantic properties of their input text, which can then be used for downstream tasks. The output of an encoder model is a vector of several hundreds of dimensions called an <strong>embedding</strong>. They are much more frugal (&lt; <span class="math inline">\(10^6\)</span> weights), it is likely that you can run one on a personal computer<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>.</li>
+</ul>
+<p><a href="#sec-pros-cons" class="quarto-xref">Section&nbsp;6</a>, lists a number of pros and cons for both decoder and encoder models when used for classification.</p>
 <div id="fig-transformer-architecture" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-transformer-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="./assets/encoder-architecture.jpg" class="img-fluid figure-img" style="width:50.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-transformer-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Transformer architecture
+Figure&nbsp;2: Transformer architecture
 </figcaption>
 </figure>
 </div>
-<p>The transformer contains two parts, the encoder and the decoder</p>
-<ul>
-<li><strong>Decoder</strong> models include GPT models and Llama, they often are too heavy to run on your personal laptop (smallest models have 3-8 billion prameters and can go up to 2,000 billion). They also tend to be prioprietary (XXX vérifier) resulting in confidentiality and interpretability issues <!-- TODO reformulate -->.</li>
-<li><strong>Encoder</strong> models (also called embedding models) include BERT models and many of it’s kind (CamemBERT, RoBERTa, DeBERTa, and the list is long). They are way more frugal and can be run and finetuned on most laptops<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> (most models have between 200 and 600 million parameters). Also, these models tend to be open source. (Which does not solve issues related to the training data and all.. but it’s better).<!-- TODO find back reference with model size and all --></li>
-</ul>
-<p>Training embedding models is a complex task that can be carried out in many different ways. For instance, BERT was trained on two tasks (Devlin et al., 2019):</p>
-<ul>
-<li>Task 1: Masked LM. Take a sentence, replace some words by a <code>[MASK]</code> token, predict what was the word.</li>
-<li>Task 2: Next Sentence Prediction. Take two sentences A and B, classify whether it makes sense for sentence B to appear after sentence A.</li>
-</ul>
-<p>In the context of training embedding models, tasks have been adapted and redesigned but they all have the same objective: <strong>modelling the semantic of words</strong>. If done correctly, this means that two words close in meaning are close in the embedding space and that the embedding calculated takes into account the context of the sentence. In most NLP applications, the similarity score is calculated as the scalar product of the embeddings also referred to as the cosine metric.</p>
+<p>In general, encoder models (AM: or maybe embedding models ? JB what’s the difference?) are trained to <strong>model the semantic of words in given context</strong>. A well designed encoder model can tell if two words are close in meaning or not using a “semantic distance” metric. In most NLP applications, the metric used is the cosinus distance, also referred to as the “similarity score”.</p>
 <div id="fig-similarity" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-similarity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="./assets/similarity.png" class="img-fluid figure-img" style="width:100.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-similarity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Similarity
+Figure&nbsp;3: Similarity
 </figcaption>
 </figure>
 </div>
-<p>For instance in <a href="#fig-similarity" class="quarto-xref">Figure&nbsp;2</a>, the word “apple” and “pear” are very close in meaning, so their similarity score is very high. However, in the context of Apple’s new product, the embedding has shifted with the context, now the similarity score is lower.</p>
+<p>For instance in <a href="#fig-similarity" class="quarto-xref">Figure&nbsp;3</a>, the word “apple” and “pear” are very close in meaning, so their similarity score is very high. However, in the context of Apple’s new product, the embedding has shifted with the context, now the similarity score is lower.</p>
+<p>In the context of classification using an encoder model, the goal is to use the output of the language model, the embeddings, as predictors for the label. If the classification is “left/right”, the embedding should capture the semantic similarities between left-wing texts and right-wing texts in order to classify them.</p>
+<p>One key parameter of all models is the “maximum context window”. The maximum context window is the maximum<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> number of tokens<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> that can be digested by the model at once, anything exceeding this window is simply ignored. First models used to have very short context windows (between 128 and 512 tokens maximum), meaning long texts had to be split into sentences or paragraphs. This may be a problem depending on the task at hand.</p>
+<p><strong>BERT models</strong></p>
+<p>The first BERT model was published by Google in 2019 (Devlin et al., 2019). “BERT” refers to a specific arrangement of Transformers layers with some tweaks that demonstrated great overall performance at the time and has become a reference in the realm of encoder model. As a consequence, many other BERT-like models were published, working off of these foundations, each new model proposing modifications or improvements like ModernBERT greatly increasing the context window size, CamemBERT trained on French texts or RoBERTa changing the training tasks.</p>
+<p><strong>Pretrained Language Model</strong></p>
+<p>We mentioned that language models were deep neural networks trained on a natural language task, but a model is not usable before it was trained to recognise language patterns and semantic. “Pretrained” refers to the training process that makes a language model <em>understand</em> texts by training it to perform some tasks. In practice, the weights and biases are updated to optimize one or more tasks, just as any neural network. For instance, BERT is trained on two tasks :</p>
+<ul>
+<li>Task 1: Masked LM. Take a sentence, replace some words by a <code>[MASK]</code> token, predict what was the word.</li>
+<li>Task 2: Next Sentence Prediction. Take two sentences A and B, classify whether it makes sense for sentence B to appear after sentence A.</li>
+</ul>
+<p>This pre-training is the most time and power consuming step as the process can take from dozens of hours to several days, weeks or even months. This task is only performed by specialised organisations that have access to high end hardware and large amount of data (let it be from legal or illegal source). Once the process is done, the model can reach moderate to high performance on a large range of tasks.</p>
+<p><strong>Fine-tuning</strong></p>
+<p>The “pre-training” implies there is a “training”, or more specifically, a “fine-tuning”. This fine-tuning process only takes a few minutes on a regular laptop and can last a few hours at best. This process is intends to adapt the model to <strong>your</strong> task and <strong>your</strong> data, going from moderate to, hopefully, very high performance.</p>
+<p>In our case, we will be fine-tuning the model on a classification task, by providing text inputs and hand labels. In practice, this process updates the weights and biases but at a much lower order of magnitude. This fine-tuning process will transform the language model into a classifier model for text data. This means that the fine tuning is assessed using the same metrics (F1 score, …) and following the same framework (train, dev, test splits) as any other classifier.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Learn more the embedding space and training encoders">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -323,7 +449,7 @@ Learn more the embedding space and training encoders
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://jalammar.github.io/illustrated-transformer/">The illustrated transformer</a></li>
@@ -334,15 +460,17 @@ Learn more the embedding space and training encoders
 </div>
 </div>
 </div>
-<p>One key parameter of all models is the “maximum context window”. The maximum context window is the maximum number of tokens that can be digested by the model at once, anything exceeding this window is simply ignored. First models used to have very short context windows (between 128 and 512 tokens maximum), meaning long texts had to be split into sentences or paragraphs. This may be a problem depending on the task at hand.</p>
 <div class="callout-example">
+<p>[ES: pas convaincu de cette partie ici, tu es encore sur la théorie et là tu viens avec un aspect très précis de tâche alors qu’on a pas vraiment parlé de labellisation encore]</p>
 <p>Let’s say you want to detect if long articles tackle environmental issues. One might need to divide the articles into paragraphs, and for each paragraph, detect if it tackles environmental issues. After inference, one would need to aggregate the results of each paragraph to obtain a global score (3 out of 6 paragraphs tackle environmental issues) or a global indicator (at leas 1 paragraph tackles environmental issues). <br> This consists of an additional difficulty and requires researcher to further precise their research question and how they might answer it.</p>
 </div>
-<p>Some techniques allow users to exceed the maximum context window, please refer to XXX @ Léo @ Alexandre</p>
 </section>
 <section id="fine-tuning-pipeline-the-essential" class="level1 page-columns page-full">
 <h1>Fine-tuning pipeline: the essential</h1>
+<p>Let’s finally dive into the implementation of fine-tuning a pretrained language model of type encoder to perform a classification task!</p>
 <p>In this section we will see the fundamentals to fine-tuning encoders for a classification task. We will use a dataset introduced by Luo et al., (2020); they collected journal articles, from which they extracted sentences conveying an opinion regarding global warming. Finally, they annotated each opinion as “agreeing”, “neutral” or “disagreeing” with regard to the following statement “Climate chage/global warming is a serious concern”.</p>
+<p>First</p>
+<p>TODO ANNONCER CE QUE NOUS ALLONS FAIRE</p>
 <section id="load-your-data" class="level2">
 <h2 class="anchored" data-anchor-id="load-your-data">Load your data</h2>
 <p>Data is available on the <a href="https://github.com/yiweiluo/GWStance/tree/master">project’s GitHub repository</a>, we can download it from there using Pandas.</p>
@@ -475,13 +603,13 @@ Learn more the embedding space and training encoders
 <img src="./assets/sentence-length.png" class="img-fluid figure-img" style="width:50.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sentence-length-hist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Sentence length
+Figure&nbsp;4: Sentence length
 </figcaption>
 </figure>
 </div>
 <p>In the context of our experiment, the sentences are quite short and their size is roughly standard. We will not exclude text inputs based on the text. Keep in mind that this model will be trained on a specific task and specific material. Performances are not guaranteed for texts too different in tone, source, date, or length from the training data.</p>
 <ul>
-<li><strong>Are there any unwanted characters</strong>: If you are used to <a href="XXX">TF-IDF techniques</a>, you might be accoustumed to filtering punctuations and stop words. This is not something that we want to do when using transformers models. Indeed these models are trained with these characters. On top of that they convey meaningful context to the model. However, you might want to filter out elements that, for your study, do not carry semantic value. For instance, when working on social media content, depending on your problematic, you will want to either keep or remove emojis for instance<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>. At the end of the day, you want to make sure that the elements you keep in your text carry semantic information necessary for the annotation process.</li>
+<li><strong>Are there any unwanted characters</strong>: If you are used to <a href="XXX">TF-IDF techniques</a>, you might be accoustumed to filtering punctuations and stop words. This is not something that we want to do when using transformers models. Indeed these models are trained with these characters. On top of that they convey meaningful context to the model. However, you might want to filter out elements that, for your study, do not carry semantic value. For instance, when working on social media content, depending on your problematic, you will want to either keep or remove emojis for instance<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>. At the end of the day, you want to make sure that the elements you keep in your text carry semantic information necessary for the annotation process.</li>
 </ul>
 <p>Our corpus is relatively clean given that the preprocessing stage happened in the earlier stages of the study. Skimming through the text entries, we can still find some irregularities regarding the punctuation. Let’s fix this:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> preprocess_text(text: <span class="bu">str</span>):</span>
@@ -513,6 +641,7 @@ Figure&nbsp;3: Sentence length
 <div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_no_duplicates <span class="op">=</span> df.loc[<span class="op">~</span>df[<span class="st">"sent_id"</span>].<span class="bu">str</span>.startswith(<span class="st">"s"</span>), :] </span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df_no_duplicates.groupby(<span class="st">"sentence"</span>).size().value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>We still need to deal with the 8 elements that have a duplicate. We would like to use the <code>drop_duplicates</code> function, but to do so, we need to make sure that the label of the two duplicates are the same. Let’s check if some sentence are the same with a concensus on the label:</p>
+<p>[ES: C’est vraiment la règle à suivre ? On garde des éléments identiques avec des annotations discordantes ? AM: Question de curiosité; Il vaut mieux éviter les doublons oui, sinon tu créé du bruit ou tu suraligne avec une phrase. Je pense que c’est pas critique mais je trouvais ça important de s’y arrêter. Opinions?]</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_concensus <span class="op">=</span> df_no_duplicates.groupby(<span class="st">"sentence"</span>)[<span class="st">"label_text"</span>].agg(concensus <span class="op">=</span> <span class="kw">lambda</span> X : <span class="bu">len</span>(<span class="bu">set</span>(X)) <span class="op">==</span> <span class="dv">1</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_concensus[df_concensus[<span class="st">"concensus"</span>] <span class="op">==</span> <span class="va">False</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <table class="caption-top table">
@@ -583,7 +712,8 @@ Figure&nbsp;3: Sentence length
 <li>the <strong>dev set</strong> is the set of sentences that are used to evaluate a model and choose Hyperparameters. They are not seen by the model but they are part of the optimisation process.</li>
 <li>the <strong>final-eval</strong> set is the set of sentences that are used to produce realistic performance evaluation. This set of sentences is not seen by the model during training and prevent from biasing the hyperparameter optimisation due to cherry picking.</li>
 </ul>
-<p>In general, we allocate 70% of the data to the train set, then 10% to train eval, dev set and final eval set.Depending on the size of your dataset, you might want to tweak this distribution. Ultimately, you want enough data for training and evaluation for scores to be significative.</p>
+<p>[ES: la terminologie est différente de ActiveTigger, sur quoi on se base pour ne pas avoir eval / test ? JE pense que ça doit être cohérent entre nos outils et nos leçons non ? AM: Je suis d’accord. Cependant la terminologie a souvent été confuse pour certaines personnes. Est ce que ça vaudrait pas le coup de réfléchir à une terminologie claire et mettre à jour ce tuto ET AT?]</p>
+<p>In general, we allocate 70% of the data to the train set, then 10% to train eval, dev set and final eval set. Depending on the size of your dataset, you might want to tweak this distribution. Ultimately, you want enough data for training and evaluation for scores to be significative.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>CODE FOR CREATING A COLUMN SPLIT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><strong>Stratification of the splits</strong> <!-- Move to good practices ??? --></p>
 <p><em>The process of stratification consists of creating subgroups as defined by meta data (years for instance) and selecting a same number of texts per subgroup. This process intends to produce a dataset with uniform distribution across the selected metadata.</em></p>
@@ -603,8 +733,9 @@ Figure&nbsp;3: Sentence length
 </section>
 <section id="choose-and-load-a-model" class="level2">
 <h2 class="anchored" data-anchor-id="choose-and-load-a-model">Choose and load a model</h2>
-<p>In this tutorial we use the Transformers package, maintained by <a href="https://huggingface.co/">HuggingFace</a>. HuggingFace is a company (for profit ?) specialised in NLP and machine learning. They maintain many SOTA libraries such as <a href="XXX">Transformers</a>, <a href="XXX">Datasets</a> or <a href="XXX">Sentence Transormers</a>. On top of maintaining the libraries, they publish posts about the latest tech, tutorials on their libraries, host a forum for debugging but also propose inference and training solutions if you don’t have access the required hardware.</p>
-<p>More specifically, they propose a range of open source models and datasets downlable through their API. In the context of this tutorial, we will start working with the famous BERT models named: <a href="https://huggingface.co/google-bert/bert-base-uncased">google-bert/bert-base-uncased</a></p>
+<p>We will start with a pre-trained model and then fine-tune it on our specific data. How to choose such model ? XXX</p>
+<p>In this tutorial we use the Transformers package, maintained by <a href="https://huggingface.co/">HuggingFace</a><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>. They propose a range of open source models and datasets downlable through their API. In the context of this tutorial, we will start working with the famous BERT models named: <a href="https://huggingface.co/google-bert/bert-base-uncased">google-bert/bert-base-uncased</a></p>
+<p>[AM: Je pensais qu’on voulait présenter HF, pourquoi mettre ça en note de bas de page?]</p>
 <div class="callout callout-style-default callout-note callout-titled" title="How to choose a model">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -621,6 +752,7 @@ How to choose a model
 <li>What language was the model trained on? This one is trivial. However, depending on your corpus, you might want to find models that are multilingual. Performance of multilingual models can be below monolingual models; consider trying different models (is it still true ?? @ Léo). You can also try and translate your corpus into one language and use a monolingual model.</li>
 <li>What documents was the model trained on? Evaluated on? Models performance can vary a lot when used on a certain domain or another. Make sure to use models that have been XXX BENCSSMARK @ Etienne @ Paul</li>
 <li>Last but not least: How big is the model? You won’t get away with it, your laptop has limited computation capabilities, large models won’t run on any laptip. Know your hardware and check what model you can run <a href="XXX">using this method</a>. <!-- TODO find a method lols --></li>
+<li>Is the model still relevant : look how many time the model is download to have a sense of the community using them. Don’t hestiate to look if newer model are available since models also have versions.</li>
 </ul>
 </div>
 </div>
@@ -776,7 +908,8 @@ Tips and tricks regarding the model
 </section>
 <section id="train-the-model" class="level2">
 <h2 class="anchored" data-anchor-id="train-the-model">Train the model</h2>
-<p>We are finally going to train the model. To do so, we are going to follow the 3 folowing steps:</p>
+<p>We are finally going to train the model on our specific data. To do so, we are going to follow the 3 folowing steps:</p>
+<p>[AM: Je suis d’accord que fine-tune c’est plus fiable avec les concepts mais la méthode c’est vraiment trainer.train() et pas fine_tuner.fine_tune() … Je sais pas ce qui est mieux]</p>
 <ul>
 <li>Tokenize your dataset</li>
 <li>Setup the training arguments</li>
@@ -794,7 +927,7 @@ What are tokens already?
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Tokens are parts of words, whole words, or even punctuations and emojis. They are created using a <a href="">NAME OF THE ALGORITHM BYTE SOMETHING???</a>. They are used to subdivise the text and assign ready made embeddings that will be modified by the attention mechanism.</p>
+<p>Tokens are a way to divide textual content (there are different rules : words, part of the word, character…). They are the way a pattern can be assigned to a specific id, and then to a numeric value. They are created using a <a href="">NAME OF THE ALGORITHM BYTE SOMETHING???</a>. They are used to subdivise the text and assign ready made embeddings that will be modified by the attention mechanism.</p>
 <p><a href="Jurafsky chapter on tokens">Read more</a></p>
 </div>
 </div>
@@ -835,6 +968,7 @@ What are tokens already?
 <section id="understand-the-ins-and-outs-of-the-pipeline" class="level3">
 <h3 class="anchored" data-anchor-id="understand-the-ins-and-outs-of-the-pipeline">Understand the ins and outs of the pipeline</h3>
 <!-- Move to experts? -->
+<p>[ES: je ne comprends pas le rôle de cette partie ; si c’est comprendre l’inférence avec un modèle, je pense que ça doit arriver bien plus tôt quand tu présentes charger un modèle, une partie “l’utiliser out of the box” avant le fine-tuning. AM: Je vois ce que tu veux dire, mais aussi y’a besoin de présenter tous les objets avant de les appeler. Je pense pas qu’on peut le faire plus tôt. Ou alors il faut le faire avec les mains et pas avec du code. C’est peut être mieux ? ]</p>
 <p>Before training the model, we wanted to demonstrate each step of the classification:</p>
 <ul>
 <li>Tokenizing the texts</li>
@@ -925,6 +1059,19 @@ What are tokens already?
 </section>
 <section id="predict-the-labels-for-the-full-dataset" class="level2">
 <h2 class="anchored" data-anchor-id="predict-the-labels-for-the-full-dataset">Predict the labels for the full dataset</h2>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>C’est dur à comprendre comme partie, je suis un peu perdu</p>
+</div>
+</div>
 <p>To predict the labels, we just need to use the model’s <code>__call__</code> method and retrieve the predicted logits. From there, using the <code>np.argmax</code> function, we retrieve the predicted labels and save the results to avoid re-running the inference.</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>text_id : <span class="bu">list</span>[<span class="bu">int</span>] <span class="op">=</span> []</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>labels_true : <span class="bu">list</span>[<span class="bu">int</span>] <span class="op">=</span> []</span>
@@ -992,7 +1139,7 @@ What are tokens already?
 <img src="./assets/precision_recall.jpg" class="img-fluid figure-img" style="width:100.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-precision-recall-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: precision and recall
+Figure&nbsp;5: precision and recall
 </figcaption>
 </figure>
 </div>
@@ -1015,7 +1162,21 @@ Figure&nbsp;4: precision and recall
 </section>
 <section id="read-the-learning-curve" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="read-the-learning-curve">Read the learning curve</h2>
-<p>The learning curve provides the evolution of the model’s performance using the loss function<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> evaluated on the train set and the train-eval set. We can retrieve it by using the logs in the <code>trainer_state.json</code>; plot it:</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Ca devrait arriver au moment de l’entrainement, avec l’explication de ce qui va se passer, pas après si ?</p>
+<p>On re-écrit et on rediscute de sa place après !</p>
+</div>
+</div>
+<p>The learning curve provides the evolution of the model’s performance using the loss function<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a> evaluated on the train set and the train-eval set. We can retrieve it by using the logs in the <code>trainer_state.json</code>; plot it:</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px </span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1043,7 +1204,7 @@ Figure&nbsp;4: precision and recall
 <img src="./assets/learning_curve.png" class="img-fluid figure-img" style="width:70.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-learning-curve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5: Learning curve
+Figure&nbsp;6: Learning curve
 </figcaption>
 </figure>
 </div>
@@ -1058,7 +1219,7 @@ Figure&nbsp;5: Learning curve
 <img src="./assets/typical_learning_curve.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-01-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6: Typical learning curve
+Figure&nbsp;7: Typical learning curve
 </figcaption>
 </figure>
 </div>
@@ -1088,7 +1249,7 @@ Figure&nbsp;6: Typical learning curve
 <p>What to do:</p>
 <ul>
 <li>choose a lower learning rate, for slower weight updates</li>
-<li>use larger batches<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>, in order to smooth training over more examples per training step</li>
+<li>use larger batches<a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a>, in order to smooth training over more examples per training step</li>
 <li>choose higher weight decay: this will prevent the weights from getting to large</li>
 <li>annotate more data, you may not have enough examples for the model to learn from</li>
 </ul>
@@ -1223,7 +1384,7 @@ Figure&nbsp;6: Typical learning curve
 </section>
 <section id="use-gpu-for-faster-training" class="level2">
 <h2 class="anchored" data-anchor-id="use-gpu-for-faster-training">Use GPU for faster training</h2>
-<p>For now we have only used the CPU to perform the training, but it is slow and alternatives exist. If you have a NVIDIA GPU<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> and have set up your cuda<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a> environment, you may accelerate the process. Also, if you have a Mac with an MX chip, you can use mps to accelerate the training.</p>
+<p>For now we have only used the CPU to perform the training, but it is slow and alternatives exist. If you have a NVIDIA GPU<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a> and have set up your cuda<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a> environment, you may accelerate the process. Also, if you have a Mac with an MX chip, you can use mps to accelerate the training.</p>
 <p>You can check if your environment is ready to use cuda and mps with the following lines:</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.cuda <span class="im">import</span> is_available <span class="im">as</span> cuda_available</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.mps <span class="im">import</span> is_available <span class="im">as</span> mps_available</span>
@@ -1345,7 +1506,7 @@ Training arguments to chose the device to use
 <p>@ Etienne @ Julien</p>
 </section>
 </section>
-<section id="pros-and-cons-of-using-an-encoder-vs-decoder-model-for-text-classification" class="level1">
+<section id="sec-pros-cons" class="level1">
 <h1>Pros and cons of using an encoder vs decoder model for text classification</h1>
 <p><strong>Coding skills</strong></p>
 <p>As this tutorial demonstrates, fine tuning an encoder model requires more coding skills than making API requests to an external servers. This can be an advantage if you want to develop your skills and refine your understanding of language models, but it takes more time and effort.</p>
@@ -1353,7 +1514,10 @@ Training arguments to chose the device to use
 <p>Fine tuning an encoder model requires hardware and a clean environment as demonstrated trhoughout this tutorial; on the other hand, making API calls requires an API key with credit. This raises concerns regarding the equal access to such technologies.</p>
 <p><strong>Control on the model</strong></p>
 <p>Most models do not disclose the training data used for pretraining the model we use, this represent an hard limit when it comes to controlling the model used and the interpretability of the results. However, encoder models allow for more reproducibility (you own the model used for inference) and interpretability (you own the data used for fine tuning, XXX additional techniques to probe the model???).</p>
-<p>XXX More limits</p>
+<p><strong>Open weights</strong></p>
+<p>XXX</p>
+<p><strong>Confidentiality</strong></p>
+<p>XXX</p>
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
@@ -1370,13 +1534,16 @@ Training arguments to chose the device to use
 <ol>
 <li id="fn1"><p><a href="https://www.youtube.com/watch?v=sDCtY9Z1bqE">Set up your cuda environment</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p><a href="XXX">More on UV</a>, XXXX<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>The effective batch size is the system batch size times the gradient accumulation.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>It tends to be less likely as newer models tend to be larger. Read more in the <a href="#choose-and-load-a-model">Choose and load a model</a> section<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5"><p>you need to make sure that the model that you are using does recognise emojis<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn6"><p>The loss function is a function measuring the distance between the predicted labels and the gold standard labels.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn7"><p>The effective batch size is the system batch size times the gradient accumulation.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn8"><p><a href="https://www.tutorialpedia.org/blog/is-it-possible-to-run-cuda-on-amd-gpus/#2-closed-source-ecosystem">AMD GPUs do not have access to cuda</a> but you can work you way out with alternative solutions like <a href="https://github.com/vosen/ZLUDA">ZLuda</a><a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn9"><p><a href="https://www.youtube.com/watch?v=pPStdjuYzSI">What is cuda in 3 mins</a>; <a href="https://developer.nvidia.com/cuda-downloads">Install cuda on your machine</a><a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Most famous Python library for Machine Learning. This library has had a major impact in the coding community, notably it imposed the <code>.fit</code> <code>.transform</code> syntax.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>It tends to be less likely as newer models tend to be larger. Read more in the <a href="#choose-and-load-a-model">Choose and load a model</a> section.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Some techniques allow users to exceed the maximum context window, please refer to XXX @ Léo @ Alexandre<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Texts cannot be used directly and must undergo a tokenization process. Models come with a vocabulary of tokens, each text is therefore a combination of “tokens” from the vocabulary.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>you need to make sure that the model that you are using does recognise emojis<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>HuggingFace is a company (for profit ?) specialised in NLP and machine learning. They maintain many SOTA libraries such as <a href="XXX">Transformers</a>, <a href="XXX">Datasets</a> or <a href="XXX">Sentence Transormers</a>. On top of maintaining the libraries, they publish posts about the latest tech, tutorials on their libraries, host a forum for debugging but also propose inference and training solutions if you don’t have access the required hardware.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p>The loss function is a function measuring the distance between the predicted labels and the gold standard labels.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn10"><p>The effective batch size is the system batch size times the gradient accumulation.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn11"><p><a href="https://www.tutorialpedia.org/blog/is-it-possible-to-run-cuda-on-amd-gpus/#2-closed-source-ecosystem">AMD GPUs do not have access to cuda</a> but you can work you way out with alternative solutions like <a href="https://github.com/vosen/ZLUDA">ZLuda</a><a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn12"><p><a href="https://www.youtube.com/watch?v=pPStdjuYzSI">What is cuda in 3 mins</a>; <a href="https://developer.nvidia.com/cuda-downloads">Install cuda on your machine</a><a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
