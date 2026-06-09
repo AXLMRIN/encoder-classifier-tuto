@@ -1,0 +1,10 @@
+torch
+transformers>=4.52.4
+datasets
+pandas
+scikit-learn
+accelerate>=1.1.0
+plotly
+matplotlib
+"nbformat>=4.2.0"
+ipykernel
