@@ -7,8 +7,8 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: tuto.ipynb
-        text: Notebook
+      - href: appendices.qmd
+        text: Appendices
 
 format:
   html:

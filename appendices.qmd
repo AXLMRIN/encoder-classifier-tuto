@@ -1,0 +1,141 @@
+# Appendices 
+
+## Code for removing the last 8 duplicates{#sec-duplicates}
+
+We would like to use the `drop_duplicates` function, but to do so, we need to make sure that the label of the two duplicates are the same. Let's check if some sentence are the same with a concensus on the label: 
+
+
+```python 
+df_concensus = df_no_duplicates.groupby("sentence")["label_text"].agg(concensus = lambda X : len(set(X)) == 1)
+print(df_concensus[df_concensus["concensus"] == False])
+```
+
+| sentence                                         |   concensus |
+|:-------------------------------------------------|------------:|
+| We need to get rid of fossil fuel subsidies now. |       False |
+
+One sentence does not reach a concensus, We are going to remove it by hand and then use the `drop_duplicates` function: 
+
+```python 
+df_no_duplicates = df_no_duplicates.loc[
+    df_no_duplicates["sentence"] != "We need to get rid of fossil fuel subsidies now.",
+    :
+]
+df_no_duplicates = df_no_duplicates.drop_duplicates("sentence")
+```
+
+As a final check, we can use the Levenshtein distance to make sure that there are no lasting duplicates: 
+
+```python
+from Levenshtein import distance as lev_distance
+
+threshold = 10
+
+for i in range(len(df_no_duplicates)):
+    for j in range(i + 1, len(df_no_duplicates)):
+        s1 = df_no_duplicates.iloc[i]["sentence"]
+        s2 = df_no_duplicates.iloc[j]["sentence"]
+        d = lev_distance(s1, s2)
+        if d < threshold:
+            print(f"{d} : {s1} || {s2}")
+```
+
+With this loop, we have found 6 new sentences with duplicates:
+
+- Global warming isn’t happening. || Global warming isn't happening.
+- There is no solid evidence of global warming. || There is not solid evidence of global warming.
+- Balance of evidence suggests a discernible human influence on global climate. || The balance of evidence suggests a discernible human influence on global climate.
+- The alleged “ consensus ” behind the dangers of anthropogenic global warming is not nearly as settled among climate scientists as people imagine. || The alleged â consensus â behind the dangers of anthropogenic global warming is not nearly as settled among climate scientists as people imagine.
+- Rising global temperatures during the 19th and 20th centuries may be linked to greater plant photosynthesis. || Rising global temperatures during the 19th and 20th centuries could be linked to greater plant photosynthesis.
+- Climate change will continue to affect all types of weather phenomena and subsequently impact increasingly urbanised areas. || Climate change will continue to affect all types of weather phenomena and subsequently impact increasingly urbanized areas.
+
+From there, one can choose to remove them or not. For this tutorial we will remove one of them if the two have the same label and remove both if they don't.
+
+```python 
+last_duplicates = [
+    ("Global warming isn’t happening.","Global warming isn't happening."),
+    ("There is no solid evidence of global warming.","There is not solid evidence of global warming."),
+    ("Balance of evidence suggests a discernible human influence on global climate.","The balance of evidence suggests a discernible human influence on global climate."),
+    ("The alleged “ consensus ” behind the dangers of anthropogenic global warming is not nearly as settled among climate scientists as people imagine.","The alleged â consensus â behind the dangers of anthropogenic global warming is not nearly as settled among climate scientists as people imagine."),
+    ("Rising global temperatures during the 19th and 20th centuries may be linked to greater plant photosynthesis.","Rising global temperatures during the 19th and 20th centuries could be linked to greater plant photosynthesis."),
+    ("Climate change will continue to affect all types of weather phenomena and subsequently impact increasingly urbanised areas.","Climate change will continue to affect all types of weather phenomena and subsequently impact increasingly urbanized areas."),
+]
+
+for (s1, s2) in last_duplicates:
+    lab_s1 = df_no_duplicates.loc[df_no_duplicates["sentence"] == s1, "label_text"]
+    lab_s2 = df_no_duplicates.loc[df_no_duplicates["sentence"] == s2, "label_text"]
+    if lab_s1.item() == lab_s2.item() : 
+        df_no_duplicates.drop(index = lab_s2.index)
+    else: 
+        df_no_duplicates.drop(index = [*lab_s1.index, *lab_s2.index])
+```
+
+
+## Good practices -> to move back to main 
+
+**Stratification of the splits**  <!-- Move to good practices ??? -->
+
+_The process of stratification consists of creating subgroups as defined by meta data (years for instance) and selecting a same number of texts per subgroup. This process intends to produce a dataset with uniform distribution across the selected metadata._
+
+You dataset may contain additional variations through years, or sources. To make sure that these variations do not bias your model, you may want to stratify your splits according to said dimensions. If your dataset contains underrepresented labels, you can also choose to stratify your sets using the label column in order to create balanced splits which will contain as many texts per label.
+
+In our case, we don't have additional metadata to stratify our splits with, also, the label distribution is not too unbalanced that we have to stratify the splits. We will not proceed to any stratification. 
+
+If you were to do stratify your dataset, here is a code snippet to do it: 
+
+```python
+stratification_column = ["year"]
+sub_groups = df.groupby(stratification_column, as_index = True)
+samples_per_stratum = min(sub_groups.size())
+df_stratified = (
+    sub_groups
+    .apply(lambda x : x.sample(n = samples_per_stratum))
+    .reset_index()
+    # .drop(["level_0", "level_1"], axis = 1) # Some additional columns will appear, you may want to drop them
+)
+```
+
+### Understand the ins and outs of the pipeline 
+
+<!-- Move to experts? -->
+
+[ES: je ne comprends pas le rôle de cette partie ; si c'est comprendre l'inférence avec un modèle, je pense que ça doit arriver bien plus tôt quand tu présentes charger un modèle, une partie "l'utiliser out of the box" avant le fine-tuning. AM: Je vois ce que tu veux dire, mais aussi y'a besoin de présenter tous les objets avant de les appeler. Je pense pas qu'on peut le faire plus tôt. Ou alors il faut le faire avec les mains et pas avec du code. C'est peut être mieux ? ]
+
+Before training the model, we wanted to demonstrate each step of the classification: 
+
+- Tokenizing the texts
+- Passing the tokens to the model
+- Create embeddings
+- Classify the embeddings
+
+```python  
+entry = [
+    "Hello World",
+    "This is a second query"
+]
+
+tokenizer_parameters = {
+    "truncation":True, 
+    "padding":"max_length",
+    "max_length":400,
+    "return_tensors":"pt"
+}
+
+model_input = tokenizer(entry,**tokenizer_parameters)
+base_model_output = classif_model.base_model(**model_input)
+classif_model_output = classif_model(**model_input)
+print(f'''
+# model input keys: {', '.join(model_input)}
+model input shape (pytorch tensor): {model_input["input_ids"].shape}
+base model output keys: {', '.join(base_model_output)}
+base model output last_hidden_state shape (pytorch tensor): {base_model_output.last_hidden_state.shape}
+classification model output key: {', '.join(classif_model_output)}
+classification model output logits shape (pytorch tensor): {classif_model_output.logits.shape}
+''')
+```
+
+<!-- TODO Add a  picture to comment the output-->
+<!-- TODO Explain the idea of logits and activation function -->
+
+
+## Macro vs micro{#sec-macro-micro}
