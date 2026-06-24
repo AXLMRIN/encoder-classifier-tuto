@@ -18,7 +18,7 @@ toc-depth: 3
 
 Social scientists dealing with large corpora of documents (tweets, abstracts, newspaper articles, videos, ...) often need to annotate each item with one or more labels. To complete this cumbersome task, social scientists have adopted many strategies such as hiring interns, externalise the task to a company such as MTurk, or use computers to do the job (SOURCE of fun fact ?). Since the development of LLMs, it has now become a common practice to use them as annotators in social science contexts (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). For instance Claesson (2026) annotated 4.5 million tweets addressed to French members of the parliament. Each tweet could be assigned the labels "attack", "critique" or "support". With these annotations, she was able to describe the conditions of hate speech towards French parliamentaries on twitter. <!-- TODO reformulate --> In the Machine Learning jargon, the annotation task is referred to as a "classification task".
 
-In this series of tutorials we dive into the technicalities of the classification pipeline using LLMs as annotators. In a previous [tutoriel](https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/), we demonstrated how to use generative AI (genAI) for this task; the pipeline consisted of creating an appropriate prompt and retrieving the label in the genAI response. In this tutorial however we demonstrate how to use an encoder model (an LLM that does not generate texts) <!--AM: JB is it the right term or should we call it an embedding model?-->to perform this task. We are going to use smaller[^smaller-info] open weights models[^open-weights] that we will "teach" how to annotate texts the way an expert would using the supervised learning framework[^supervised-learning-disclaimer]. Researchers can maintain more control on the model and its performance, however, implementing such techniques requires more NLP knowledge and coding skills. Therefore this tutorial is longer and introduces many concepts that could be overlooked when using black box models.
+In this series of tutorials we dive into the technicalities of the classification pipeline using LLMs as annotators. In a previous [tutoriel](https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/), we demonstrated how to use generative AI (genAI) for this task; the pipeline consisted of creating an appropriate prompt and retrieving the label in the genAI response. In this tutorial however we demonstrate how to use an encoder model (an LLM that does not generate texts) (AM: JB is it the right term or should we call it an embedding model?) to perform this task. We are going to use smaller[^smaller-info] open weights models[^open-weights] and "teach" it how to annotate texts the way an expert would using the supervised learning framework[^supervised-learning-disclaimer]. Researchers can maintain more control on the model and its performance, however, implementing such techniques requires more NLP knowledge and coding skills. Therefore this tutorial is longer and introduces many concepts that could be overlooked when using black box models.
 
 [^smaller-info]: Smallest generative models weigh 16GB ([Llama-3-8B](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct/tree/main)) and larger models can easily reach  850GB ([Deepseek-V4-pro](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/tree/main)). On the other hand, the models we'll use weigh from 500MB ([google-bert/bert-base-uncased](https://huggingface.co/google-bert/bert-base-uncased)) to 2.3BG ([FacebookAI/xlm-roberta-large](https://huggingface.co/FacebookAI/xlm-roberta-large/tree/main)).
 
@@ -46,12 +46,12 @@ In this tutorial we will :
 - Understand the general pipeline for text classification with encoder models.
 - Develop some familiarity with preprocessing and training techniques.
 - Introduce the key metrics to evaluate models' performance.
-- Discuss how to properly incorporate this step in your research using state-of-the-art practices for your research.
+- Discuss how to properly incorporate this step in your research using state-of-the-art practices.
 
 In this tutorial, we will NOT cover : 
 
-- The Python syntax, we expect readers to already have some knowledge of the coding language. See Lino's course for an introduction 
-- The fundamentals of NLP and the intersection of linguistics and computer science, we will only introduce concepts necessary to understanding this tutorial. See Jurafsky 
+- The Python syntax, we expect readers to already have some knowledge of the coding language. See [Lino's course](https://pythonds.linogaliana.fr/) for an introduction 
+- The fundamentals of NLP and the intersection of linguistics and computer science, we will only introduce concepts necessary to understanding this tutorial. See [Jurafsky](https://web.stanford.edu/~jurafsky/slp3/) 
 - The conceptualisation of your research question to fall into the automatic annotation framework, we expect readers to be able to design their protocol and motivate it using appropriate social sciences or any domain speficic concepts.
 
 Available materials:
@@ -101,7 +101,7 @@ Classifiers often have structuring parameters called **hyperparameters** that al
 :::{.column width=70%}
 To evaluate classifiers we use [normalised metrics](https://scikit-learn.org/stable/modules/model_evaluation.html#which-scoring-function-should-i-use) such as [Precision](https://en.wikipedia.org/wiki/Precision_and_recall), [Recall](https://en.wikipedia.org/wiki/Precision_and_recall), [Accuracy](https://en.wikipedia.org/wiki/Accuracy_and_precision#In_binary_classification) and [F1 score](https://en.wikipedia.org/wiki/F-score#Definition). Depending on your research you may want to optimise one metric or another. 
 
-- Precision: _"out of all the elements predicted of class A, how many were indeed of class A?"_, this metric is rather conservative, optimising this score will limit the number of false positives.
+- Precision: _"out of all the elements predicted as class A, how many were indeed from class A?"_, this metric is rather conservative, optimising this score will limit the number of false positives.
 - Recall: _"out of all the elements that should have been classified as A, how many were indeed classified as A?"_, this metric is XXX, optimising this score will limit the number of false negatives.
 - Accuracy: _"across all classes, how many elements were classified correctly?"_, XXX critique of this metric JB?
 - F1 score: this score is an harmonic mean of recall an precision.
@@ -122,7 +122,7 @@ To correctly assess a model evaluation and prevent cherry-picking, we proceed to
 
 ## Models
 
-In this context, models are [deep neural network models](https://en.wikipedia.org/wiki/Neural_network_(machine_learning)). Neural Networks consist of connected nodes _(neurons)_ that receive signals from other neurons, process the signal, and send the outcome to other neurons. Neurons are grouped into layers, and signals travel from the first layer to the last one transforming the input signal into an output signal. A neural network is considered deep if it has more than 2 layers. Each neuron contains information called **weights** and **biases**. 
+In this context, models are [deep neural network models](https://en.wikipedia.org/wiki/Neural_network_(machine_learning)). Neural Networks consist of connected nodes _(neurons)_ that receive signals from other neurons, process the signal, and send the output to other neurons. Neurons are grouped into layers, and signals travel from the first layer to the last one transforming the input signal into an output signal. A neural network is considered deep if it has more than 2 layers. Each neuron contains information called **weights** and **biases**. 
 
 To be usable, Neural Networks must be trained on a certain task, for instance a classification task. As described before, the algorithm/neural network will adapt to the training data. In this case, the adaptation consists of updating the **weights** and **biases** in each neuron in order for the neural network to perform the task. 
 
@@ -166,7 +166,7 @@ Across all architechures, the **Transformer architecture** has become the _de fa
 The original transformer was made up of two parts, the encoder and the decoder, but most of its subsequent applications use only one of these parts:
 
 - **Decoder** models, including the GPT and Llama families, are generative models, meaning they are able to produce text. They are typically very large (from $10^6$ to $10^9$ weights), it is unlikely to run one on a personal computer and are often used through an API as demonstrated in the [previous tutorial](XXX).
-- **Encoder** models are intended to capture the semantic properties of their input text, which can then be used for downstream tasks. The output of an encoder model is a vector of several hundreds of dimensions called an **embedding**. They are much more frugal (< $10^6$ weights), it is likely that you can run one on a personal computer[^7]. 
+- **Encoder** models are intended to capture the semantic properties of their input text, which can then be used for downstream tasks. The output of an encoder model is a vector of several hundreds of dimensions called an **embedding**. They are much more frugal ($10^6$ - $10^8$ weights), it is likely that you can run one on a personal computer[^7]. 
 
 @sec-pros-cons, lists a number of pros and cons for both decoder and encoder models when used for classification.
 
@@ -186,11 +186,11 @@ One key parameter of all models is the "maximum context window". The maximum con
 
 [^max-window-size-actually]: Some techniques allow users to exceed the maximum context window, please refer to XXX @ Léo @ Alexandre
 
-[^tokens-def]: Texts cannot be used directly and must undergo a tokenization process. Models come with a vocabulary of tokens, each text is therefore a combination of "tokens" from the vocabulary. [Read more](Jurafsky chapter on tokens)
+[^tokens-def]: Texts cannot be used directly and must undergo a tokenization process. Models come with a vocabulary of tokens, each text is therefore a combination of "tokens" from the vocabulary. [Read more](https://web.stanford.edu/~jurafsky/slp3/2.pdf)
 
 ## BERT models
 
-The first BERT model was published by Google in 2019 (Devlin et al., 2019). "BERT" refers to a specific arrangement of Transformers layers with some tweaks that demonstrated great overall performance at the time and has become a reference in the realm of encoder model. As a consequence, many other BERT-like models were published, working off of these foundations, each new model proposing modifications or improvements like ModernBERT greatly increasing the context window size, CamemBERT trained on French texts or RoBERTa changing the training tasks. 
+The first BERT model was published by Google in 2019 (Devlin et al., 2019). "BERT" refers to a specific arrangement of Transformers layers with some tweaks that demonstrated great overall performance at the time and has become a reference in the realm of encoder models. As a consequence, many other BERT-like models were published, working off of these foundations, each new model proposing modifications or improvements like ModernBERT greatly increasing the context window size, CamemBERT trained on French texts or RoBERTa changing the training tasks. 
 
 ## Pretrained Language Model
 
@@ -199,11 +199,11 @@ We mentioned that language models were deep neural networks trained on a natural
 - Task 1: Masked LM. Take a sentence, replace some words by a `[MASK]` token, predict what was the word.
 - Task 2: Next Sentence Prediction. Take two sentences A and B, classify whether it makes sense for sentence B to appear after sentence A. 
 
-This pre-training is the most time and power consuming step as the process can take from dozens of hours to several days, weeks or even months. This task is only performed by specialised organisations that have access to high end hardware and large amount of data (let it be from legal or illegal source). Once the process is done, the model can reach moderate to high performance on a large range of tasks.
+This pre-training is the most time and power consuming step, as the process can take from dozens of hours to several days, weeks, or even months (XXX source). This task is only performed by specialised organisations that have access to high-end hardware and large amounts of data (whether from legal or illegal sources). Once the process is done, the model can reach moderate to high performance on a large range of tasks.
 
 ## Fine-tuning
 
-The "pre-training" implies there is a "training", or more specifically, a "fine-tuning". This fine-tuning process only takes a few minutes on a regular laptop and can last a few hours at best. This process is intends to adapt the model to **your** task and **your** data, going from moderate to, hopefully, very high performance. 
+The "pre-training" implies there is a "training", or more specifically, a "fine-tuning". This fine-tuning process only takes a few minutes and can last a few dozens of minutes on more limited hardware. This process intends to adapt the model to **your** task and **your** data, going from moderate to, hopefully, very high performance. 
 
 In our case, we will be fine-tuning the model on a classification task, by providing text inputs and hand labels. In practice, this process updates the weights and biases but at a much lower order of magnitude. This fine-tuning process will transform the language model into a classifier model for text data. This means that the fine tuning is assessed using the same metrics (F1 score, ...) and following the same framework (train, dev, test splits) as any other classifier. 
 
@@ -216,7 +216,7 @@ In our case, we will be fine-tuning the model on a classification task, by provi
 
 :::
 
-# Fine-tuning pipeline: the essential
+# Fine-tuning pipeline: the essential{#sec-essentials}
 
 Let's finally dive into the implementation of fine-tuning a pretrained language model of type encoder to perform a classification task!
 
@@ -301,7 +301,7 @@ df["ID"] = [f'ID-{i:04}' for i in range(len(df))]
 
 Assessing the length of your documents is crucial for two reasons: 
 
-- Firstly, as mentionned in @sec-encoders, we must check that the length of the documents are compatible with the chosen model's context window size [^preprocess-choose-model]. Also you will need to answer this question: where is the information that you're looking for. For some tasks, you might want to work at the sentence level because you want to find specific elements of your corpus. For other tasks, working at the document or paragraph level is acceptable because you want to assess a global quantity
+- Firstly, as mentionned in @sec-encoders, we must check that the length of the documents are compatible with the chosen model's context window size [^preprocess-choose-model]. Also you will need to answer this question: "Where is the information that you're looking for?". For some tasks, you might want to work at the sentence level because you want to find specific elements of your corpus. For other tasks, working at the document or paragraph level is acceptable because you want to assess a global quantity
 - Secondly, we need to make sure that models have roughly the same size to spot obvious issues (empty texts for instance) and ensure that we are not comparing documents of 5 words with 2 pages long documents.
 
 [^preprocess-choose-model]: Here we mention how the chose model impacts the preprocessing of the texts whereas we have not chosen a model yet. This is a good example of how non-linear pipelines are, there are many back and forths stressing the need for a well documented pipeline.
@@ -329,7 +329,7 @@ Name: sentence-len, dtype: float64
 ![Sentence length](./assets/sentence-length.png){#fig-sentence-length-hist width=50%}
 
 
-In the context of our experiment, the sentences are quite short and their size is roughly standard. We will not exclude text inputs based on the text. Keep in mind that this model will be trained on a specific task and specific material. Performances are not guaranteed for texts too different in tone, source, date, or length from the training data.
+In the context of our experiment, the sentences are quite short and their size is roughly standard. We will not exclude text inputs based on their length. Keep in mind that this model will be trained on a specific task and specific material. Performances are not guaranteed for texts too different in tone, source, date, or length from the training data.
 
 **Are there any unwanted characters**
 
@@ -337,7 +337,7 @@ If you are used to [TF-IDF techniques](XXX), you might be accoustumed to filteri
 
 [^recognise-emojis]: You need to ensure that the model you are using recognises emojis.
 
-Our corpus is relatively clean given that the preprocessing stage happened in the earlier stages of the study. Skimming through the text entries, we can still find some irregularities regarding the punctuation. Let's fix this: 
+Our corpus is relatively clean given that the preprocessing stage happened at an earlier stage of the study. Skimming through the text entries, we can still find some irregularities regarding the punctuation. Let's fix these: 
 
 ```python 
 def preprocess_text(text: str):
@@ -360,7 +360,7 @@ df["sentence-preprocessed"] = df["sentence"].apply(preprocess_text)
 
 **Are there any duplicates?** 
 
-This can be a fatal flaw as training a model with repeated elements can outweight other annotation or completely confuse it. Let's see if we have duplicates elements. 
+This can be a fatal flaw as training a model with repeated elements can outweight other annotation or completely confuse it. Let's see if we have duplicates: 
 
 ```python 
 df.groupby("sentence").size().value_counts()
@@ -373,11 +373,10 @@ df.groupby("sentence").size().value_counts()
 Name: count, dtype: int64
 ```
 
-We can see that 5 elements are duplicated 50 times. Further inverstigations let us identify that sentences with indexes starting with an "s" (`['s0', 's1', 's2', 's3', 's4']`) are duplicated 50 times. Let's remove these rows.
+We can see that 5 elements are duplicated 50 times. Further investigations let us identify that sentences with indices starting with an "s" (`['s0', 's1', 's2', 's3', 's4']`) are duplicated 50 times. Let's remove these rows.
 
 ```python 
 df_no_duplicates = df.loc[~df["sent_id"].str.startswith("s"), :] 
-df_no_duplicates.groupby("sentence").size().value_counts()
 ```
 
 We still need to deal with the 8 elements that have a duplicate. For conciseness' sake we document this step in the [appendices of this tutorial](./appendices.qmd#sec-duplicates). You can run the lines yourself of load the checkpoint:
@@ -476,10 +475,6 @@ DatasetDict({
 
 In this tutorial we use the Transformers package, maintained by [HuggingFace](https://huggingface.co/)[^huggingface]. They propose a range of open source models and datasets downlable through their API. In the context of this tutorial, we will start working with the famous BERT model named: [google-bert/bert-base-uncased](https://huggingface.co/google-bert/bert-base-uncased)
 
-:::{.callout-warning}
-[AM: Je pensais qu'on voulait présenter HF, pourquoi mettre ça en note de bas de page?]
-:::
-
 [^huggingface]: HuggingFace is a company for profit specialised in NLP and machine learning. They maintain many SOTA libraries such as [Transformers](https://huggingface.co/docs/transformers/index), [Datasets](https://huggingface.co/docs/datasets/index) or [Sentence Transormers](https://sbert.net/). On top of maintaining the libraries, they publish posts about the latest tech, tutorials on their libraries, host a forum for debugging but also propose inference and training solutions if you don't have access the required hardware.
 
 :::{.callout-note title="How to choose a model"}
@@ -516,7 +511,7 @@ model = AutoModelForSequenceClassification.from_pretrained(
 Nota: for some models you might need to set `trust_remote_code` to `True`. _Make sure you actually trust the model you are downloading._
 ::: 
 
-:::{.callout-note title="Model description" collapse="false"}
+:::{.callout-note title="Model description" collapse="true"}
 We can easily observe the general architecture of the model by typing: 
 
 ```python
@@ -594,7 +589,7 @@ BertForSequenceClassification(
 
 :::
 
-:::{.callout-note title="Tips and tricks - Read the model configuration" collapse="false"}
+:::{.callout-note title="Tips and tricks - Read the model configuration" collapse="true"}
 
 The `AutoConfig` class is very convenient for retrieveing information that may be difficult to obtain otherwise because models' documentation sometimes lack precision. We load it like this: 
 
@@ -641,7 +636,7 @@ BertConfig {
 
 ## Fine-tune the model
 
-We are finally going to fine-tune the model on our specific data. To do so, we are going to follow the 3 folowing steps:  
+We are finally going to fine-tune the model on our specific data. To do so, we are going to proceed with the 3 following steps:  
 
 - Tokenize the dataset
 - Setup the training arguments
@@ -649,7 +644,7 @@ We are finally going to fine-tune the model on our specific data. To do so, we a
 
 ### Tokenize the dataset: 
 
-Tokenizing consists of two steps, first text patterns are transformed into tokens from the model's vocabulary, then each sentence is truncated or padded so that each entry has the same length. 
+Tokenizing consists of two steps, first text patterns are transformed into tokens from the model's vocabulary, then each sentence is truncated or padded so that every entry has the same length. 
 
 :::{.callout-tip title="Example" collapse="true"}
 ```python 
@@ -702,11 +697,10 @@ def preprocess_dataset(row: dict):
   }
 
 dsd = dsd.map(preprocess_dataset)
-# Only keep columns useful during training
+# Only keep columns useful for training
 dsd = dsd.select_columns(['ID', 'labels', 'input_ids', 'token_type_ids', 'attention_mask'])
 # Set the dataset dict format to torch
-for split in dsd: 
-  dsd[split] = dsd[split].with_format("torch")
+dsd = dsd.with_format("torch")
 dsd
 ```
 
@@ -731,7 +725,7 @@ The data is ready to be used for Fine-Tuning!
 
 ### Setup fine-tuning hyperparameters{#sec-training-parameters}
 
-The fine-tuning parameters are stored in the `TrainingArguments`[^training-or-fine-tuning] object. We have selected the main parameters that you'll want to look for during training but you can browse the [117 parameters it can take](https://huggingface.co/docs/transformers/v4.49.0/en/main_classes/trainer#transformers.TrainingArguments). You'll find more information about tuning the hyperparameters at the @sec-hyperparameters-tuning.
+The fine-tuning parameters are stored in the `TrainingArguments`[^training-or-fine-tuning] object. We have selected the main parameters that you'll want to look for during training, but you can browse the [117 parameters it can take](https://huggingface.co/docs/transformers/v4.49.0/en/main_classes/trainer#transformers.TrainingArguments). You'll find more information about what hyperparameters represent and how to tune them in @sec-hyperparameters-tuning.
 
 [^training-or-fine-tuning]: The syntax would be the same if you trained a model from scratch, therefore the pipeline uses training related names (Trainer, TrainingArguments, ...), but that does not change the fact that we are indeed *fine-tuning* a model.
 
@@ -742,7 +736,6 @@ training_arguments = TrainingArguments(
     num_train_epochs = 5,
     learning_rate = 5e-5,
     weight_decay  = 0.0,
-    warmup_steps  = 0.0,
     optim = "adamw_torch_fused",
     # Second order hyperparameters
     per_device_train_batch_size = 4,
@@ -752,11 +745,11 @@ training_arguments = TrainingArguments(
     # metric_for_best_model="f1_macro", # TODO implement F1 as metric: MOVE TO EXPERT
     # Pipe
     output_dir = "./models/training",
-    eval_strategy = "epoch", # TODO CHANGE THAT TO HAVE MORE dots
-    logging_strategy = "epoch",
-    save_strategy = "epoch",
+    eval_strategy = "steps"   , eval_steps    = 0.05,
+    logging_strategy = "steps", logging_steps = 0.05,
+    save_strategy = "steps"   , save_steps    = 0.05,
     load_best_model_at_end = True,
-    save_total_limit = 5 + 1,
+    save_total_limit = 2,
 
     disable_tqdm = False,
 )
@@ -808,7 +801,7 @@ The model can be loaded like before:
 
 ```python 
 reload_model = AutoModelForSequenceClassification.from_pretrained(
-    "./models/training/checkpoint-4/")
+    "./models/training/checkpoint-76")
 ```
 
 It is worth noting that the trainer output also contains the best training checkpoint `trainer.state.best_model_checkpoint`. In our case, the best checkpoint is the checkpoint number 38`'./models/training/checkpoint-76'` the evaluation loss reaches a minimum (0.81) for this checkpoint.
@@ -873,12 +866,12 @@ print(classification_report(
 weighted avg       0.67      0.66      0.65       306
 ```
 
-Here we can see that the model performance for the labels "agrees" and "neutral" is decent, but would benefit from further hyperparameter tuning. On the other hand, the model does not recognise the "disagrees" label. All in all, the current finetuning leads to mediocre results. We will tweak the hyperparameters to reach better results. The first step is reading the learning curve.
+Here we can see that the model's performance for the labels "agrees" and "neutral" is decent, but would benefit from further hyperparameter tuning. On the other hand, the model does not recognise the "disagrees" label. All in all, the current finetuning leads to mediocre results. In @sec-advanced, we will tweak the hyperparameters to reach better results. 
 
 
 ## Conclusion 
 
-In this section we have covered the basics to load the data and model, launch the fine-tuning it and evaluate the performances. We discussed: 
+In this section we have covered the basics to load the data and model, launch the fine-tuning and evaluate performances. We discussed: 
 
 - The importance of knowing your corpus and preprocessing the texts depending on your research question.
 - How to choose a model depending on the task.
@@ -888,21 +881,41 @@ In this section we have covered the basics to load the data and model, launch th
 
 You now have all the technical knowledge necessary to fine-tune most classification models using the HuggingFace `AutoModelForSequenceClassification` pipeline. However, in the @sec-evaluation, we saw that the performance were not optimal. In the following section, we will explore other model outputs to gain further insights and modify the hyperparameters to reach better performances. Also, the pipeline did not make use of more advanced hardware such as GPUs and Apple MX chips, we will discuss how to adapt the code accordingly.
 
-## Read the learning curve
+# Training pipeline: advanced practices{#sec-advanced}
 
-:::{.callout-warning}
+## Hyperparameters description
 
-Ca devrait arriver au moment de l'entrainement, avec l'explication de ce qui va se passer, pas après si ?
+In @sec-training-parameters we introduced the main hyperparameters but did not provide much information on what they represent. In this section, we provide list these parameters and propose a description as well as a level of importance when tweaking the hyperparameters.
 
-On re-écrit et on rediscute de sa place après !
+- **Learning rate** 🟢🟢🟢 _(importance)_
+  - The learning rate represents the weights update rate at each step. More specifically, this hyperparameter represents the first learning rate value, as the learning rate itself changes during the process. Values too high might change the weights too much and mess with the model's inner balance; on the other hand values too low will not affect the model and the fine-tuning will have no effect.
+  - Typical values: $[1e-6, 1e-4]$
+- **Number of epochs** 🟢
+  - This is the number of times the number model will see the full training set. You want it as low as possible[^number-of-epochs] but sufficient for the performance to peak.
+  - Typical values: 3-5
+- **Weight decay**[^alias-weight-decay] 🟢🟢
+  - This prevents weights from growing too big (i.e. it's a regularisation parameter) and lead to overfitting. Values too low (meaning no regularisation) might result in overfitting whereas values too high may lead to underfitting.
+  - Typical values: 0.01-0.1  
+- **Batch size**, **Device batch size** and **Gradient accumulation steps** 🟢🟢
+  - All three parameters monitor the number of inputs to use in a batch before updating the weights. The larger the batch the less sensitive to noise the updates are. However, depending on your hardware, you might not be able to reach high batch sizes. Therefore we set the Device batch size at a lower value and Accumulation steps so that $\text{Batch size} = \text{Device batch size} \times \text{Gradient accumulation steps}$.
+  - Typical values for the Batch size: 16-64
+- **Eval** and **Save strategies** 🔴
+  - The strategies can be set to `"epoch"` or `"steps"`. If you use steps you can set the `eval_steps` and `save_steps` parameter to set after how many steps you want to evaluate your model and save it. Bear in mind that each model can weigh a few gigabytes, the more you save the more disk space you'll need. You can use `save_total_limit`[^note-save-total-limit] to limit the number of checkpoints saved.
 
-:::
+[^number-of-epochs]: More epochs mean more computation time.
 
-The learning curve provides the evolution of the model's performance using the loss function[^lossFunction] evaluated on the train set and the train-eval set. We can retrieve it by using the logs in the `trainer_state.json`; plot it: 
+[^alias-weight-decay]: AKA: L2-regularization.
+
+[^note-save-total-limit]: If you use `load_best_model_at_end=True`, make sure to have `save_total_limit` > 2, otherwise the best model will be overwritten by the last model ([documentation](https://huggingface.co/docs/transformers/main_classes/trainer#transformers.TrainingArguments.save_total_limit)).
+
+## Read the learning curve{#sec-hyperparameters-tuning}
+
+In @sec-essentials we fine-tuned a BERT model and saved checkpoints containing crucial information; one of them is the lerning curve. The learning curve provides the evolution of the model's performance using the loss function[^lossFunction] evaluated on the train set and the train-eval set. We can retrieve it by using the logs in the `trainer_state.json`; plot it: 
 
 [^lossFunction]: The loss function is a function measuring the distance between the predicted labels and the gold standard labels.
 
 ```python 
+# TODO update and make it simpler
 import json
 import plotly.express as px 
 
@@ -976,15 +989,15 @@ Now you only have to look at the evaluation metrics to see if you are satisfied 
 
 The model has **overfitted**
 
-- Both curves went down during training: the model has learned
-- But the training curve is much lower than the evaluation curve
+- Both curves went down during training: the model has learned.
+- But the training curve is much lower than the evaluation curve.
 
 What to do:
 
-- choose a lower learning rate, for slower weight updates
-- use larger batches[^6], in order to smooth training over more examples per training step
-- choose higher weight decay: this will prevent the weights from getting to large
-- annotate more data, you may not have enough examples for the model to learn from
+- choose a lower learning rate, for slower weight updates.
+- Increase batch size in order to smooth training over more examples per training step.
+- Increase weight decay to prevent overfitting.
+- Annotate more , you may not have enough examples for the model to learn from.
 
 [^6]: The effective batch size is the system batch size times the gradient accumulation.
 
@@ -1008,10 +1021,10 @@ The model has **underfitted**: Both curves are flat, the model learned nothing
 
 What to do:
 
-- choose a higher learning rates, for faster weight updates
-- use smaller batches, as this will result in more training steps
-- choose lower weight decay: too high regularization can prevent proper learning
-- annotate more data, you may not have enough examples for the model to learn from
+- Increase learning rate for faster weight updates.
+- Decrease batch size to increase the number of training steps.
+- Decrease weight decay, too much regularization can prevent proper learning.
+- Annotate more data, you may not have enough examples for the model to learn from
 
 :::
 
@@ -1031,16 +1044,16 @@ What to do:
 
 **You're on the right track**
 
-- Both curves went down during training: the model has learned
-- Both curves have the same loss values: no overfitting
-- But there is no plateau at the end, the curves are still going down
+- Both curves went down during training: the model has learned.
+- Both curves have the same loss values: no overfitting.
+- But there is no plateau at the end, the curves are still going down.
 
 What to do:
 
-- use more epochs, to give the model time to learn more
-- choose a higher learning rate, for faster weight updates
-- use smaller batches, as this will result in more training steps
-- choose lower weight decay: too high regularization can prevent proper learning
+- Increase the number epochs to increase the number of training steps.
+- Increase the learning rate for faster weight updates.
+- Decrease the batch size to increase the number of training steps.
+- Decrease weight decay, too much regularization can prevent proper learning.
 
 
 :::
@@ -1061,15 +1074,15 @@ What to do:
 
 The model is trying to learn too fast:
 
-- Curves should be going down, not up and down
-- Some learning has occured, but you can probably do better
+- Curves should be going down, not up and down.
+- Some learning has occured, but you can probably do better.
 
 What to do:
 
-- choose a lower learning rate, for slower weight updates
-- use larger batches, in order to smooth training over more examples per training step
-- choose higher weight decay: this will prevent the weights from getting to large
-- annotate more data, you may not have enough examples for the model to learn from
+- Decrease the learning rate for gentlier weight update.
+- Increase the batch size in order to smooth training over more examples per training step.
+- Increase the weight decay to prevent overfitting.
+- Annotate more data, you may not have enough examples for the model to learn from.
 
 :::
 
@@ -1080,61 +1093,6 @@ What to do:
 :::
 
 ::::
-
-## Predict the labels for the full dataset
-
-:::{.callout-warning}
-
-C'est dur à comprendre comme partie, je suis un peu perdu
-:::
-
-To predict the labels, we just need to use the model's `__call__` method and retrieve the predicted logits. From there, using the `np.argmax` function, we retrieve the predicted labels and save the results to avoid re-running the inference.
-
-```python 
-text_id : list[int] = []
-labels_true : list[int] = []
-labels_pred : list[int] = []
-
-output = []
-for batch in dsd["test"].batch(batch_size=16, drop_last_batch=False):
-  print(batch["labels"]); break
-  model_input = {'input_ids' : batch['input_ids'],'attention_mask' : batch['attention_mask']}
-  logits : np.ndarray = model(**model_input).logits.detach().cpu().numpy()
-  output += [
-    {
-      "ID": str(id_), 
-      "GS": int(np.argmax(labels_).item()), 
-      "PRED": int(np.argmax(logit_row).item())
-    }
-    for id_, labels, logit_row in zip(batch["ID"].cpu(), batch["labels"].cpu(), logits)
-  ]
-(
-  pd.DataFrame({
-    "ID": text_id,
-    "predict" : labels_pred, 
-    "gold_standard": labels_true
-  })
-  .set_index("ID")
-  .to_csv("./outputs/prediction.csv")
-)
-```
-
-# Training pipeline: advanced practices
-
-## Hyperparameters tuning{#sec-hyperparameters-tuning}
-
-In the @sec-training-parameters we used the default values for the hyperparameters. In this section, we will describe them and provide advices for tuning them. 
-
-|| Definition | Reference | Advice on how to tune it| Importance |
-|---|---|---|---|---|
-|Learning rate|This is the initial "push" when training your model. Each step (??) this value is updated, however, this initial value may lead to different results.|$[1e-6,1e-4]$|Consider increasing it if the loss does not decrease enough and decrease it if the loss diverges| 🟢🟢🟢 |
-|Number of epochs| This is the number of time that the model will see the full train set. | 3-5 | You want it as low as possible but high enough to reach the optimum| 🟢 |
-|Weight Decay| This parameter prevents the model from overfitting by freezing random nodes during a training step | $0.1$ | If you have good results on the training set the model performs poorly on the train-eval set and test set consider increasing it.| 🟢 |
-|Batch size and gradient accumulation | The batch size is the number of elements seen during one step. This parameter is to be tuned according to your hardware (small hardware, lower batch size). However, to get better results, we want the optimisation step to be considering many step at once, this is why we have the gradient accumulation step. This allows to execute the gradient descent with virtually more elements than the batch size | Maintain `batch_size * gradient_accumulation_steps = 32 or 64`| 🔴 |
-|Warmup ratio | XXX | XXXX | 0.1 | XXX| 
-| Optimizer | This is the algorithm chosen to perform the optimisation. The most famous is SGD (Stochastic Gradient Descent) but many alternatives exist. For finetuning, don't bother digging into it and stick with the AdamW which is made for easy tuning of the learning rate and weight decay | AdamW | 🔴🔴🔴 | 
-
-<!-- TODO find better hyperparameters and put the code here -->
 
 ## Use GPU for faster training{#sec-GPU}
 
@@ -1154,35 +1112,65 @@ print("CUDA: ", cuda_available())
 print("MPS: ", mps_available())
 ```
 
-From there, you will need to be aware of where your objects are. Indeed, in order to use the model on CUDA (or MPS), the input and the model need to be stored on the same hardware. The code becomes: 
+From there on, you will need to be aware of where your objects are stored. Indeed, in order to use the model on CUDA (or MPS), the input and the model need to be stored on the same hardware. The code for finetuning changes slightly: 
 
 ```python 
-from torch import Tensor 
-
+# Choose your device
 DEVICE = "cuda" # or "mps", or "cpu"
 
-entry = [
-    "Hello World",
-    "This is a second query"
-]
+# Preprocess, tokenize, format and split your data
+ds = ...
+# Move the dataset on the desired device:
+ds = ds.with_format("torch", device = DEVICE)
 
-tokenizer_parameters = {
-    "truncation":True, 
-    "padding":"max_length",
-    "max_length":400,
-}
-
-
+# Load the model
+model = ...
+# move the model to the desired device
 model = model.to(device = DEVICE)
+# You can check the model device :
+print(model.device)
 
-model_input = tokenizer(entry,**tokenizer_parameters)
-model_input = {
-  "input_ids" = Tensor(model_input["input_ids"]).to(device = DEVICE),
-  "attention_mask" = Tensor(model_input["attention_mask"]).to(device = DEVICE)
-}
-base_model_output = model.base_model(**model_input)
-classif_model_output = model(**model_input)
+# Load the training arguments: 
+training_args = TrainingArguments(
+  ...
+  bf16= str(device) == "cuda", 
+)
+
+# Set up the trainer and launch the processing
 ```
+
+The code for using the model for inference changes as well: 
+
+```python
+from torch import no_grad
+IDs = []
+y_gold = []
+y_pred = []
+
+# Reload the best model: 
+model = AutoModelForSequenceClassification.from_pretrained(trainer.state.best_model_checkpoint)
+model = model.to(device=DEVICE)
+model.eval()
+if str(DEVICE)=="cuda": model = model.bf16() # Only works on GPUs
+
+for batch in tqdm(dsd["dev"].batch(8)): 
+  IDs += [batch["ID"]]
+  y_gold += [batch["labels"]]
+  with torch.no_grad():
+    probs = (
+      model(input_ids = batch["input_ids"], attention_mask= batch["attention_mask"])
+      .logits.cpu().softmax(1).float().numpy()
+    )
+    y_pred += [np.array([loop_config.id2label[int(y)] for y in y_pred])]
+
+results = pd.DataFrame({
+  "ID": np.concat(ID),
+  "gold": np.concat(y_gold),
+  "pred": np.concat(pred)
+})
+```
+
+
 
 If you don't move the elements properly, you will face this error: 
 
@@ -1192,34 +1180,6 @@ two devices, cuda:0 and cpu! (when checking argument for argument
 index in method wrapper_CUDA__index_select)
 ```
 
-When using a `Dataset` or `DatasetDict`, you can force all arrays to be automatically stored on a same device using this command: 
-
-```python
-ds = ds.with_format("torch", device = DEVICE)
-```
-
-:::{.callout-note title="Training arguments to chose the device to use"}
-
-The Training arguments object accepts the following arguments `use_cpu`, `use_mps`, `use_cuda` which supposedly handles everything for you. However, we would advise to manually move your objects on the right device and set: 
-
-```
-training_args = TrainingArguments(
-  ...
-  use_mps_device   = DEVICE == "mps" ,
-  no_cuda          = DEVICE != "cuda",
-  use_cpu          = DEVICE == "cpu" ,
-)
-```
-
-weird, i can't seem to be able to force using cpu -> you can't update, you have to set it when creating the instance
-
-
-arggg je sais pas si c'est un bon conseil
-
-TypeError: Got unsupported ScalarType BFloat16 -> when using bfloat16 and .numpy() -> .float().numpy()
-
-:::
-
 The final step is to clean your GPU after using it. Otherwise you risk clogging the memory and flushing it becomes a hassle. Best practices include working inside a `try/except/finally` loop to make sure the memory is clean after use. 
 
 ```python 
@@ -1227,20 +1187,13 @@ from gc import collect as gc_collect
 from torch.cuda import empty_cache, synchronize, ipc_collect
 from torch.cuda import is_available as cuda_available
 
-def clean():
-  """Flush GPU memory"""
-  empty_cache()
-  if cuda_available():
-      synchronize()
-      ipc_collect()
-  gc_collect()
-  print("Memory flushed")
-
 tokenizer, model, dsd, trainer = (None, ) * 4 # All objects that are moved to the GPU
 try: 
   tokenize = ...
+  dsd = ...
   model = ...
-  model = ...
+  trainer = ...
+  trainer.train()
 
 except Exception as e:
     print("# ERROR" + "#" * 93)
@@ -1249,12 +1202,18 @@ except Exception as e:
 
 finally:
     del tokenizer, model, dsd, trainer # All objects that are moved to the GPU
-    clean_memory()
+    empty_cache()
+    if cuda_available():
+        synchronize()
+        ipc_collect()
+    gc_collect()
 ```
 
 ## Read the errors
 
-You will face many, many errors. Sometimes they are random and rerunning the script / restarting the kernel will solve the issue. Others are subtle and difficult to identify. In such case, copy pase the error in google (genAI is less likely to provide you the right answer), you'll find forums with people who faced the same issue. As stressed in the introduction, downgrading/upgrading some libraries is likely to solve the issue.
+You will face many, many errors. Sometimes they are random and rerunning the script / restarting the kernel will solve the issue. Others are subtle and difficult to identify. In such case, copy paste the error in google (in our experience, genAI is less likely to provide you the right answer), you'll find forums with people who faced the same issue. As stressed in the introduction, downgrading/upgrading some libraries is likely to solve the issue.
+
+### Dataset formatting
 
 Many errors are raised due to the functions assuming that your columns are well named and that the data has the right format. Make sure to have the following: 
 
@@ -1265,22 +1224,36 @@ Many errors are raised due to the functions assuming that your columns are well 
 
 Also, depending on the model you're using these columns can have different names. Make sure to check the huggingface documentation related to the model you are using as well as forums.
 
-If you face this error: 
+### Memory overflow
+
+If you face this error using a GPU : 
 
 ```txt 
 NVML_SUCCESS == r INTERNAL ASSERT FAILED at "/home/conda/feedstock_root/build_artifacts/libtorch_1750199048837/work/c10/cuda/CUDACachingAllocator.cpp":1016, please report a bug to PyTorch.
 ```
 
-It is likely that you have reached the memory limit of your hardware. Reducing the batch size or using a smaller model is likely to solve your issue.
+It is likely that you have reached the memory limit of your hardware. Reducing the device batch size or using a smaller model is likely to solve your issue. If you use a CPU the error becomes: `Invalid buffer size: `
 
-Same: "Invalid buffer size: " on CPU
+### Tensor shapes
 
-- "ValueError: too many values to unpack (expected 2)" -> pb dsd["train"][0]["input_ids"].shape doit retourner torch.Size([400]) et pas torch.Size([1, 400]), pb de tokenizer avec return_tensors="pt" + with format
+If you face the following error: 
 
-missing keys beta/gamma and weights/biases -> not a problem
+```txt 
+ValueError: too many values to unpack (expected 2)
+```
 
-3.63it/s]There were missing keys in the checkpoint model loaded: ['bert.embeddings.LayerNorm.weight', 'bert.embeddings.LayerNorm.bias', 'bert.encoder.layer.0.attention.output.LayerNorm.weight', 'bert.encoder.layer.0.attention.output.LayerNorm.bias', 'bert.encoder.layer.0.output.LayerNorm.weight', 'bert.encoder.layer.0.output.LayerNorm.bias', 'bert.encoder.layer.1.attention.output.LayerNorm.weight', 'bert.encoder.layer.1.attention.output.LayerNorm.bias', 'bert.encoder.layer.1.output.LayerNorm.weight', 'bert.encoder.layer.1.output.LayerNorm.bias', 'bert.encoder.layer.2.attention.output.LayerNorm.weight', 'bert.encoder.layer.2.attention.output.LayerNorm.bias', 'bert.encoder.layer.2.output.LayerNorm.weight', 'bert.encoder.layer.2.output.LayerNorm.bias', 'bert.encoder.layer.3.attention.output.LayerNorm.weight', 'bert.encoder.layer.3.attention.output.LayerNorm.bias', 'bert.encoder.layer.3.output.LayerNorm.weight', 'bert.encoder.layer.3.output.LayerNorm.bias', 'bert.encoder.layer.4.attention.output.LayerNorm.weight', 'bert.encoder.layer.4.attention.output.LayerNorm.bias', 'bert.encoder.layer.4.output.LayerNorm.weight', 'bert.encoder.layer.4.output.LayerNorm.bias', 'bert.encoder.layer.5.attention.output.LayerNorm.weight', 'bert.encoder.layer.5.attention.output.LayerNorm.bias', 'bert.encoder.layer.5.output.LayerNorm.weight', 'bert.encoder.layer.5.output.LayerNorm.bias', 'bert.encoder.layer.6.attention.output.LayerNorm.weight', 'bert.encoder.layer.6.attention.output.LayerNorm.bias', 'bert.encoder.layer.6.output.LayerNorm.weight', 'bert.encoder.layer.6.output.LayerNorm.bias', 'bert.encoder.layer.7.attention.output.LayerNorm.weight', 'bert.encoder.layer.7.attention.output.LayerNorm.bias', 'bert.encoder.layer.7.output.LayerNorm.weight', 'bert.encoder.layer.7.output.LayerNorm.bias', 'bert.encoder.layer.8.attention.output.LayerNorm.weight', 'bert.encoder.layer.8.attention.output.LayerNorm.bias', 'bert.encoder.layer.8.output.LayerNorm.weight', 'bert.encoder.layer.8.output.LayerNorm.bias', 'bert.encoder.layer.9.attention.output.LayerNorm.weight', 'bert.encoder.layer.9.attention.output.LayerNorm.bias', 'bert.encoder.layer.9.output.LayerNorm.weight', 'bert.encoder.layer.9.output.LayerNorm.bias', 'bert.encoder.layer.10.attention.output.LayerNorm.weight', 'bert.encoder.layer.10.attention.output.LayerNorm.bias', 'bert.encoder.layer.10.output.LayerNorm.weight', 'bert.encoder.layer.10.output.LayerNorm.bias', 'bert.encoder.layer.11.attention.output.LayerNorm.weight', 'bert.encoder.layer.11.attention.output.LayerNorm.bias', 'bert.encoder.layer.11.output.LayerNorm.weight', 'bert.encoder.layer.11.output.LayerNorm.bias'].
-There were unexpected keys in the checkpoint model loaded: ['bert.embeddings.LayerNorm.beta', 'bert.embeddings.LayerNorm.gamma', 'bert.encoder.layer.0.attention.output.LayerNorm.beta', 'bert.encoder.layer.0.attention.output.LayerNorm.gamma', 'bert.encoder.layer.0.output.LayerNorm.beta', 'bert.encoder.layer.0.output.LayerNorm.gamma', 'bert.encoder.layer.1.attention.output.LayerNorm.beta', 'bert.encoder.layer.1.attention.output.LayerNorm.gamma', 'bert.encoder.layer.1.output.LayerNorm.beta', 'bert.encoder.layer.1.output.LayerNorm.gamma', 'bert.encoder.layer.2.attention.output.LayerNorm.beta', 'bert.encoder.layer.2.attention.output.LayerNorm.gamma', 'bert.encoder.layer.2.output.LayerNorm.beta', 'bert.encoder.layer.2.output.LayerNorm.gamma', 'bert.encoder.layer.3.attention.output.LayerNorm.beta', 'bert.encoder.layer.3.attention.output.LayerNorm.gamma', 'bert.encoder.layer.3.output.LayerNorm.beta', 'bert.encoder.layer.3.output.LayerNorm.gamma', 'bert.encoder.layer.4.attention.output.LayerNorm.beta', 'bert.encoder.layer.4.attention.output.LayerNorm.gamma', 'bert.encoder.layer.4.output.LayerNorm.beta', 'bert.encoder.layer.4.output.LayerNorm.gamma', 'bert.encoder.layer.5.attention.output.LayerNorm.beta', 'bert.encoder.layer.5.attention.output.LayerNorm.gamma', 'bert.encoder.layer.5.output.LayerNorm.beta', 'bert.encoder.layer.5.output.LayerNorm.gamma', 'bert.encoder.layer.6.attention.output.LayerNorm.beta', 'bert.encoder.layer.6.attention.output.LayerNorm.gamma', 'bert.encoder.layer.6.output.LayerNorm.beta', 'bert.encoder.layer.6.output.LayerNorm.gamma', 'bert.encoder.layer.7.attention.output.LayerNorm.beta', 'bert.encoder.layer.7.attention.output.LayerNorm.gamma', 'bert.encoder.layer.7.output.LayerNorm.beta', 'bert.encoder.layer.7.output.LayerNorm.gamma', 'bert.encoder.layer.8.attention.output.LayerNorm.beta', 'bert.encoder.layer.8.attention.output.LayerNorm.gamma', 'bert.encoder.layer.8.output.LayerNorm.beta', 'bert.encoder.layer.8.output.LayerNorm.gamma', 'bert.encoder.layer.9.attention.output.LayerNorm.beta', 'bert.encoder.layer.9.attention.output.LayerNorm.gamma', 'bert.encoder.layer.9.output.LayerNorm.beta', 'bert.encoder.layer.9.output.LayerNorm.gamma', 'bert.encoder.layer.10.attention.output.LayerNorm.beta', 'bert.encoder.layer.10.attention.output.LayerNorm.gamma', 'bert.encoder.layer.10.output.LayerNorm.beta', 'bert.encoder.layer.10.output.LayerNorm.gamma', 'bert.encoder.layer.11.attention.output.LayerNorm.beta', 'bert.encoder.layer.11.attention.output.LayerNorm.gamma', 'bert.encoder.layer.11.output.LayerNorm.beta', 'bert.encoder.layer.11.output.LayerNorm.gamma'].
+The issue is likely to come from the tokenization step. If you type: `dsd["train"][0]["input_ids"].shape`, it must return `torch.Size([400])` and not `torch.Size([1, 400])`. Ensure that the tokenizer does not use `return_tensors="pt"` and that you use `dsd.with_format("torch")`.
+
+### Missing keys when saving/reloading a checkpoint
+
+You might face this scary issue: 
+
+```txt 
+There were missing keys in the checkpoint model loaded: ['bert.embeddings.LayerNorm.weight', ...
+There were unexpected keys in the checkpoint model loaded: ['bert.embeddings.LayerNorm.beta', ...
+```
+
+This is merely a convention issue. Some models/versions use beta/gamma keywords instead of weights/biases. This is not a problem and the model solve this automatically. If the loaded model shows unexpected low performance, this might be a sign that the model did not solve this issue automatically. You might have to rename the parameters yourself using the right convention _(very unlikely)_.
 
 # Some good practices
 
