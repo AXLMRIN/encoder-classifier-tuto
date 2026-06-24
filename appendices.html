@@ -101,6 +101,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -149,10 +178,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#appendices" id="toc-appendices" class="nav-link active" data-scroll-target="#appendices">Appendices</a>
   <ul class="collapse">
   <li><a href="#sec-duplicates" id="toc-sec-duplicates" class="nav-link" data-scroll-target="#sec-duplicates">Code for removing the last 8 duplicates</a></li>
-  <li><a href="#good-practices---to-move-back-to-main" id="toc-good-practices---to-move-back-to-main" class="nav-link" data-scroll-target="#good-practices---to-move-back-to-main">Good practices -&gt; to move back to main</a>
-  <ul class="collapse">
-  <li><a href="#understand-the-ins-and-outs-of-the-pipeline" id="toc-understand-the-ins-and-outs-of-the-pipeline" class="nav-link" data-scroll-target="#understand-the-ins-and-outs-of-the-pipeline">Understand the ins and outs of the pipeline</a></li>
-  </ul></li>
+  <li><a href="#good-practices---to-move-back-to-main" id="toc-good-practices---to-move-back-to-main" class="nav-link" data-scroll-target="#good-practices---to-move-back-to-main">Good practices -&gt; to move back to main</a></li>
+  <li><a href="#sec-ins-and-outs" id="toc-sec-ins-and-outs" class="nav-link" data-scroll-target="#sec-ins-and-outs">Understand the ins and outs of the pipeline</a></li>
   <li><a href="#sec-macro-micro" id="toc-sec-macro-micro" class="nav-link" data-scroll-target="#sec-macro-micro">Macro vs micro</a></li>
   </ul></li>
   </ul>
@@ -246,17 +273,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># .drop(["level_0", "level_1"], axis = 1) # Some additional columns will appear, you may want to drop them</span></span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<section id="understand-the-ins-and-outs-of-the-pipeline" class="level3">
-<h3 class="anchored" data-anchor-id="understand-the-ins-and-outs-of-the-pipeline">Understand the ins and outs of the pipeline</h3>
-<!-- Move to experts? -->
-<p>[ES: je ne comprends pas le rôle de cette partie ; si c’est comprendre l’inférence avec un modèle, je pense que ça doit arriver bien plus tôt quand tu présentes charger un modèle, une partie “l’utiliser out of the box” avant le fine-tuning. AM: Je vois ce que tu veux dire, mais aussi y’a besoin de présenter tous les objets avant de les appeler. Je pense pas qu’on peut le faire plus tôt. Ou alors il faut le faire avec les mains et pas avec du code. C’est peut être mieux ? ]</p>
-<p>Before training the model, we wanted to demonstrate each step of the classification:</p>
-<ul>
-<li>Tokenizing the texts</li>
-<li>Passing the tokens to the model</li>
-<li>Create embeddings</li>
-<li>Classify the embeddings</li>
-</ul>
+</section>
+<section id="sec-ins-and-outs" class="level2">
+<h2 class="anchored" data-anchor-id="sec-ins-and-outs">Understand the ins and outs of the pipeline</h2>
+<p>To further understand the objects we manipulate, this section discusses the ins and outs of the tokenizer and the model.</p>
+<p>From text entries we tokenize them as presented in <a href="./index.html#sec-tokenization">the tutorial</a>, and give them the right format and shape:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>entry <span class="op">=</span> [</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Hello World"</span>,</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"This is a second query"</span></span>
@@ -265,24 +286,80 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>tokenizer_parameters <span class="op">=</span> {</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"truncation"</span>:<span class="va">True</span>, </span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"padding"</span>:<span class="st">"max_length"</span>,</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_length"</span>:<span class="dv">400</span>,</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"return_tensors"</span>:<span class="st">"pt"</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>model_input <span class="op">=</span> tokenizer(entry,<span class="op">**</span>tokenizer_parameters)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>base_model_output <span class="op">=</span> classif_model.base_model(<span class="op">**</span>model_input)</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>classif_model_output <span class="op">=</span> classif_model(<span class="op">**</span>model_input)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'''</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="ss"># model input keys: </span><span class="sc">{</span><span class="st">', '</span><span class="sc">.</span>join(model_input)<span class="sc">}</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="ss">model input shape (pytorch tensor): </span><span class="sc">{</span>model_input[<span class="st">"input_ids"</span>]<span class="sc">.</span>shape<span class="sc">}</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="ss">base model output keys: </span><span class="sc">{</span><span class="st">', '</span><span class="sc">.</span>join(base_model_output)<span class="sc">}</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="ss">base model output last_hidden_state shape (pytorch tensor): </span><span class="sc">{</span>base_model_output<span class="sc">.</span>last_hidden_state<span class="sc">.</span>shape<span class="sc">}</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="ss">classification model output key: </span><span class="sc">{</span><span class="st">', '</span><span class="sc">.</span>join(classif_model_output)<span class="sc">}</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="ss">classification model output logits shape (pytorch tensor): </span><span class="sc">{</span>classif_model_output<span class="sc">.</span>logits<span class="sc">.</span>shape<span class="sc">}</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="ss">'''</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<!-- TODO Add a  picture to comment the output-->
-<!-- TODO Explain the idea of logits and activation function -->
-</section>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_length"</span>:<span class="dv">20</span> </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>model_input <span class="op">=</span> tokenizer(entry,<span class="op">**</span>tokenizer_parameters)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model_input[<span class="st">"input_ids"</span>])</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model_input[<span class="st">"attention_mask"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>[[101, 7592, 2088, 102, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [101, 2023, 2003, 1037, 2117, 23032, 102, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>[[1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Models only accept Torch Tensors so we must convert them (as we did at the end of <a href="./index.html#sec-tokenization">formatting section</a>). The model will only accept inputs of type integers:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch <span class="im">import</span> Tensor</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>model_input <span class="op">=</span> {k:Tensor(v).to(dtype<span class="op">=</span><span class="bu">int</span>, device<span class="op">=</span><span class="st">"cpu"</span>) <span class="cf">for</span> k,v <span class="kw">in</span> model_input.items()}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>From there we can look at the base model (i.e.&nbsp;encoder model) output:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>base_model_output <span class="op">=</span> model.to(device<span class="op">=</span><span class="st">"cpu"</span>).base_model(<span class="op">**</span>model_input)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>base_model_output</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>BaseModelOutputWithPoolingAndCrossAttentions(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  last_hidden_state=tensor([[[-0.2369,  ...,  0.5157],</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    ...,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    [-0.5129, ..., 0.3993]],</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  ],grad_fn=&lt;NativeLayerNormBackward0&gt;), </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  pooler_output=tensor([[-0.8752,  ...,  0.9330],</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    [-0.7771, ..., 0.8831]],</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    grad_fn=&lt;TanhBackward0&gt;), </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  hidden_states=None, </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  past_key_values=None, </span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  attentions=None, </span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  cross_attentions=None</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The two outputs of interest are <code>last_hidden_state</code>and <code>pooler_output</code>. Note that the output depends on the model architecture. Most models will have an <code>last_hidden_state</code> but not all of them will have a <code>pooler_output</code>. Let’s look at them:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"last_hidden_state"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(base_model_output.last_hidden_state.shape)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(base_model_output.last_hidden_state)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"pooler_output"</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(base_model_output.pooler_output.shape)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(base_model_output.pooler_output)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>last_hidden_state</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>torch.Size([2, 20, 768])</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>tensor([[[-0.2369,  ...,  0.5157],</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>         ...,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>         [-0.5129,  ...,  0.3993]],</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        [[-0.1064,  ..., 1.1088],</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>         [-0.4536,  ..., 0.1622]]],</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>         ...,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>       grad_fn=&lt;NativeLayerNormBackward0&gt;)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>pooler_output</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>torch.Size([2, 768])</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>tensor([[-0.8752, -0.3879, -0.7193,  ...,  0.0322, -0.7454,  0.9330],</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>        [-0.7771, -0.4486, -0.8072,  ..., -0.6931, -0.7128,  0.8831]],</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>       grad_fn=&lt;TanhBackward0&gt;)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We can see that both outputs are matrices with values ranging between -1 and 1. The shapes differ however:</p>
+<ul>
+<li><code>last_hidden_state</code> has a shape of <code>[2, 20, 768]</code> with <code>2</code> corresponding to the number of entries, <code>20</code> corresponds to the number of tokens per entry and <code>768</code> corresponds to the dimension of the embeddings<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Therefore we understand that this correspond to a matrix mapping each entry and token to an embedding.</li>
+<li><code>pooler_output</code> has a shape of <code>[2,768]</code>, we find again the <code>2</code> corresponding to the number of entries and <code>768</code> corresponding to the dimension of the embeddings. We understand that we lost the token dimension, which is the goal of <code>pooling</code> (more on <a href="XXX">pooling</a>).</li>
+</ul>
+<p>From there we can pass the output of the base model to the classifier:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>model.classifier(base_model_output.pooler_output)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>tensor([[ 0.4330,  0.7812, -0.1392],</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>        [ 0.3477,  0.8166, -0.4157]], grad_fn=&lt;AddmmBackward0&gt;)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This time the classifier returns a matrix of shape <code>[2,3]</code>, <code>2</code> corresponding to the number of entries and <code>3</code> corresponding to the number of classes we set when loading the model.</p>
+<p>If call the model directly we get:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>model(<span class="op">**</span>model_input).logits</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>SequenceClassifierOutput(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  loss<span class="op">=</span><span class="va">None</span>, </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  logits<span class="op">=</span>tensor([[ <span class="fl">0.5898</span>,  <span class="fl">0.6808</span>, <span class="op">-</span><span class="fl">0.2086</span>],</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        [ <span class="fl">0.3828</span>,  <span class="fl">1.1566</span>, <span class="op">-</span><span class="fl">0.0813</span>]], grad_fn<span class="op">=&lt;</span>AddmmBackward0<span class="op">&gt;</span>), </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  hidden_states<span class="op">=</span><span class="va">None</span>, </span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  attentions<span class="op">=</span><span class="va">None</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Here we see that the <code>logits</code> contains a <span class="math inline">\(2\times 3\)</span> matrix as well. The logits is the result of <code>model.classifier(base_model_output.pooler_output)</code> computed before, except the values aren’t exact. This is norma as the model inherently rely on some randomized components.</p>
+<p>To obtain probabilities over the 3 labels, one must use an <a href="xxx">activation function</a>, here we will use the <code>softmax</code> function because we are in a multiclass setting<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>model.to(device<span class="op">=</span><span class="st">"cpu"</span>)(<span class="op">**</span>model_input).logits.softmax(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>tensor([[0.3401, 0.4815, 0.1785],</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>        [0.3526, 0.5000, 0.1474]], grad_fn=&lt;SoftmaxBackward0&gt;)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>From there you can infer labels the way you want using the output probabilites. In the <a href="./index.html#sec-evaluation">evaluating section</a>, we assigned the label with the greater probability.</p>
 </section>
 <section id="sec-macro-micro" class="level2">
 <h2 class="anchored" data-anchor-id="sec-macro-micro">Macro vs micro</h2>
@@ -291,7 +368,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 </section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Which matches the <a href="./index.html#nte-model-description">description of the moel</a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>For multilabel settings use the <code>sigmoid</code> function.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

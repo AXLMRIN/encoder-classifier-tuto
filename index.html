@@ -184,7 +184,7 @@ window.Quarto = {
   <li><a href="#objectives-and-materials" id="toc-objectives-and-materials" class="nav-link" data-scroll-target="#objectives-and-materials">Objectives and materials</a></li>
   <li><a href="#install-environment" id="toc-install-environment" class="nav-link" data-scroll-target="#install-environment">Install environment:</a></li>
   </ul></li>
-  <li><a href="#key-concepts-and-valuable-resources-to-start-your-nlp-journeysec-key-concepts" id="toc-key-concepts-and-valuable-resources-to-start-your-nlp-journeysec-key-concepts" class="nav-link" data-scroll-target="#key-concepts-and-valuable-resources-to-start-your-nlp-journeysec-key-concepts">Key concepts and valuable resources to start your NLP journey{sec-key-concepts}</a>
+  <li><a href="#sec-key-concepts" id="toc-sec-key-concepts" class="nav-link" data-scroll-target="#sec-key-concepts">Key concepts and valuable resources to start your NLP journey</a>
   <ul class="collapse">
   <li><a href="#sec-classification-task" id="toc-sec-classification-task" class="nav-link" data-scroll-target="#sec-classification-task">The classification task</a></li>
   <li><a href="#models" id="toc-models" class="nav-link" data-scroll-target="#models">Models</a></li>
@@ -200,7 +200,7 @@ window.Quarto = {
   <li><a href="#choose-and-load-a-model" id="toc-choose-and-load-a-model" class="nav-link" data-scroll-target="#choose-and-load-a-model">Choose and load a model</a></li>
   <li><a href="#fine-tune-the-model" id="toc-fine-tune-the-model" class="nav-link" data-scroll-target="#fine-tune-the-model">Fine-tune the model</a>
   <ul class="collapse">
-  <li><a href="#tokenize-the-dataset" id="toc-tokenize-the-dataset" class="nav-link" data-scroll-target="#tokenize-the-dataset">Tokenize the dataset:</a></li>
+  <li><a href="#sec-tokenization" id="toc-sec-tokenization" class="nav-link" data-scroll-target="#sec-tokenization">Tokenize the dataset</a></li>
   <li><a href="#sec-training-parameters" id="toc-sec-training-parameters" class="nav-link" data-scroll-target="#sec-training-parameters">Setup fine-tuning hyperparameters</a></li>
   <li><a href="#launch-fine-tuning" id="toc-launch-fine-tuning" class="nav-link" data-scroll-target="#launch-fine-tuning">Launch fine-tuning</a></li>
   </ul></li>
@@ -265,22 +265,9 @@ window.Quarto = {
 <h1>Introduction</h1>
 <!-- JB: Start by explaining what text annotation is -->
 <!-- ES:  Je commencerai le tutoriel de manière un peu plus douce sur les principales notions, là ça rentre vraiment dans le dur rapidement. Plus, il y a trois stratégies : encoder non finetuné, encoder finetuné et décodeur en inférence non ? On ne parle pas de plongement seuls + ML. Donc peut être un peu mieux situer l'approche, de manière un peu plus intuitive. Et peut être aussi introduire ici le fait qu'un humain est capable d'annoter et qu'on veut étendre cette équation humaine.  -->
-<p>Social scientists dealing with large corpora of documents (tweets, abstracts, newspaper articles, videos, …) often need to annotate each item with one or more labels. To complete this cumbersome task, social scientists have adopted many strategies such as hiring interns, externalise the task to a company such as MTurk, or use computers to do the job (SOURCE of fun fact ?). Since the development of LLMs, it has now become a common practice to use them as annotators in social science contexts (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). For instance Claesson (2026) annotated 4.5 million tweets addressed to French members of the parliament. Each tweet could be assigned the labels “attack”, “critique” or “support”. With these annotations, she was able to describe the conditions of hate speech towards French parliamentaries on twitter. <!-- TODO reformulate --> In the Machine Learning jargon, the annotation task is referred to as a “classification task”.</p>
+<p>Social scientists dealing with large corpora of documents (tweets, abstracts, newspaper articles, videos, …) often need to annotate each item with one or more labels. To complete this cumbersome task, social scientists have adopted many strategies such as hiring interns, externalise the task to a company such as MTurk, or use computers to do the job (SOURCE of fun fact ?). Since the development of LLMs, it has now become a common practice to use them as annotators in social science contexts (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). For instance Claesson (2026) annotated 4.5 million tweets addressed to French members of the parliament. Each tweet could be assigned the labels “attack”, “critique” or “support”. With these annotations, she was able to describe the conditions of hate speech towards French parliamentarians on twitter. <!-- TODO reformulate --> In the Machine Learning jargon, the annotation task is referred to as a “classification task”.</p>
+<p><em>AM: i want to say “its not magic, don’t use an LLM for fun and pretend it’s science”. Dont know if we must, dont know how to phrase it</em><br> These practices are at the intersection of quantitative social sciences and computer science called <em>the Computational Social Sciences</em>. This field of studies builds upon social science theories and leverages computer science methods to scale projects or offer new analyses. In the case of corpus annotation, scientists must define the labels and codebook based on social science theories. To assist social scientists in this task, our team developped <a href="css.cnrs.fr/active-tigger">ActiveTigger</a>, an open-source software, designed by and for social scientists, to support collaborative text annotation and code-free model fine-tuning.</p>
 <p>In this series of tutorials we dive into the technicalities of the classification pipeline using LLMs as annotators. In a previous <a href="https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/">tutoriel</a>, we demonstrated how to use generative AI (genAI) for this task; the pipeline consisted of creating an appropriate prompt and retrieving the label in the genAI response. In this tutorial however we demonstrate how to use an encoder model (an LLM that does not generate texts) (AM: JB is it the right term or should we call it an embedding model?) to perform this task. We are going to use smaller<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> open weights models<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> and “teach” it how to annotate texts the way an expert would using the supervised learning framework<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. Researchers can maintain more control on the model and its performance, however, implementing such techniques requires more NLP knowledge and coding skills. Therefore this tutorial is longer and introduces many concepts that could be overlooked when using black box models.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><em>AM: INCLUDE SOMEWHERE: This approach does not replace the theoretical work and manual annotation, as one must define the labels and what they represent, as well as annotate some elements that will be used to evaluate the LLMs’ ability to perform the classification task. On the other hand, LLMs provide cost-effective and rapid alternatives for scaling studies.</em></p>
-<p><em>AM: Mention Active Tigger</em></p>
-</div>
-</div>
 <p>The main objective of this tutorial is to <strong>fine-tune</strong> an <strong>encoder model</strong> and introduce the key concepts so you can adapt the code to your specific task.</p>
 <p>After presenting the objectives, materials and setup steps, we introduce the key NLP and Machine Learning concepts, we will break down the pipeline starting with loading the dataset and format it, then load the model and set the hyperparameters, finally launch the fine-tuning process. Once the process finishes, we will assess the performance and discuss how we can tweak the hyperparameters to reach satisfying performance. We conclude this tutorial with advices on how to correctly incorporate the results in a social science project. Throughout the tutoriel we provide practical insights on how to best use your hardware.</p>
 <!-- TODO: write a pros and cons of the two methods -->
@@ -314,8 +301,8 @@ Warning
 <p>We use SOTA Python librairies such as <a href="https://pytorch.org/">PyTorch</a> and <a href="https://huggingface.co/docs/transformers/index">Transformers</a>. These librairies are well documented and large online communities of users have posted much valuable content to assist you during your journey. More specifically, it is likely that you will face implementation issues related to the versions of the libraries; many forums will guide you into choosing the adequate librairies versions to install depending on your task and model of choice. For this reason, we recommend using a virtual environments manager such as conda<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> or uv<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> and keep track of your versions to save painful debugging time in the long run.</p>
 </section>
 </section>
-<section id="key-concepts-and-valuable-resources-to-start-your-nlp-journeysec-key-concepts" class="level1">
-<h1>Key concepts and valuable resources to start your NLP journey{sec-key-concepts}</h1>
+<section id="sec-key-concepts" class="level1">
+<h1>Key concepts and valuable resources to start your NLP journey</h1>
 <p>In this tutorial we will <strong>fine-tune</strong> a <strong>pretrained language model</strong> of type <strong>encoder</strong> to perform a <strong>classification</strong> task. The description itself needs clarification, we will endeavor to shed light on all of these keywords while remaining on the surface level to keep this tutorial legible. At each step, we provide valuable resources to further understand the concepts as well as the links to the litterature.</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -462,7 +449,7 @@ Figure&nbsp;3: Similarity
 <p>The “pre-training” implies there is a “training”, or more specifically, a “fine-tuning”. This fine-tuning process only takes a few minutes and can last a few dozens of minutes on more limited hardware. This process intends to adapt the model to <strong>your</strong> task and <strong>your</strong> data, going from moderate to, hopefully, very high performance.</p>
 <p>In our case, we will be fine-tuning the model on a classification task, by providing text inputs and hand labels. In practice, this process updates the weights and biases but at a much lower order of magnitude. This fine-tuning process will transform the language model into a classifier model for text data. This means that the fine tuning is assessed using the same metrics (F1 score, …) and following the same framework (train, dev, test splits) as any other classifier.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Learn more the embedding space and training encoders">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -471,7 +458,7 @@ Learn more the embedding space and training encoders
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://jalammar.github.io/illustrated-transformer/">The illustrated transformer</a></li>
@@ -941,17 +928,17 @@ Warning
 <p>Nota: for some models you might need to set <code>trust_remote_code</code> to <code>True</code>. <em>Make sure you actually trust the model you are downloading.</em></p>
 </div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled" title="Model description">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div id="nte-model-description" class="callout callout-style-default callout-note callout-titled" title="Model description">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Model description
+Note&nbsp;1: Model description
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>We can easily observe the general architecture of the model by typing:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1025,7 +1012,7 @@ Model description
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Tips and tricks - Read the model configuration">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1034,7 +1021,7 @@ Tips and tricks - Read the model configuration
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The <code>AutoConfig</code> class is very convenient for retrieveing information that may be difficult to obtain otherwise because models’ documentation sometimes lack precision. We load it like this:</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoConfig</span>
@@ -1083,11 +1070,11 @@ Tips and tricks - Read the model configuration
 <li>Setup the training arguments</li>
 <li>Launch training</li>
 </ul>
-<section id="tokenize-the-dataset" class="level3">
-<h3 class="anchored" data-anchor-id="tokenize-the-dataset">Tokenize the dataset:</h3>
+<section id="sec-tokenization" class="level3">
+<h3 class="anchored" data-anchor-id="sec-tokenization">Tokenize the dataset</h3>
 <p>Tokenizing consists of two steps, first text patterns are transformed into tokens from the model’s vocabulary, then each sentence is truncated or padded so that every entry has the same length.</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Example">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1096,7 +1083,7 @@ Example
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>tokenizer(<span class="st">"Hello World! 😇"</span>)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co"># {'input_ids': [101, 7592, ...], 'token_type_ids': [0, 0, ...], 'attention_mask': [1, 1, ...]}</span></span>
@@ -1313,6 +1300,18 @@ Example
 <span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"gold"</span>: np.concat(y_gold),</span>
 <span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"pred"</span>: np.concat(pred)</span>
 <span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you want to develop your understanding of the objects we manipulate, we provide a setp by step description in the <a href="./appendices.html#sec-ins-and-outs">appendices</a></p>
+</div>
 </div>
 <div class="no-row-height column-margin column-container"><div class="">
 <p>Note that this code snippet will only run if the model is loaded on your CPU. See <a href="#sec-GPU" class="quarto-xref">Section&nbsp;4.3</a> for device discussions.</p>
@@ -1663,7 +1662,7 @@ Figure&nbsp;6: Typical learning curve
 <p>As mentionned in the introduction, one could choose to use an LLMs such as ChatGPT through an API (<a href="https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/">illustrated here</a>) or fine-tune an encoder model as illustrated in this tutorial. We list a number of pros and cons for using either technique in the context of social science research.</p>
 <p><strong>Coding skills</strong></p>
 <p>As this tutorial demonstrates, fine tuning an encoder model requires more coding skills than making API requests to an external servers. This can be an advantage if you want to develop your skills and refine your understanding of language models, but it takes more time and effort.</p>
-<p>Alternatively, you can use <a href="css.cnrs.fr/active-tigger">ActiveTigger</a>, our open-source software designed to support collaborative text annotation and code-free model fine-tuning, and more!</p>
+<p>Alternatively, you can use <a href="css.cnrs.fr/active-tigger">ActiveTigger</a>, an open-source software designed to support collaborative text annotation and code-free model fine-tuning, and more!</p>
 <!--TODO add logo-->
 <p><strong>Accessibility to a server</strong></p>
 <p>Fine tuning an encoder model requires hardware and a clean environment as demonstrated throughout this tutorial; on the other hand, making API calls requires an API key with credit. This raises concerns regarding the equal access to such technologies.</p>
@@ -1676,7 +1675,7 @@ Figure&nbsp;6: Typical learning curve
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
-<p>In this tutorial we covered many topics: - In <strong>?@sec-key-concepts</strong> we defined some key concepts such as the supervised learning framework, BERT models and fine-tuning. It is important to have a broad understanding of these in order to easily manipulate the objects and adapt the code. - In <a href="#sec-essentials" class="quarto-xref">Section&nbsp;3</a> we laid out the usual fine-tuning pipeline including data processing and formatting, choosing the model, launching the fine-tuning and assessing the performance. <a href="#sec-essentials-conclusion" class="quarto-xref">Section&nbsp;3.5</a> summarises the main steps. - In <a href="#sec-advanced" class="quarto-xref">Section&nbsp;4</a> we stopped on more complex concepts such as the reading curve and provided instructions on how to tweak the hyperparameters. This section also discusses using GPU for quicker training and provides hotfixes for common errors.</p>
+<p>In this tutorial we covered many topics: - In <a href="#sec-key-concepts" class="quarto-xref">Section&nbsp;2</a> we defined some key concepts such as the supervised learning framework, BERT models and fine-tuning. It is important to have a broad understanding of these in order to easily manipulate the objects and adapt the code. - In <a href="#sec-essentials" class="quarto-xref">Section&nbsp;3</a> we laid out the usual fine-tuning pipeline including data processing and formatting, choosing the model, launching the fine-tuning and assessing the performance. <a href="#sec-essentials-conclusion" class="quarto-xref">Section&nbsp;3.5</a> summarises the main steps. - In <a href="#sec-advanced" class="quarto-xref">Section&nbsp;4</a> we stopped on more complex concepts such as the reading curve and provided instructions on how to tweak the hyperparameters. This section also discusses using GPU for quicker training and provides hotfixes for common errors.</p>
 </section>
 <section id="bibliography" class="level1">
 <h1>Bibliography</h1>
