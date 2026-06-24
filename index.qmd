@@ -53,11 +53,7 @@ In this tutorial, we will NOT cover :
 - The fundamentals of NLP and the intersection of linguistics and computer science, we will only introduce concepts necessary to understanding this tutorial. See [Jurafsky](https://web.stanford.edu/~jurafsky/slp3/) 
 - The conceptualisation of your research question to fall into the automatic annotation framework, we expect readers to be able to design their protocol and motivate it using appropriate social sciences or any domain speficic concepts.
 
-Available materials:
-
--
-
-<!-- TODO faire un dépot Zenodo -->
+We provide a notebook with all cells pre-run [here](https://github.com/AXLMRIN/encoder-classifier-tuto/blob/main/tuto.ipynb)
 
 ## Install environment: 
 
