@@ -75,7 +75,7 @@ We use SOTA Python librairies such as [PyTorch](https://pytorch.org/) and [Trans
 
 [^5]: [More on UV](XXX), XXXX
 
-# Key concepts and valuable resources to start your NLP journey
+# Key concepts and valuable resources to start your NLP journey{sec-key-concepts}
 
 In this tutorial we will **fine-tune** a **pretrained language model** of type **encoder** to perform a **classification** task. The description itself needs clarification, we will endeavor to shed light on all of these keywords while remaining on the surface level to keep this tutorial legible. At each step, we provide valuable resources to further understand the concepts as well as the links to the litterature.
 
@@ -869,7 +869,7 @@ weighted avg       0.67      0.66      0.65       306
 Here we can see that the model's performance for the labels "agrees" and "neutral" is decent, but would benefit from further hyperparameter tuning. On the other hand, the model does not recognise the "disagrees" label. All in all, the current finetuning leads to mediocre results. In @sec-advanced, we will tweak the hyperparameters to reach better results. 
 
 
-## Conclusion 
+## Conclusion{#sec-essentials-conclusion}
 
 In this section we have covered the basics to load the data and model, launch the fine-tuning and evaluate performances. We discussed: 
 
@@ -1271,27 +1271,37 @@ This is merely a convention issue. Some models/versions use beta/gamma keywords 
 
 # Pros and cons of using an encoder vs decoder model for text classification{#sec-pros-cons}
 
+As mentionned in the introduction, one could choose to use an LLMs such as ChatGPT through an API ([illustrated here](https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/)) or fine-tune an encoder model as illustrated in this tutorial. We list a number of pros and cons for using either technique in the context of social science research.
+
 **Coding skills**
 
-As this tutorial demonstrates, fine tuning an encoder model requires more coding skills than making API requests to an external servers. This can be an advantage if you want to develop your skills and refine your understanding of language models, but it takes more time and effort.
+As this tutorial demonstrates, fine tuning an encoder model requires more coding skills than making API requests to an external servers. This can be an advantage if you want to develop your skills and refine your understanding of language models, but it takes more time and effort. 
+
+Alternatively, you can use [ActiveTigger](css.cnrs.fr/active-tigger), our open-source software designed to support collaborative text annotation and code-free model fine-tuning, and more! 
+
+<!--TODO add logo-->
 
 **Accessibility to a server**
 
-Fine tuning an encoder model requires hardware and a clean environment as demonstrated trhoughout this tutorial; on the other hand, making API calls requires an API key with credit. This raises concerns regarding the equal access to such technologies.
+Fine tuning an encoder model requires hardware and a clean environment as demonstrated throughout this tutorial; on the other hand, making API calls requires an API key with credit. This raises concerns regarding the equal access to such technologies.
 
 **Control on the model**
 
-Most models do not disclose the training data used for pretraining the model we use, this represent an hard limit when it comes to controlling the model used and the interpretability of the results. However, encoder models allow for more reproducibility (you own the model used for inference) and interpretability (you own the data used for fine tuning, XXX additional techniques to probe the model???).
+Most models do not disclose the training data used for pretraining the model we use, this represent a hard limit when it comes to controlling the model used and the interpretability of the results. However, encoder models allow for more reproducibility (you own the model used for inference) and interpretability (you own the data used for fine tuning, XXX additional techniques to probe the model???).
 
 **Open weights**
 
-XXX
+Most generative models cannot be downloaded on your personal device, these models are said "closed weights". If you want to use such models you will need to use an API to use this specific model. On the other hand, all models on Hugging Face (generative or encoder) can be downloaded and are said "open weights". This is critical for reproducibility purposes. (source with varying performance through after different model updates).
 
 **Confidentiality**
 
-XXX
+If your research project requires extensive care regarding confidentiality, then you cannot use an LLM through API calls. You would need to run a model (generative or encoder) on trusted servers/devices. Therefore, fine-tuning an encoder lowers the bar for hardware requirements.
 
 # Conclusion 
 
+In this tutorial we covered many topics:
+- In @sec-key-concepts we defined some key concepts such as the supervised learning framework, BERT models and fine-tuning. It is important to have a broad understanding of these in order to easily manipulate the objects and adapt the code.
+- In @sec-essentials we laid out the usual fine-tuning pipeline including data processing and formatting, choosing the model, launching the fine-tuning and assessing the performance. @sec-essentials-conclusion summarises the main steps.
+- In @sec-advanced we stopped on more complex concepts such as the reading curve and provided instructions on how to tweak the hyperparameters. This section also discusses using GPU for quicker training and provides hotfixes for common errors.
 
 # Bibliography 
