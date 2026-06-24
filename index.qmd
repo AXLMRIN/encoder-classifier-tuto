@@ -16,7 +16,11 @@ toc-depth: 3
 
 <!-- ES:  Je commencerai le tutoriel de manière un peu plus douce sur les principales notions, là ça rentre vraiment dans le dur rapidement. Plus, il y a trois stratégies : encoder non finetuné, encoder finetuné et décodeur en inférence non ? On ne parle pas de plongement seuls + ML. Donc peut être un peu mieux situer l'approche, de manière un peu plus intuitive. Et peut être aussi introduire ici le fait qu'un humain est capable d'annoter et qu'on veut étendre cette équation humaine.  -->
 
-Social scientists dealing with large corpora of documents (tweets, abstracts, newspaper articles, videos, ...) often need to annotate each item with one or more labels. To complete this cumbersome task, social scientists have adopted many strategies such as hiring interns, externalise the task to a company such as MTurk, or use computers to do the job (SOURCE of fun fact ?). Since the development of LLMs, it has now become a common practice to use them as annotators in social science contexts (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). For instance Claesson (2026) annotated 4.5 million tweets addressed to French members of the parliament. Each tweet could be assigned the labels "attack", "critique" or "support". With these annotations, she was able to describe the conditions of hate speech towards French parliamentaries on twitter. <!-- TODO reformulate --> In the Machine Learning jargon, the annotation task is referred to as a "classification task".
+Social scientists dealing with large corpora of documents (tweets, abstracts, newspaper articles, videos, ...) often need to annotate each item with one or more labels. To complete this cumbersome task, social scientists have adopted many strategies such as hiring interns, externalise the task to a company such as MTurk, or use computers to do the job (SOURCE of fun fact ?). Since the development of LLMs, it has now become a common practice to use them as annotators in social science contexts (Gilardi et al., 2023; Bonikowski et al, 2022; Do et al., 2022). For instance Claesson (2026) annotated 4.5 million tweets addressed to French members of the parliament. Each tweet could be assigned the labels "attack", "critique" or "support". With these annotations, she was able to describe the conditions of hate speech towards French parliamentarians on twitter. <!-- TODO reformulate --> In the Machine Learning jargon, the annotation task is referred to as a "classification task".
+
+_AM: i want to say "its not magic, don't use an LLM for fun and pretend it's science". Dont know if we must, dont know how to phrase it_<br/>
+These practices are at the intersection of quantitative social sciences and computer science called _the Computational Social Sciences_. This field of studies builds upon social science theories and leverages computer science methods to scale projects or offer new analyses. In the case of corpus annotation, scientists must define the labels and codebook based on social science theories. To assist social scientists in this task, our team developped [ActiveTigger](css.cnrs.fr/active-tigger), an open-source software, designed by and for social scientists, to support collaborative text annotation and code-free model fine-tuning.
+
 
 In this series of tutorials we dive into the technicalities of the classification pipeline using LLMs as annotators. In a previous [tutoriel](https://www.css.cnrs.fr/classification-with-generative-llms-and-api-calls/), we demonstrated how to use generative AI (genAI) for this task; the pipeline consisted of creating an appropriate prompt and retrieving the label in the genAI response. In this tutorial however we demonstrate how to use an encoder model (an LLM that does not generate texts) (AM: JB is it the right term or should we call it an embedding model?) to perform this task. We are going to use smaller[^smaller-info] open weights models[^open-weights] and "teach" it how to annotate texts the way an expert would using the supervised learning framework[^supervised-learning-disclaimer]. Researchers can maintain more control on the model and its performance, however, implementing such techniques requires more NLP knowledge and coding skills. Therefore this tutorial is longer and introduces many concepts that could be overlooked when using black box models.
 
@@ -26,11 +30,6 @@ In this series of tutorials we dive into the technicalities of the classificatio
 
 [^supervised-learning-disclaimer]: If you are unfamiliar with the term "supervised learning", it is defined in @sec-classification-task.
 
-:::{.callout-warning}
-_AM: INCLUDE SOMEWHERE: This approach does not replace the theoretical work and manual annotation, as one must define the labels and what they represent, as well as annotate some elements that will be used to evaluate the LLMs’ ability to perform the classification task. On the other hand, LLMs provide cost-effective and rapid alternatives for scaling studies._
-
-_AM: Mention Active Tigger_
-:::
 
 The main objective of this tutorial is to **fine-tune** an **encoder model** and introduce the key concepts so you can adapt the code to your specific task. 
 
@@ -75,7 +74,7 @@ We use SOTA Python librairies such as [PyTorch](https://pytorch.org/) and [Trans
 
 [^5]: [More on UV](XXX), XXXX
 
-# Key concepts and valuable resources to start your NLP journey{sec-key-concepts}
+# Key concepts and valuable resources to start your NLP journey{#sec-key-concepts}
 
 In this tutorial we will **fine-tune** a **pretrained language model** of type **encoder** to perform a **classification** task. The description itself needs clarification, we will endeavor to shed light on all of these keywords while remaining on the surface level to keep this tutorial legible. At each step, we provide valuable resources to further understand the concepts as well as the links to the litterature.
 
@@ -511,7 +510,7 @@ model = AutoModelForSequenceClassification.from_pretrained(
 Nota: for some models you might need to set `trust_remote_code` to `True`. _Make sure you actually trust the model you are downloading._
 ::: 
 
-:::{.callout-note title="Model description" collapse="true"}
+:::{.callout-note title="Model description" collapse="true" #nte-model-description}
 We can easily observe the general architecture of the model by typing: 
 
 ```python
@@ -642,7 +641,7 @@ We are finally going to fine-tune the model on our specific data. To do so, we a
 - Setup the training arguments
 - Launch training
 
-### Tokenize the dataset: 
+### Tokenize the dataset{#sec-tokenization}
 
 Tokenizing consists of two steps, first text patterns are transformed into tokens from the model's vocabulary, then each sentence is truncated or padded so that every entry has the same length. 
 
@@ -836,6 +835,9 @@ results = pd.DataFrame({
 ```
 :::
 
+:::{.callout-note}
+If you want to develop your understanding of the objects we manipulate, we provide a setp by step description in the [appendices](./appendices.qmd#sec-ins-and-outs)
+:::
 :::{.column-margin}
 Note that this code snippet will only run if the model is loaded on your CPU. See @sec-GPU for device discussions.
 :::
@@ -998,8 +1000,6 @@ What to do:
 - Increase batch size in order to smooth training over more examples per training step.
 - Increase weight decay to prevent overfitting.
 - Annotate more , you may not have enough examples for the model to learn from.
-
-[^6]: The effective batch size is the system batch size times the gradient accumulation.
 
 :::
 
@@ -1277,7 +1277,7 @@ As mentionned in the introduction, one could choose to use an LLMs such as ChatG
 
 As this tutorial demonstrates, fine tuning an encoder model requires more coding skills than making API requests to an external servers. This can be an advantage if you want to develop your skills and refine your understanding of language models, but it takes more time and effort. 
 
-Alternatively, you can use [ActiveTigger](css.cnrs.fr/active-tigger), our open-source software designed to support collaborative text annotation and code-free model fine-tuning, and more! 
+Alternatively, you can use [ActiveTigger](css.cnrs.fr/active-tigger), an open-source software designed to support collaborative text annotation and code-free model fine-tuning, and more! 
 
 <!--TODO add logo-->
 
